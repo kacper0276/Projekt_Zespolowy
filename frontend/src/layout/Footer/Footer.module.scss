@@ -1,0 +1,68 @@
+// Footer.module.scss
+$formGradientStart: #030030;
+$formGradientEnd: #a5082e;
+$textColor: #E0E0E0;
+
+.mainFooter {
+  background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+  color: $textColor;
+  padding: 2rem 0;
+  box-shadow: 0 -4px 6px rgba(0,0,0,0.1);
+}
+
+.footerTitle {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: $textColor;
+}
+
+.footerDescription {
+  color: rgba(224, 224, 224, 0.7);
+}
+
+.linkTitle {
+  margin-bottom: 1rem;
+  color: $textColor;
+}
+
+.footerLinks {
+  list-style: none;
+  padding: 0;
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: rgba(224, 224, 224, 0.7);
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+      color: $textColor;
+      transform: translateX(5px);
+    }
+  }
+}
+
+.socialLinks {
+  display: flex;
+  gap: 1rem;
+}
+
+.socialIcon {
+  color: rgba(224, 224, 224, 0.7);
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    color: $textColor;
+    transform: scale(1.1);
+  }
+}
+
+.copyright {
+  margin-top: 1rem;
+  color: rgba(224, 224, 224, 0.5);
+  font-size: 0.9rem;
+}

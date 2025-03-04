@@ -1,44 +1,44 @@
-@use "./styles/variables" as *;
+@media only screen and (max-width: 1000px) {
+  html {
+    position: fixed;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    margin: 0;
+    width: 100vw;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+}
 
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100vw;
+}
+
+.mobile-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-}
+  height: 100vh;
+  background-color: #f8f9fa;
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em $primary-color);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .btn {
+    font-size: 1rem;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: $secondary-color;
 }
