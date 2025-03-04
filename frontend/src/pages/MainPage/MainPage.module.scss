@@ -144,9 +144,14 @@ $textColor: #E0E0E0;
 }
 
 .featureIcon {
-  margin-bottom: 1rem;
-  color: $formGradientEnd;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+    margin-bottom: 1rem;
+    color: $formGradientEnd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    i {
+      font-size: 48px; 
+      line-height: 1;
+    }
+  }

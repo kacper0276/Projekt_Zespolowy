@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './MainPage.module.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const MainPage: React.FC = () => {
   return (
@@ -19,7 +20,7 @@ const MainPage: React.FC = () => {
                 Rozpocznij za darmo
               </button>
               <button className={`btn ${styles.secondaryCta}`}>
-                Obejrzyj demo
+                Stwórz nową tablice
               </button>
             </div>
           </div>
@@ -54,10 +55,7 @@ const MainPage: React.FC = () => {
           <div className="col-md-4 text-center">
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 20h9"></path>
-                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                </svg>
+                <i className="bi bi-pencil"></i>
               </div>
               <h3>Edytuj</h3>
               <p>Dostosuj swoje tablice do swoich potrzeb</p>
@@ -66,12 +64,7 @@ const MainPage: React.FC = () => {
           <div className="col-md-4 text-center">
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
+                <i className="bi bi-people"></i>
               </div>
               <h3>Współpraca</h3>
               <p>Pracuj razem w czasie rzeczywistym</p>
@@ -80,12 +73,7 @@ const MainPage: React.FC = () => {
           <div className="col-md-4 text-center">
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="7" height="7"></rect>
-                  <rect x="14" y="3" width="7" height="7"></rect>
-                  <rect x="14" y="14" width="7" height="7"></rect>
-                  <rect x="3" y="14" width="7" height="7"></rect>
-                </svg>
+                <i className="bi bi-grid"></i>
               </div>
               <h3>Integracje</h3>
               <p>Połącz się z innymi narzędziami</p>
