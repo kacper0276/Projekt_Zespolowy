@@ -7,12 +7,14 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import Header from "../src/layout/Header/Header"
 import Footer from "../src/layout/Footer/Footer"
 import MainPage from "../src/pages/MainPage/MainPage"
+import KanbanBoard from "./pages/KanbanBoard/KanbanBoard";
 
 function App() {
 
   const content = (
     <Routes>
       <Route path="/" element={<MainPage/>} />
+      <Route path="/KanbanBoard" element={<KanbanBoard/>} />
     </Routes>
   );
 
@@ -28,6 +30,7 @@ function App() {
   const footer = (
     <>
       <Routes>
+        <Route path="/KanbanBoard" element={<></>} />
         <Route path="*" element={<Footer/>} />
       </Routes>
     </>

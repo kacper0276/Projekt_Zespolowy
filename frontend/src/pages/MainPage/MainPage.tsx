@@ -1,9 +1,17 @@
 import React from 'react';
 import styles from './MainPage.module.scss';
+import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const MainPage: React.FC = () => {
+  const navigate = useNavigate();
+
+const handleStartFree = () => {
+
+navigate('/KanbanBoard');
+
+};
   return (
     <div className={styles.mainPage}>
       <main className={`container ${styles.mainContent}`}>
@@ -16,9 +24,9 @@ const MainPage: React.FC = () => {
               Zarządzaj projektami, organizuj zadania i zwiększ produktywność
             </p>
             <div className={styles.ctaButtons}>
-              <button className={`btn ${styles.primaryCta}`}>
-                Rozpocznij za darmo
-              </button>
+            <button className={`btn ${styles.primaryCta}`} onClick={handleStartFree}>
+              Rozpocznij za darmo
+            </button>
               <button className={`btn ${styles.secondaryCta}`}>
                 Stwórz nową tablice
               </button>

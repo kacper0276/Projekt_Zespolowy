@@ -1,0 +1,237 @@
+$formGradientStart: #030030;
+$formGradientEnd: #a5082e;
+$textColor: #E0E0E0;
+$backgroundColor: #121212;
+$cardBackground: #1E1E1E;
+
+.kanbanBoard {
+  background-color: $backgroundColor;
+  color: $textColor;
+  min-height: 100vh;
+  padding: 2rem;
+  overflow-x: auto;
+}
+
+.boardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+ 
+  h1 {
+    background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+  }
+}
+
+.boardContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.boardColumns {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.kanbanColumn {
+  background: $cardBackground;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1rem;
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.columnHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+ 
+  h3 {
+    font-size: 20px;
+    margin: 0;
+    color: $textColor;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+ 
+  .taskCount {
+    background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+  }
+}
+
+.columnActions {
+  margin-bottom: 1rem;
+}
+
+.addTaskButton {
+  background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.3s ease;
+  width: 100%;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+.inlineTaskInput {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  
+  .taskInput {
+    width: 100%;
+    background: #2A2A2A;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: $textColor;
+    padding: 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+  }
+
+  .confirmTaskActions {
+    display: flex;
+    gap: 0.5rem;
+    
+    .confirmTaskButton, .cancelButton {
+      width: 50%;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      transition: transform 0.3s ease;
+    }
+
+    .confirmTaskButton {
+      background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+      color: white;
+      border: none;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      &:not(:disabled):hover {
+        transform: scale(1.02);
+      }
+    }
+
+    .cancelButton {
+      background: #2A2A2A;
+      color: $textColor;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background: #3A3A3A;
+      }
+    }
+  }
+}
+
+.columnContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.taskCard {
+  background: #2A2A2A;
+  border-radius: 5px;
+  padding: 1rem;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+    background: #3A3A3A;
+  }
+}
+
+.taskHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+ 
+  h4 {
+    margin: 0;
+    color: $textColor;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+.taskActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.moveButton {
+  background: transparent;
+  border: none;
+  color: $textColor;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  i {
+    font-size: 1.2rem;
+  }
+}
+
+.columnCreation {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.columnInput {
+  width: 100%;
+  background: #2A2A2A;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: $textColor;
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
+.addColumnButton {
+  background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.3s ease;
+  width: 100%;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
