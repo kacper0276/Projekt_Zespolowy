@@ -17,7 +17,7 @@ const KanbanBoard: React.FC = () => {
   // Stany do obsługi dodawania zadań w konkretnej kolumnie
   const [taskInputStates, setTaskInputStates] = useState<{[key: string]: { isAdding: boolean, title: string }}>({});
 
-  // Funkcja do toggleowania widoczności pola dodawania zadania
+  // Toggle visibility of task input
   const toggleAddTask = (status: string) => {
     setTaskInputStates(prev => ({
       ...prev,
@@ -28,7 +28,7 @@ const KanbanBoard: React.FC = () => {
     }));
   };
 
-  // Funkcja do aktualizacji tytułu nowego zadania
+  // Update new task title
   const handleTaskTitleChange = (status: string, title: string) => {
     setTaskInputStates(prev => ({
       ...prev,
@@ -39,7 +39,7 @@ const KanbanBoard: React.FC = () => {
     }));
   };
 
-  // Funkcja do dodawania nowego zadania
+  // Add new task
   const addTask = (status: string) => {
     const titleToAdd = taskInputStates[status]?.title.trim();
     if (titleToAdd) {
@@ -49,10 +49,8 @@ const KanbanBoard: React.FC = () => {
         status: status
       };
       
-      // Dodaj zadanie do listy zadań
       setTasks(prev => [...prev, newTask]);
       
-      // Resetuj stan dodawania zadania dla danej kolumny
       setTaskInputStates(prev => ({
         ...prev,
         [status]: { isAdding: false, title: '' }
@@ -60,7 +58,7 @@ const KanbanBoard: React.FC = () => {
     }
   };
 
-  // Funkcja do dodawania nowej kolumny
+  // Add new column
   const addColumn = () => {
     if (newColumnTitle.trim() && !columns.includes(newColumnTitle.trim().toLowerCase())) {
       const normalizedColumnName = newColumnTitle.trim().toLowerCase();
@@ -69,14 +67,14 @@ const KanbanBoard: React.FC = () => {
     }
   };
 
-  // Funkcja do przesuwania zadań między kolumnami
+  // Move task between columns
   const moveTask = (taskId: string, newStatus: string) => {
     setTasks(tasks.map(task =>
       task.id === taskId ? {...task, status: newStatus} : task
     ));
   };
 
-  // Renderowanie pojedynczej kolumny
+  // Render individual column
   const renderColumn = (status: string) => {
     const columnTasks = tasks.filter(task => task.status === status);
     const isAddingTask = taskInputStates[status]?.isAdding;
@@ -97,7 +95,6 @@ const KanbanBoard: React.FC = () => {
           </button>
         </div>
 
-        {/* Pole do dodawania zadania */}
         {isAddingTask && (
           <div className={styles.inlineTaskInput}>
             <input 
