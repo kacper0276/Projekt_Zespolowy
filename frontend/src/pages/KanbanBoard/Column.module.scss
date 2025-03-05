@@ -1,0 +1,140 @@
+$formGradientStart: #030030;
+$formGradientEnd: #a5082e;
+$textColor: #E0E0E0;
+$backgroundColor: #121212;
+$cardBackground: #1E1E1E;
+
+.column {
+  background-color: $cardBackground;
+  border-radius: 8px;
+  width: 300px;
+  min-width: 250px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.columnHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+ 
+  h3 {
+    margin: 0;
+    color: $textColor;
+    text-transform: capitalize;
+    word-break: break-word;
+    max-width: 100%;
+    font-weight: 600;
+  }
+
+  .columnHeaderActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .taskCount {
+    background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+    color: $textColor !important;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    display: inline-block;
+  }
+
+  .deleteColumnButton {
+    background: none;
+    border: none;
+    color: $formGradientEnd;
+    transition: all 0.3s ease;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover {
+      color: darken($formGradientEnd, 10%);
+
+      i {
+        transform: rotate(180deg) scale(1.2);
+      }
+    }
+  }
+}
+
+
+.columnActions {
+  margin-bottom: 15px;
+}
+
+.addTaskButton {
+  background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+  color: $textColor !important;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  width: 100%;
+  transition: opacity 0.3s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.inlineTaskInput {
+  margin-bottom: 15px;
+}
+
+.taskInput {
+  background-color: $backgroundColor;
+  border: 1px solid $formGradientStart;
+  color: $textColor;
+}
+
+.confirmTaskActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.confirmTaskButton {
+  background: linear-gradient(to right, #02a676, #02a676);
+  color: $textColor !important;
+  border: none;
+  flex-grow: 1;
+  transition: opacity 0.3s;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    opacity: 0.8;
+  }
+}
+
+.cancelButton {
+  background-color: $cardBackground;
+  color: $textColor !important;
+  border: 1px solid $formGradientEnd;
+  flex-grow: 1;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: rgba(165, 8, 46, 0.2);
+  }
+}
+
+.columnContent {
+  flex-grow: 1;
+  min-height: 100px;
+}
