@@ -3,26 +3,38 @@ import Item from './TaskItem'
 import { Droppable } from '@hello-pangea/dnd'
 import styles from './Column.module.scss'
 
+type TaskData = {
+  id: string
+  title: string
+  status: 'idle' | 'inProgress'
+}
+
 interface ColumnProps {
   col: {
     id: string
-    list: string[]
+    tasks: TaskData[]
     uniqueCounter: number
   }
   columns: string[]
   onAddTask: (columnId: string, taskTitle: string) => void
   onDeleteTask: (columnId: string, taskIndex: number) => void
+  onToggleTaskStatus: (columnId: string, taskIndex: number) => void
   onDeleteColumn: () => void
   canDeleteColumn: boolean
+  maxInProgressTasks: number
+  currentInProgressTasks: number
 }
 
 const Column: React.FC<ColumnProps> = ({
-  col: { list, id, uniqueCounter },
+  col: { tasks, id, uniqueCounter },
   columns,
   onAddTask,
   onDeleteTask,
+  onToggleTaskStatus,
   onDeleteColumn,
-  canDeleteColumn
+  canDeleteColumn,
+  maxInProgressTasks,
+  currentInProgressTasks
 }) => {
   const [isAddingTask, setIsAddingTask] = useState(false)
   const [newTaskTitle, setNewTaskTitle] = useState('')
@@ -42,7 +54,7 @@ const Column: React.FC<ColumnProps> = ({
           <div className={styles.columnHeader}>
             <h3>{id.charAt(0).toUpperCase() + id.slice(1)}</h3>
             <div className={styles.columnHeaderActions}>
-              <span className={`badge ${styles.taskCount}`}>{list.length}</span>
+              <span className={`badge ${styles.taskCount}`}>{tasks.length}</span>
               {canDeleteColumn && (
                 <button
                   onClick={onDeleteColumn}
@@ -93,14 +105,17 @@ const Column: React.FC<ColumnProps> = ({
             ref={provided.innerRef}
             className={styles.columnContent}
           >
-            {list.map((text, index) => (
-              <Item 
-                key={`${id}-${text}-${index}`} 
-                text={text} 
-                index={index} 
-                columnId={id} 
+            {tasks.map((task, index) => (
+              <Item
+                key={`${id}-${task.id}-${index}`}
+                text={task.title}
+                index={index}
+                columnId={id}
                 uniqueId={uniqueCounter - index}
+                status={task.status}
                 onDeleteTask={() => onDeleteTask(id, index)}
+                onToggleStatus={() => onToggleTaskStatus(id, index)}
+                canToggleToInProgress={task.status === 'inProgress' || currentInProgressTasks < maxInProgressTasks}
               />
             ))}
             {provided.placeholder}

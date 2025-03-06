@@ -29,13 +29,13 @@ $cardBackground: #1E1E1E;
     max-width: 100%;
     font-weight: 600;
   }
-
+  
   .columnHeaderActions {
     display: flex;
     align-items: center;
     gap: 10px;
   }
-
+  
   .taskCount {
     background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
     color: $textColor !important;
@@ -44,7 +44,7 @@ $cardBackground: #1E1E1E;
     font-size: 0.8rem;
     display: inline-block;
   }
-
+  
   .deleteColumnButton {
     background: none;
     border: none;
@@ -54,22 +54,20 @@ $cardBackground: #1E1E1E;
     display: flex;
     align-items: center;
     justify-content: center;
-
+    
     i {
       font-size: 1.2rem;
       transition: transform 0.3s ease;
     }
-
+    
     &:hover {
-      color: darken($formGradientEnd, 10%);
-
+      color: $formGradientEnd
       i {
         transform: rotate(180deg) scale(1.2);
       }
     }
   }
 }
-
 
 .columnActions {
   margin-bottom: 15px;
@@ -83,7 +81,7 @@ $cardBackground: #1E1E1E;
   border-radius: 4px;
   width: 100%;
   transition: opacity 0.3s;
-
+  
   &:hover {
     opacity: 0.8;
   }
@@ -111,12 +109,12 @@ $cardBackground: #1E1E1E;
   border: none;
   flex-grow: 1;
   transition: opacity 0.3s;
-
+  
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
-
+  
   &:not(:disabled):hover {
     opacity: 0.8;
   }
@@ -128,7 +126,7 @@ $cardBackground: #1E1E1E;
   border: 1px solid $formGradientEnd;
   flex-grow: 1;
   transition: background-color 0.3s;
-
+  
   &:hover {
     background-color: rgba(165, 8, 46, 0.2);
   }

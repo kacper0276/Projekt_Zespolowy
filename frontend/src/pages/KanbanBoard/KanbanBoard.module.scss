@@ -3,6 +3,9 @@ $formGradientEnd: #a5082e;
 $textColor: #E0E0E0;
 $backgroundColor: #121212;
 $cardBackground: #1E1E1E;
+$inProgressColor: #02a676;
+$dangerColor: #ff4d4d;
+$successColor: #02a676;
 
 .kanbanBoard {
   background-color: $backgroundColor;
@@ -20,6 +23,111 @@ $cardBackground: #1E1E1E;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.inProgressInfo {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.limitEditor {
+  min-width: 240px;
+}
+
+.inProgressCount {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background-color: rgba(2, 166, 118, 0.2);
+  color: $inProgressColor;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  i {
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+  }
+  
+  &:hover {
+    background-color: rgba(2, 166, 118, 0.3);
+    
+    i {
+      opacity: 1;
+    }
+  }
+  
+  &.limitReached {
+    background-color: rgba(255, 77, 77, 0.2);
+    color: $dangerColor;
+    
+    &:hover {
+      background-color: rgba(255, 77, 77, 0.3);
+    }
+  }
+}
+
+.limitInputGroup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.limitInput {
+  width: 60px;
+  padding: 6px 10px;
+  text-align: center;
+  background-color: $cardBackground;
+  border: 1px solid $inProgressColor;
+  border-radius: 4px;
+  color: $textColor;
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(2, 166, 118, 0.3);
+  }
+}
+
+.limitButtons {
+  display: flex;
+  gap: 4px;
+}
+
+.confirmLimitButton, .cancelLimitButton {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  
+  i {
+    font-size: 14px;
+  }
+}
+
+.confirmLimitButton {
+  background-color: $successColor;
+  color: white;
+  
+  &:hover {
+    background-color: darken($successColor, 10%);
+  }
+}
+
+.cancelLimitButton {
+  background-color: $dangerColor;
+  color: white;
+  
+  &:hover {
+    background-color: darken($dangerColor, 10%);
   }
 }
 
@@ -57,6 +165,12 @@ $cardBackground: #1E1E1E;
   color: $textColor;
   padding: 10px;
   border-radius: 4px;
+  
+  &:focus {
+    outline: none;
+    border-color: $formGradientEnd;
+    box-shadow: 0 0 0 2px rgba(165, 8, 46, 0.2);
+  }
 }
 
 .addColumnButton {
@@ -67,7 +181,7 @@ $cardBackground: #1E1E1E;
   border-radius: 4px;
   cursor: pointer;
   transition: opacity 0.3s;
-
+  
   &:hover {
     opacity: 0.8;
   }
