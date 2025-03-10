@@ -4,6 +4,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { registerData } from './dto/register-data.dto';
 import * as bcrypt from 'bcrypt';
+import { loginData } from './dto/login-data.dto';
 
 @Injectable()
 export class UsersService {
@@ -45,5 +46,25 @@ export class UsersService {
     user.role = registerData.role;
 
     return this.userRepository.save(user);
+  }
+
+  async loginUser(loginData: loginData) {
+    const user = await this.userRepository.findOne({
+      where: { email: loginData.email, isActive: true },
+    });
+
+    if (!user) {
+      throw new BadRequestException('invalid-user-data');
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      loginData.password,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      throw new BadRequestException('invalid-user-data');
+    }
+
+    return user;
   }
 }
