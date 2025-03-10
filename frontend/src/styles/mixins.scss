@@ -1,0 +1,41 @@
+@mixin radial-gradient(
+  $position,
+  $color1,
+  $color2,
+  $color1-stop,
+  $color2-stop
+) {
+  background: radial-gradient(
+    circle at $position,
+    $color1 $color1-stop,
+    $color2 $color2-stop
+  );
+}
+
+@mixin linear-gradient($direction, $color1, $color2) {
+  background: linear-gradient($direction, $color1, $color2);
+}
+
+@mixin multiple-radial-gradients(
+  $gradient1-position,
+  $gradient1-color1,
+  $gradient1-color2,
+  $gradient1-color1-stop,
+  $gradient1-color2-stop,
+  $gradient2-position,
+  $gradient2-color1,
+  $gradient2-color2,
+  $gradient2-color1-stop,
+  $gradient2-color2-stop
+) {
+  background: radial-gradient(
+      circle at $gradient1-position,
+      $gradient1-color1 $gradient1-color1-stop,
+      $gradient1-color2 $gradient1-color2-stop
+    ),
+    radial-gradient(
+      circle at $gradient2-position,
+      $gradient2-color1 $gradient2-color1-stop,
+      $gradient2-color2 $gradient2-color2-stop
+    );
+}

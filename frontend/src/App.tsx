@@ -9,7 +9,7 @@ import Footer from "../src/layout/Footer/Footer";
 import MainPage from "../src/pages/MainPage/MainPage";
 import KanbanBoard from "./pages/KanbanBoard/KanbanBoard";
 import LoginPage from "./pages/LoginPage/LoginPage";
-import NotFound from "./pages/NotFound";
+import NotFound from "./pages/NotFound/NotFound";
 
 function App() {
   const content = (
@@ -24,6 +24,7 @@ function App() {
   const header = (
     <>
       <Routes>
+        <Route path="/login" element={<></>} />
         <Route path="*" element={<Header />} />
       </Routes>
     </>
@@ -32,6 +33,7 @@ function App() {
   const footer = (
     <>
       <Routes>
+        <Route path="/login" element={<></>} />
         <Route path="/KanbanBoard" element={<></>} />
         <Route path="*" element={<Footer />} />
       </Routes>
