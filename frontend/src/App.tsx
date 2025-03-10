@@ -4,25 +4,27 @@ import Layout from "./layout/Layout";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import Header from "../src/layout/Header/Header"
-import Footer from "../src/layout/Footer/Footer"
-import MainPage from "../src/pages/MainPage/MainPage"
+import Header from "../src/layout/Header/Header";
+import Footer from "../src/layout/Footer/Footer";
+import MainPage from "../src/pages/MainPage/MainPage";
 import KanbanBoard from "./pages/KanbanBoard/KanbanBoard";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import NotFound from "./pages/NotFound";
 
 function App() {
-
   const content = (
     <Routes>
-      <Route path="/" element={<MainPage/>} />
-      <Route path="/KanbanBoard" element={<KanbanBoard/>} />
+      <Route path="/" element={<MainPage />} />
+      <Route path="/KanbanBoard" element={<KanbanBoard />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
-
 
   const header = (
     <>
       <Routes>
-        <Route path="*" element={<Header/>} />
+        <Route path="*" element={<Header />} />
       </Routes>
     </>
   );
@@ -31,7 +33,7 @@ function App() {
     <>
       <Routes>
         <Route path="/KanbanBoard" element={<></>} />
-        <Route path="*" element={<Footer/>} />
+        <Route path="*" element={<Footer />} />
       </Routes>
     </>
   );
