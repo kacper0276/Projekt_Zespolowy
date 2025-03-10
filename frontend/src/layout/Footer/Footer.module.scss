@@ -1,13 +1,12 @@
 // Footer.module.scss
-$formGradientStart: #030030;
-$formGradientEnd: #a5082e;
-$textColor: #E0E0E0;
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
 
 .mainFooter {
-  background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+  @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
   color: $textColor;
   padding: 2rem 0;
-  box-shadow: 0 -4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .footerTitle {

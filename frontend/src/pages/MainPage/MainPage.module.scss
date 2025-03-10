@@ -1,8 +1,6 @@
 // MainPage.module.scss
-@use "../../styles/mixins.scss" as mixins;
-$formGradientStart: #030030;
-$formGradientEnd: #a5082e;
-$textColor: #e0e0e0;
+@use "../../styles/mixins" as *;
+@use "../../styles/variables" as *;
 
 .mainPage {
   background-color: #121212;
@@ -12,7 +10,7 @@ $textColor: #e0e0e0;
   overflow: hidden;
 
   &::before {
-    @include mixins.multiple-radial-gradients(
+    @include multiple-radial-gradients(
       center,
       rgba(3, 0, 48, 0.1),
       transparent,
@@ -49,7 +47,11 @@ $textColor: #e0e0e0;
 }
 
 .heroTitle {
-  @include mixins.linear-gradient(to right, #be0533, #080078);
+  @include linear-gradient(
+    to right,
+    $backgroundRedGradient,
+    $backgroundBlueGradient
+  );
   font-size: 3rem;
   background-clip: text;
   -webkit-background-clip: text;
@@ -71,11 +73,7 @@ $textColor: #e0e0e0;
 }
 
 .primaryCta {
-  @include mixins.linear-gradient(
-    to right,
-    $formGradientStart,
-    $formGradientEnd
-  );
+  @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -118,11 +116,7 @@ $textColor: #e0e0e0;
 }
 
 .sectionTitle {
-  @include mixins.linear-gradient(
-    to right,
-    $formGradientStart,
-    $formGradientEnd
-  );
+  @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -140,13 +134,7 @@ $textColor: #e0e0e0;
   overflow: hidden;
 
   &::before {
-    @include mixins.radial-gradient(
-      center,
-      rgba(3, 0, 48, 0.1),
-      transparent,
-      0%,
-      70%
-    );
+    @include radial-gradient(center, rgba(3, 0, 48, 0.1), transparent, 0%, 70%);
     content: "";
     position: absolute;
     top: -50%;

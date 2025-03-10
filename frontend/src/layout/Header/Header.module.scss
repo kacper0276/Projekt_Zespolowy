@@ -1,12 +1,11 @@
 // Header.module.scss
-$formGradientStart: #030030;
-$formGradientEnd: #a5082e;
-$textColor: #E0E0E0;
+@use "../../styles/mixins" as *;
+@use "../../styles/variables" as *;
 
 .mainHeader {
-  background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+  @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
   padding: 1rem 0;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 10;
 }
@@ -48,11 +47,11 @@ $textColor: #E0E0E0;
   padding: 0.5rem 1rem;
   border-radius: 5px;
   transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
   &:hover {
     background: white;
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   }
 }
