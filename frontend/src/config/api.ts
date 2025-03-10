@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
 import { useNavigate } from "react-router-dom";
 import { ApiResponse } from "../types/api.types";
 
-export const API_URL = "http://localhost:3003/api/";
+export const API_URL = "http://localhost:3000/api/";
 
 const useApiInstance = (contentType: string): AxiosInstance => {
   const token = "token";
