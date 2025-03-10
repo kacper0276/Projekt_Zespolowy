@@ -1,0 +1,73 @@
+@use "../../styles/mixins" as *;
+@use "../../styles/variables" as *;
+
+.mainContainer {
+  @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+
+  .formContainer {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      background: #ccc;
+      color: #000;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    input:not(:placeholder-shown) {
+      background: #fff;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: $blue-400;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $blue-500;
+      }
+    }
+
+    .passwordContainer {
+      position: relative;
+
+      input {
+        padding-right: 40px;
+      }
+
+      .toggleButton {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        width: 30px;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+    }
+  }
+}
