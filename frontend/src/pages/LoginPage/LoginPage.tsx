@@ -5,10 +5,14 @@ import { useApiJson } from "../../config/api";
 import { LoginData } from "../../types/auth.types";
 import { useNavigate } from "react-router-dom";
 import { ApiResponse } from "../../types/api.types";
+import { useUser } from "../../context/UserContext";
+import localStorageService from "../../services/localStorage.service";
+import { toast } from "react-toastify";
 
 const LoginPage: React.FC = () => {
   useWebsiteTitle("Strona logowania");
   const api = useApiJson();
+  const userContext = useUser();
   const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [loginData, setLoginData] = useState<LoginData>({
@@ -23,13 +27,27 @@ const LoginPage: React.FC = () => {
   const login = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    api.post<ApiResponse<any>>("users/login", loginData).then((response) => {
-      console.log(response);
+    try {
+      const res = await api.post<ApiResponse<any>>("auth/login", loginData);
 
-      if (response.data.message === "successfully-logged-in") {
-        navigate("/");
-      }
-    });
+      const loginDataRes = res.data.data;
+
+      localStorageService.setItem("user", loginDataRes.user);
+      localStorageService.setItem("accessToken", loginDataRes.accessToken);
+      localStorageService.setItem("refreshToken", loginDataRes.refreshToken);
+
+      userContext.login(
+        loginDataRes.user,
+        loginDataRes.accessToken,
+        loginDataRes.refreshToken
+      );
+
+      toast.success(res.data.message);
+
+      navigate("/");
+    } catch (err: any) {
+      toast.error(err.response?.data.message || err.message);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

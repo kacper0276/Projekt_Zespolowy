@@ -11,6 +11,7 @@ import KanbanBoard from "./pages/KanbanBoard/KanbanBoard";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import NotFound from "./pages/NotFound/NotFound";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
+import { UserProvider } from "./context/UserContext";
 
 function App() {
   const content = (
@@ -45,9 +46,11 @@ function App() {
   );
 
   return (
-    <Router>
-      <Layout header={header} content={content} footer={footer} />
-    </Router>
+    <UserProvider>
+      <Router>
+        <Layout header={header} content={content} footer={footer} />
+      </Router>
+    </UserProvider>
   );
 }
 
