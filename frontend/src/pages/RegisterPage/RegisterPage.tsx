@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "./RegisterPage.module.scss";
+import progressBarStyles from "../../styles/progressBar.module.scss";
 import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 import { RegisterData } from "../../types/auth.types";
 import { Role } from "../../enums/role.enum";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiJson } from "../../config/api";
+import { handleChange } from "../../helpers/ProgressBarRegister";
 
 const RegisterPage: React.FC = () => {
   useWebsiteTitle("Strona rejestracji");
   const navigate = useNavigate();
   const api = useApiJson();
+  const bars = useRef<HTMLDivElement>(null);
+  const strengthDiv = useRef<HTMLDivElement>(null);
 
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [repeatedPasswordVisible, setRepeatedPasswordVisible] =
@@ -78,12 +82,27 @@ const RegisterPage: React.FC = () => {
             required
             onChange={handleInputChange}
           />
+          <input
+            type="text"
+            placeholder="firstName"
+            name="firstName"
+            onChange={handleInputChange}
+          />
+          <input
+            type="text"
+            placeholder="lastName"
+            name="lastName"
+            onChange={handleInputChange}
+          />
           <div className={styles.passwordContainer}>
             <input
               type={passwordVisible ? "text" : "password"}
               placeholder="Hasło"
               name="password"
-              onChange={handleInputChange}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                handleInputChange(e);
+                handleChange(e.target.value, bars, strengthDiv);
+              }}
               required
             />
             <button
@@ -110,18 +129,14 @@ const RegisterPage: React.FC = () => {
               {repeatedPasswordVisible ? "🙈" : "👁️"}
             </button>
           </div>
-          <input
-            type="text"
-            placeholder="firstName"
-            name="firstName"
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            placeholder="lastName"
-            name="lastName"
-            onChange={handleInputChange}
-          />
+
+          <div id={`${progressBarStyles.bars}`} ref={bars}>
+            <div></div>
+          </div>
+          <div
+            className={`${progressBarStyles.strength}`}
+            ref={strengthDiv}
+          ></div>
           <button type="submit">Zarejestruj się</button>
         </form>
       </div>

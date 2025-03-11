@@ -1,0 +1,38 @@
+/* Progress bar */
+#bars {
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 6px;
+  width: 100%;
+  border-radius: 3px;
+  // background: rgb(211, 202, 202);
+}
+
+#bars div {
+  height: 6px;
+  border-radius: 3px;
+  transition: 0.4s;
+}
+
+.słabe div {
+  background: #d0424f;
+  width: 33.33%;
+}
+
+.średnie div {
+  background: #e58448;
+  width: 66.66%;
+}
+
+.mocne div {
+  background: #1eb965;
+  width: 100%;
+}
+
+.strength {
+  text-align: left;
+  height: 30px;
+  text-transform: capitalize;
+}
