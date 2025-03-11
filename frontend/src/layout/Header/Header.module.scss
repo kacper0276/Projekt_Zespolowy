@@ -1,11 +1,10 @@
-// Header.module.scss
 @use "../../styles/mixins" as *;
 @use "../../styles/variables" as *;
 
 .mainHeader {
   @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
   padding: 1rem 0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 10;
 }
