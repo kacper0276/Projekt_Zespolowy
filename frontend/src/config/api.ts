@@ -1,12 +1,13 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
 import { useNavigate } from "react-router-dom";
 import { ApiResponse } from "../types/api.types";
+import localStorageService from "../services/localStorage.service";
+import { useUser } from "../context/UserContext";
 
 export const API_URL = "http://localhost:3000/api/";
 
 const useApiInstance = (contentType: string): AxiosInstance => {
-  const token = "token";
-  const refreshToken = "refreshToken";
+  const { token, refreshToken, login, logout, user } = useUser();
   const navigate = useNavigate();
 
   const instance = axios.create({
@@ -43,6 +44,21 @@ const useApiInstance = (contentType: string): AxiosInstance => {
             }
           );
 
+          login(
+            { ...user! },
+            refreshResponse.data.data.accessToken,
+            refreshResponse.data.data.refreshToken
+          );
+
+          localStorageService.setItem(
+            "accessToken",
+            refreshResponse.data.data.accessToken
+          );
+          localStorageService.setItem(
+            "refreshToken",
+            refreshResponse.data.data.refreshToken
+          );
+
           originalRequest.headers = {
             ...originalRequest.headers,
             Authorization: `Bearer ${refreshResponse.data.data.accessToken}`,
@@ -50,6 +66,8 @@ const useApiInstance = (contentType: string): AxiosInstance => {
 
           return axios(originalRequest);
         } catch (refreshError) {
+          logout();
+          localStorageService.clear();
           navigate("/welcome-page");
           return Promise.reject(refreshError);
         }
