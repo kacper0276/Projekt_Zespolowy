@@ -1,6 +1,8 @@
 import { BaseEntity } from '../../entities/base.entity';
 import { Role } from '../../enums/role.enum';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToMany } from 'typeorm';
+import { Kanban } from '../../kanban/entities/kanban.entity';
+import { Task } from '../../tasks/entities/task.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -24,4 +26,10 @@ export class User extends BaseEntity {
 
   @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
+
+  @ManyToMany(() => Kanban, (kanban) => kanban.users)
+  kanbans: Kanban[];
+
+  @ManyToMany(() => Task, (task) => task.users)
+  tasks: Task[];
 }
