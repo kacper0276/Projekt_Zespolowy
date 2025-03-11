@@ -46,8 +46,8 @@ const LoginPage: React.FC = () => {
         <h2>Logowanie</h2>
         <form onSubmit={login}>
           <input
-            type="text"
-            placeholder="Nazwa użytkownika"
+            type="email"
+            placeholder="Email"
             name="email"
             required
             onChange={handleInputChange}

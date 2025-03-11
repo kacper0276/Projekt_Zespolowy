@@ -10,6 +10,7 @@ import MainPage from "../src/pages/MainPage/MainPage";
 import KanbanBoard from "./pages/KanbanBoard/KanbanBoard";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import NotFound from "./pages/NotFound/NotFound";
+import RegisterPage from "./pages/RegisterPage/RegisterPage";
 
 function App() {
   const content = (
@@ -17,6 +18,7 @@ function App() {
       <Route path="/" element={<MainPage />} />
       <Route path="/KanbanBoard" element={<KanbanBoard />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<RegisterPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -25,6 +27,7 @@ function App() {
     <>
       <Routes>
         <Route path="/login" element={<></>} />
+        <Route path="/signup" element={<></>} />
         <Route path="*" element={<Header />} />
       </Routes>
     </>
@@ -34,6 +37,7 @@ function App() {
     <>
       <Routes>
         <Route path="/login" element={<></>} />
+        <Route path="/signup" element={<></>} />
         <Route path="/KanbanBoard" element={<></>} />
         <Route path="*" element={<Footer />} />
       </Routes>
