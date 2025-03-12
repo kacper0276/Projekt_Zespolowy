@@ -3,136 +3,257 @@ $formGradientEnd: #a5082e;
 $textColor: #E0E0E0;
 $backgroundColor: #121212;
 $cardBackground: #1E1E1E;
+$inProgressColor: #02a676;
+$dangerColor: #ff4d4d;
+$successColor: #02a676;
 
 .column {
-  background-color: $cardBackground;
-  border-radius: 8px;
   width: 300px;
-  min-width: 250px;
-  padding: 15px;
+  min-width: 300px;
+  background-color: $cardBackground;
+  border-radius: 6px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  gap: 10px;
+  height: fit-content;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .columnHeader {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
- 
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
   h3 {
+    font-size: 1.2rem;
     margin: 0;
-    color: $textColor;
-    text-transform: capitalize;
-    word-break: break-word;
-    max-width: 100%;
     font-weight: 600;
+    color: $textColor;
   }
-  
-  .columnHeaderActions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+}
+
+.columnHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.taskCount {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: $textColor;
+  font-size: 0.8rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.deleteColumnButton {
+  background: none;
+  border: none;
+  color: $dangerColor;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  padding: 0;
+  font-size: 16px;
+
+  &:hover {
+    color: darken($dangerColor, 10%);
   }
-  
-  .taskCount {
-    background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
-    color: $textColor !important;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    display: inline-block;
+}
+
+.wipLimitSection {
+  margin: 5px 0;
+}
+
+.wipLimitDisplay {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background-color: rgba(2, 166, 118, 0.1);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: $inProgressColor;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(2, 166, 118, 0.2);
   }
-  
-  .deleteColumnButton {
-    background: none;
-    border: none;
-    color: $formGradientEnd;
-    transition: all 0.3s ease;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    i {
-      font-size: 1.2rem;
-      transition: transform 0.3s ease;
-    }
-    
+
+  &.limitReached {
+    background-color: rgba(255, 77, 77, 0.1);
+    color: $dangerColor;
+
     &:hover {
-      color: $formGradientEnd
-      i {
-        transform: rotate(180deg) scale(1.2);
-      }
+      background-color: rgba(255, 77, 77, 0.2);
     }
+  }
+
+  i {
+    font-size: 12px;
+    opacity: 0.7;
+  }
+}
+
+.wipLimitEditor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.wipLimitInput {
+  width: 60px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid $inProgressColor;
+  color: $textColor;
+  border-radius: 4px;
+  padding: 4px;
+  font-size: 0.85rem;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(2, 166, 118, 0.3);
+  }
+}
+
+.wipLimitButtons {
+  display: flex;
+  gap: 5px;
+}
+
+.confirmWipButton, .cancelWipButton {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+
+  i {
+    font-size: 12px;
+  }
+}
+
+.confirmWipButton {
+  background-color: $successColor;
+  color: white;
+
+  &:hover {
+    background-color: darken($successColor, 10%);
+  }
+}
+
+.cancelWipButton {
+  background-color: $dangerColor;
+  color: white;
+
+  &:hover {
+    background-color: darken($dangerColor, 10%);
   }
 }
 
 .columnActions {
-  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  margin: 5px 0;
 }
 
 .addTaskButton {
+  width: 100%;
   background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
-  color: $textColor !important;
+  color: white;
   border: none;
   padding: 8px 12px;
   border-radius: 4px;
-  width: 100%;
+  font-size: 0.9rem;
+  cursor: pointer;
   transition: opacity 0.3s;
-  
+
   &:hover {
-    opacity: 0.8;
+    opacity: 0.9;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 
 .inlineTaskInput {
-  margin-bottom: 15px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 10px;
 }
 
 .taskInput {
-  background-color: $backgroundColor;
-  border: 1px solid $formGradientStart;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: $textColor;
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 4px;
+
+  &:focus {
+    outline: none;
+    border-color: $formGradientEnd;
+    box-shadow: 0 0 0 2px rgba(165, 8, 46, 0.2);
+  }
 }
 
 .confirmTaskActions {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
+}
+
+.confirmTaskButton, .cancelButton {
+  flex: 1;
+  padding: 6px;
+  border-radius: 4px;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .confirmTaskButton {
-  background: linear-gradient(to right, #02a676, #02a676);
-  color: $textColor !important;
-  border: none;
-  flex-grow: 1;
-  transition: opacity 0.3s;
-  
+  background-color: $successColor;
+  color: white;
+
+  &:hover {
+    background-color: darken($successColor, 10%);
+  }
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-  
-  &:not(:disabled):hover {
-    opacity: 0.8;
+    background-color: $successColor;
   }
 }
 
 .cancelButton {
-  background-color: $cardBackground;
-  color: $textColor !important;
-  border: 1px solid $formGradientEnd;
-  flex-grow: 1;
-  transition: background-color 0.3s;
-  
+  background-color: rgba(255, 255, 255, 0.1);
+  color: $textColor;
+
   &:hover {
-    background-color: rgba(165, 8, 46, 0.2);
+    background-color: rgba(255, 255, 255, 0.2);
   }
 }
 
 .columnContent {
-  flex-grow: 1;
-  min-height: 100px;
+  min-height: 200px;
+  padding: 8px 0;
+  overflow-y: auto;
 }

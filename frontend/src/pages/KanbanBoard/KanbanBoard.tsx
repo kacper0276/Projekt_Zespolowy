@@ -8,13 +8,14 @@ import 'react-toastify/dist/ReactToastify.css'
 type TaskData = {
   id: string
   title: string
-  status: 'idle' | 'inProgress'
 }
 
 type ColumnData = {
   id: string
+  title: string
   tasks: TaskData[]
   uniqueCounter: number
+  wipLimit: number
 }
 
 type ColumnsState = {
@@ -25,60 +26,74 @@ function KanbanBoard() {
   const [newColumnTitle, setNewColumnTitle] = useState<string>('')
   const [columns, setColumns] = useState<ColumnsState>({})
   const [columnOrder, setColumnOrder] = useState<string[]>([])
-  const [inProgressTasksCount, setInProgressTasksCount] = useState<number>(0)
   
-  // Task limit configuration
-  const [maxInProgressTasks, setMaxInProgressTasks] = useState<number>(5)
-  const [isEditingLimit, setIsEditingLimit] = useState<boolean>(false)
-  const [tempLimit, setTempLimit] = useState<string>('5')
-
-  // Update inProgressTasksCount whenever columns change
+  // Initialize with default columns
   useEffect(() => {
-    let count = 0
-    Object.values(columns).forEach(column => {
-      column.tasks.forEach(task => {
-        if (task.status === 'inProgress') {
-          count++
+    if (Object.keys(columns).length === 0) {
+      const initialColumns: ColumnsState = {
+        'todo': { 
+          id: 'todo', 
+          title: 'To Do', 
+          tasks: [], 
+          uniqueCounter: 0,
+          wipLimit: 0 // 0 means no limit
+        },
+        'inprogress': { 
+          id: 'inprogress', 
+          title: 'In Progress', 
+          tasks: [], 
+          uniqueCounter: 0,
+          wipLimit: 5 // Default WIP limit for In Progress
+        },
+        'done': { 
+          id: 'done', 
+          title: 'Done', 
+          tasks: [], 
+          uniqueCounter: 0,
+          wipLimit: 0 // No limit
         }
-      })
-    })
-    setInProgressTasksCount(count)
-  }, [columns])
+      }
+      setColumns(initialColumns)
+      setColumnOrder(['todo', 'inprogress', 'done'])
+    }
+  }, [])
 
-  const handleLimitChange = () => {
-    const newLimit = parseInt(tempLimit, 10)
-    if (isNaN(newLimit) || newLimit < 1) {
-      toast.error('Limit musi być liczbą większą niż 0', {
-        position: "top-center",
-        autoClose: 3000
-      })
-      return
-    }
-    
-    setMaxInProgressTasks(newLimit)
-    setIsEditingLimit(false)
-    
-    // If the new limit is lower than current in-progress tasks, show a warning
-    if (newLimit < inProgressTasksCount) {
-      toast.warning(`Masz obecnie ${inProgressTasksCount} zadań w trakcie wykonywania. Niektóre zadania powinny zostać oznaczone jako niewykonywane.`, {
-        position: "top-center",
-        autoClose: 5000
-      })
-    }
+  const updateColumnWipLimit = (columnId: string, newLimit: number) => {
+    setColumns(prev => {
+      const column = prev[columnId]
+      return {
+        ...prev,
+        [columnId]: {
+          ...column,
+          wipLimit: newLimit
+        }
+      }
+    })
   }
 
   const addColumn = () => {
     if (newColumnTitle.trim()) {
-      const normalizedColumnName = newColumnTitle.trim().toLowerCase()
-      const uniqueColumnName = Object.keys(columns).includes(normalizedColumnName)
-        ? `${normalizedColumnName}_${Object.keys(columns).length}`
-        : normalizedColumnName
+      // Create a normalized ID for the column
+      const normalizedColumnId = newColumnTitle.trim()
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '')
+      
+      const uniqueColumnId = Object.keys(columns).includes(normalizedColumnId)
+        ? `${normalizedColumnId}-${Object.keys(columns).length}`
+        : normalizedColumnId
 
       setColumns(prev => ({
         ...prev,
-        [uniqueColumnName]: { id: uniqueColumnName, tasks: [], uniqueCounter: 0 }
+        [uniqueColumnId]: { 
+          id: uniqueColumnId, 
+          title: newColumnTitle.trim(), 
+          tasks: [], 
+          uniqueCounter: 0,
+          wipLimit: 0 // Default no limit for new columns
+        }
       }))
-      setColumnOrder(prev => [...prev, uniqueColumnName])
+      setColumnOrder(prev => [...prev, uniqueColumnId])
       setNewColumnTitle('')
     }
   }
@@ -92,13 +107,30 @@ function KanbanBoard() {
     setColumnOrder(prev => prev.filter(id => id !== columnId))
   }
 
+  const canAddTaskToColumn = (columnId: string) => {
+    const column = columns[columnId]
+    // If wipLimit is 0, there's no limit
+    if (column.wipLimit === 0) return true
+    
+    // Otherwise, check if we're below the limit
+    return column.tasks.length < column.wipLimit
+  }
+
   const onAddTask = (columnId: string, taskTitle: string) => {
+    // Check if adding would exceed WIP limit
+    if (!canAddTaskToColumn(columnId)) {
+      toast.error(`Nie można dodać zadania do kolumny "${columns[columnId].title}" - osiągnięto limit WIP (${columns[columnId].wipLimit})`, {
+        position: "top-center",
+        autoClose: 3000
+      })
+      return
+    }
+
     setColumns(prev => {
       const column = prev[columnId]
       const newTask: TaskData = {
         id: `task-${column.uniqueCounter}`,
-        title: taskTitle,
-        status: 'idle'
+        title: taskTitle
       }
       
       return {
@@ -126,44 +158,11 @@ function KanbanBoard() {
     })
   }
 
-  const onToggleTaskStatus = (columnId: string, taskIndex: number) => {
-    setColumns(prev => {
-      const column = prev[columnId]
-      const task = column.tasks[taskIndex]
-      
-      if (task.status === 'idle' && inProgressTasksCount >= maxInProgressTasks) {
-        toast.error(`Nie można mieć więcej niż ${maxInProgressTasks} zadań w trakcie wykonywania jednocześnie!`, {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        return prev;
-      }
-      
-      const newTasks = [...column.tasks]
-      newTasks[taskIndex] = {
-        ...task,
-        status: task.status === 'idle' ? 'inProgress' : 'idle'
-      }
-      
-      return {
-        ...prev,
-        [columnId]: {
-          ...column,
-          tasks: newTasks
-        }
-      }
-    })
-  }
-
   const onDragEnd = (result: DropResult) => {
     const { source, destination, type } = result
     if (!destination) return
 
+    // Handle column reordering
     if (type === 'COLUMN') {
       if (destination.index === source.index) return
       const newColumnOrder = Array.from(columnOrder)
@@ -173,10 +172,21 @@ function KanbanBoard() {
       return
     }
 
+    // Handle task reordering
     const sourceColumn = columns[source.droppableId]
     const destColumn = columns[destination.droppableId]
 
+    // If moving to a different column, check WIP limit
+    if (sourceColumn.id !== destColumn.id && destColumn.wipLimit > 0 && destColumn.tasks.length >= destColumn.wipLimit) {
+      toast.error(`Nie można przenieść zadania do kolumny "${destColumn.title}" - osiągnięto limit WIP (${destColumn.wipLimit})`, {
+        position: "top-center",
+        autoClose: 3000
+      })
+      return
+    }
+
     if (sourceColumn === destColumn) {
+      // Moving within the same column
       const newTasks = Array.from(sourceColumn.tasks)
       const [removed] = newTasks.splice(source.index, 1)
       newTasks.splice(destination.index, 0, removed)
@@ -186,6 +196,7 @@ function KanbanBoard() {
         [sourceColumn.id]: { ...sourceColumn, tasks: newTasks }
       }))
     } else {
+      // Moving to a different column
       const sourceTasks = Array.from(sourceColumn.tasks)
       const destTasks = Array.from(destColumn.tasks)
       const [removed] = sourceTasks.splice(source.index, 1)
@@ -204,54 +215,6 @@ function KanbanBoard() {
       <ToastContainer theme="dark" />
       <div className={styles.boardHeader}>
         <h1>Tablica Kanban</h1>
-        <div className={styles.inProgressInfo}>
-          <div className={styles.limitEditor}>
-            {isEditingLimit ? (
-              <div className={styles.limitInputGroup}>
-                <input
-                  type="number"
-                  min="1"
-                  value={tempLimit}
-                  onChange={(e) => setTempLimit(e.target.value)}
-                  className={styles.limitInput}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleLimitChange();
-                    if (e.key === 'Escape') setIsEditingLimit(false);
-                  }}
-                />
-                <div className={styles.limitButtons}>
-                  <button 
-                    onClick={handleLimitChange} 
-                    className={styles.confirmLimitButton} 
-                    title="Zapisz"
-                  >
-                    <i className="bi bi-check-lg"></i>
-                  </button>
-                  <button 
-                    onClick={() => setIsEditingLimit(false)} 
-                    className={styles.cancelLimitButton}
-                    title="Anuluj"
-                  >
-                    <i className="bi bi-x-lg"></i>
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <span 
-                className={`${styles.inProgressCount} ${inProgressTasksCount >= maxInProgressTasks ? styles.limitReached : ''}`}
-                onClick={() => {
-                  setTempLimit(maxInProgressTasks.toString());
-                  setIsEditingLimit(true);
-                }}
-                title="Kliknij, aby edytować limit zadań"
-              >
-                Zadania w trakcie wykonywania: {inProgressTasksCount}/{maxInProgressTasks}
-                <i className="bi bi-pencil-fill ms-2"></i>
-              </span>
-            )}
-          </div>
-        </div>
       </div>
       
       <DragDropContext onDragEnd={onDragEnd}>
@@ -261,20 +224,20 @@ function KanbanBoard() {
               <div className={styles.boardColumns}>
                 {columnOrder.map((columnId, index) => {
                   const column = columns[columnId]
+                  if (!column) return null
+                  
                   return (
                     <Draggable key={column.id} draggableId={column.id} index={index}>
                       {(providedColumn) => (
                         <div ref={providedColumn.innerRef} {...providedColumn.draggableProps} {...providedColumn.dragHandleProps}>
                           <Column 
                             col={column} 
-                            columns={Object.keys(columns)}
                             onAddTask={onAddTask}
                             onDeleteTask={onDeleteTask}
-                            onToggleTaskStatus={onToggleTaskStatus}
                             onDeleteColumn={() => deleteColumn(column.id)}
-                            canDeleteColumn={true}
-                            maxInProgressTasks={maxInProgressTasks}
-                            currentInProgressTasks={inProgressTasksCount}
+                            canDeleteColumn={!['todo', 'inprogress', 'done'].includes(column.id)}
+                            updateWipLimit={updateColumnWipLimit}
+                            canAddTask={canAddTaskToColumn(column.id)}
                           />
                         </div>
                       )}

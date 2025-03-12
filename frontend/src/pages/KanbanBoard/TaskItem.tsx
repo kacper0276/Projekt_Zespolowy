@@ -7,24 +7,18 @@ interface ItemProps {
   index: number
   columnId: string
   uniqueId: number
-  status: 'idle' | 'inProgress'
   onDeleteTask: () => void
-  onToggleStatus: () => void
-  canToggleToInProgress: boolean
 }
 
-const Item: React.FC<ItemProps> = ({ 
-  text, 
-  index, 
-  columnId, 
-  uniqueId, 
-  status,
-  onDeleteTask,
-  onToggleStatus,
-  canToggleToInProgress
+const Item: React.FC<ItemProps> = ({
+  text,
+  index,
+  columnId,
+  uniqueId,
+  onDeleteTask
 }) => {
-  const uniqueDraggableId = `${columnId}-${text}-${uniqueId}`
-  
+  const uniqueDraggableId = `${columnId}-${uniqueId}`
+ 
   return (
     <Draggable draggableId={uniqueDraggableId} index={index}>
       {provided => (
@@ -32,29 +26,11 @@ const Item: React.FC<ItemProps> = ({
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`${styles.item} ${status === 'inProgress' ? styles.inProgress : ''}`}
+          className={styles.item}
         >
           <div className={styles.taskContent}>
             <span className={styles.taskText}>{text}</span>
             <div className={styles.taskActions}>
-              <div 
-                className={styles.statusToggleContainer}
-                title={status === 'inProgress' ? 'Kliknij, aby oznaczyć jako niewykonywane' : 
-                  canToggleToInProgress ? 'Kliknij, aby oznaczyć jako wykonywane' : 'Osiągnięto limit zadań w trakcie wykonywania'}
-              >
-                <button 
-                  onClick={onToggleStatus}
-                  className={`${styles.statusToggle} ${!canToggleToInProgress && status === 'idle' ? styles.disabled : ''}`}
-                  disabled={!canToggleToInProgress && status === 'idle'}
-                >
-                  <div className={`${styles.toggleSlider} ${status === 'inProgress' ? styles.active : ''}`}>
-                    <div className={styles.toggleHandle}></div>
-                  </div>
-                  <span className={styles.statusLabel}>
-                    {status === 'inProgress' ? 'Wykonywane' : 'Niewykonywane'}
-                  </span>
-                </button>
-              </div>
               <button
                 onClick={onDeleteTask}
                 className={styles.deleteTaskButton}
