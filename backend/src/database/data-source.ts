@@ -1,6 +1,11 @@
 import { User } from '../users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
+import { ColumnEntity } from '../columns/entities/column.entity';
+import { Kanban } from '../kanban/entities/kanban.entity';
+import { Status } from '../status/entities/status.entity';
+import { Task } from '../tasks/entities/task.entity';
+import { ToDoList } from '../to-do-lists/entities/to-do-list.entity';
 dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -12,7 +17,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'test',
   synchronize: false,
   logging: true,
-  entities: [User],
-  migrations: ['src/migrations/**/*.ts'],
+  entities: [User, ColumnEntity, Kanban, Status, Task, ToDoList],
+  migrations: ['migrations/**/*.ts'],
   migrationsTableName: 'migrations_typeorm',
 });

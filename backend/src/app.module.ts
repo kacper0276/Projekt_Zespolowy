@@ -29,7 +29,7 @@ import { ToDoList } from './to-do-lists/entities/to-do-list.entity';
       database: process.env.DB_NAME || 'test',
       entities: [User, ColumnEntity, Kanban, Status, Task, ToDoList],
       synchronize: true,
-      migrations: ['src/migrations/**/*.ts'],
+      migrations: ['../migrations/**/*.ts'],
       migrationsTableName: 'migrations_typeorm',
     }),
     AuthModule,
