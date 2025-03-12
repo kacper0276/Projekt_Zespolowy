@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { useApiJson } from "../../config/api";
 import { handleChange } from "../../helpers/ProgressBarRegister";
 import { ApiResponse } from "../../types/api.types";
-import { UserType } from "../../interfaces/IUser";
+import { IUser } from "../../interfaces/IUser";
 
 const RegisterPage: React.FC = () => {
   useWebsiteTitle("Strona rejestracji");
@@ -56,7 +56,7 @@ const RegisterPage: React.FC = () => {
     }
 
     api
-      .post<ApiResponse<UserType>>("users/register", registerData)
+      .post<ApiResponse<IUser>>("users/register", registerData)
       .then((response) => {
         if (response.data.message === "user-registered") {
           navigate("/login");
