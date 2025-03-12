@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Response } from 'express';
-import { registerData } from './dto/register-data.dto';
-import { loginData } from './dto/login-data.dto';
+import { RegisterData } from './dto/register-data.dto';
+import { LoginData } from './dto/login-data.dto';
 
 @Controller('users')
 export class UsersController {
@@ -30,7 +30,7 @@ export class UsersController {
 
   @Post('register')
   async registerUser(
-    @Body() registerData: registerData,
+    @Body() registerData: RegisterData,
     @Res() response: Response,
   ) {
     try {
@@ -53,7 +53,7 @@ export class UsersController {
   }
 
   @Post('login')
-  async loginUser(@Body() loginData: loginData, @Res() response: Response) {
+  async loginUser(@Body() loginData: LoginData, @Res() response: Response) {
     console.log(loginData);
     try {
       const res = await this.usersService.loginUser(loginData);

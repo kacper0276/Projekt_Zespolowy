@@ -2,9 +2,9 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { registerData } from './dto/register-data.dto';
+import { RegisterData } from './dto/register-data.dto';
 import * as bcrypt from 'bcrypt';
-import { loginData } from './dto/login-data.dto';
+import { LoginData } from './dto/login-data.dto';
 
 @Injectable()
 export class UsersService {
@@ -21,7 +21,7 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  async registerUser(registerData: registerData): Promise<User> {
+  async registerUser(registerData: RegisterData): Promise<User> {
     if (registerData.password !== registerData.repeatedPassword) {
       throw new BadRequestException('passwords-do-not-match');
     }
@@ -48,7 +48,7 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async loginUser(loginData: loginData) {
+  async loginUser(loginData: LoginData) {
     const user = await this.userRepository.findOne({
       where: { email: loginData.email, isActive: true },
     });
