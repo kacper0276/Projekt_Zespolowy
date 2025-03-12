@@ -12,6 +12,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import NotFound from "./pages/NotFound/NotFound";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import { UserProvider } from "./context/UserContext";
+import ActivateAccount from "./pages/ActivateAccount/ActivateAccount";
 
 function App() {
   const content = (
@@ -20,6 +21,10 @@ function App() {
       <Route path="/KanbanBoard" element={<KanbanBoard />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<RegisterPage />} />
+      <Route
+        path="/activate-account/:userEmail"
+        element={<ActivateAccount />}
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -29,6 +34,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<></>} />
         <Route path="/signup" element={<></>} />
+        <Route path="/activate-account/:userEmail" element={<></>} />
         <Route path="*" element={<Header />} />
       </Routes>
     </>
@@ -40,6 +46,7 @@ function App() {
         <Route path="/login" element={<></>} />
         <Route path="/signup" element={<></>} />
         <Route path="/KanbanBoard" element={<></>} />
+        <Route path="/activate-account/:userEmail" element={<></>} />
         <Route path="*" element={<Footer />} />
       </Routes>
     </>
