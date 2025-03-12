@@ -1,0 +1,57 @@
+@use "sass:color";
+@use "../../../styles/mixins" as *;
+@use "../../../styles/variables" as *;
+
+.actionButton {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  
+  &.fullWidth {
+    width: 100%;
+  }
+  
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  &.primary {
+    background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+    color: white;
+    
+    &:hover:not(.disabled) {
+      opacity: 0.9;
+    }
+  }
+  
+  &.danger {
+    background-color: $dangerColor;
+    color: white;
+    
+    &:hover:not(.disabled) {
+      background-color: color.mix(black, $dangerColor, 10%);
+    }
+  }
+  
+  &.success {
+    background-color: $successColor;
+    color: white;
+    
+    &:hover:not(.disabled) {
+      background-color: color.mix(black, $successColor, 10%);
+    }
+  }
+  
+  &:not(.primary):not(.danger):not(.success) {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: $textColor;
+    
+    &:hover:not(.disabled) {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+}

@@ -1,27 +1,20 @@
-import React, { useState } from 'react'
-import Item from './TaskItem'
-import { Droppable } from '@hello-pangea/dnd'
-import styles from './Column.module.scss'
-
-type TaskData = {
-  id: string
-  title: string
-}
+import React from 'react';
+import { Droppable } from '@hello-pangea/dnd';
+import styles from './Column.module.scss';
+import TaskItem from './TaskItem';
+import WipLimitEditor from './KanbanBoardComponents/WipLimitEditor';
+import ActionButton from './KanbanBoardComponents/ActionButton';
+import { ColumnData } from '../../types/kanban.types';
+import { useKanbanColumn } from '../../hooks/useKanbanColumn';
 
 interface ColumnProps {
-  col: {
-    id: string
-    title: string
-    tasks: TaskData[]
-    uniqueCounter: number
-    wipLimit: number
-  }
-  onAddTask: (columnId: string, taskTitle: string) => void
-  onDeleteTask: (columnId: string, taskIndex: number) => void
-  onDeleteColumn: () => void
-  canDeleteColumn: boolean
-  updateWipLimit: (columnId: string, limit: number) => void
-  canAddTask: boolean
+  col: ColumnData;
+  onAddTask: (columnId: string, taskTitle: string) => void;
+  onDeleteTask: (columnId: string, taskIndex: number) => void;
+  onDeleteColumn: () => void;
+  canDeleteColumn: boolean;
+  updateWipLimit: (columnId: string, limit: number) => void;
+  canAddTask: boolean;
 }
 
 const Column: React.FC<ColumnProps> = ({
@@ -33,29 +26,21 @@ const Column: React.FC<ColumnProps> = ({
   updateWipLimit,
   canAddTask
 }) => {
-  const [isAddingTask, setIsAddingTask] = useState(false)
-  const [newTaskTitle, setNewTaskTitle] = useState('')
-  const [isEditingWipLimit, setIsEditingWipLimit] = useState(false)
-  const [tempWipLimit, setTempWipLimit] = useState(col.wipLimit.toString())
-
-  const handleAddTask = () => {
-    if (newTaskTitle.trim()) {
-      onAddTask(col.id, newTaskTitle.trim())
-      setNewTaskTitle('')
-      setIsAddingTask(false)
-    }
-  }
-
-  const handleWipLimitChange = () => {
-    const newLimit = parseInt(tempWipLimit, 10)
-    if (isNaN(newLimit) || newLimit < 0) {
-      // Display error toast
-      return
-    }
-    
-    updateWipLimit(col.id, newLimit)
-    setIsEditingWipLimit(false)
-  }
+  const {
+    isAddingTask,
+    setIsAddingTask,
+    newTaskTitle,
+    setNewTaskTitle,
+    isEditingWipLimit,
+    setIsEditingWipLimit,
+    handleAddTask,
+    handleWipLimitSave,
+    isLimitReached
+  } = useKanbanColumn({
+    column: col,
+    onAddTask,
+    updateWipLimit
+  });
 
   return (
     <div className={styles.column}>
@@ -79,43 +64,15 @@ const Column: React.FC<ColumnProps> = ({
       
       <div className={styles.wipLimitSection}>
         {isEditingWipLimit ? (
-          <div className={styles.wipLimitEditor}>
-            <input
-              type="number"
-              min="0"
-              value={tempWipLimit}
-              onChange={(e) => setTempWipLimit(e.target.value)}
-              className={styles.wipLimitInput}
-              autoFocus
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleWipLimitChange();
-                if (e.key === 'Escape') setIsEditingWipLimit(false);
-              }}
-            />
-            <div className={styles.wipLimitButtons}>
-              <button 
-                onClick={handleWipLimitChange} 
-                className={styles.confirmWipButton} 
-                title="Zapisz"
-              >
-                <i className="bi bi-check-lg"></i>
-              </button>
-              <button 
-                onClick={() => setIsEditingWipLimit(false)} 
-                className={styles.cancelWipButton}
-                title="Anuluj"
-              >
-                <i className="bi bi-x-lg"></i>
-              </button>
-            </div>
-          </div>
+          <WipLimitEditor
+            currentLimit={col.wipLimit}
+            onSave={handleWipLimitSave}
+            onCancel={() => setIsEditingWipLimit(false)}
+          />
         ) : (
           <div 
-            className={`${styles.wipLimitDisplay} ${col.wipLimit > 0 && col.tasks.length >= col.wipLimit ? styles.limitReached : ''}`}
-            onClick={() => {
-              setTempWipLimit(col.wipLimit.toString())
-              setIsEditingWipLimit(true)
-            }}
+            className={`${styles.wipLimitDisplay} ${isLimitReached ? styles.limitReached : ''}`}
+            onClick={() => setIsEditingWipLimit(true)}
             title="Kliknij, aby edytować limit zadań"
           >
             <span>
@@ -127,13 +84,14 @@ const Column: React.FC<ColumnProps> = ({
       </div>
       
       <div className={styles.columnActions}>
-        <button
+        <ActionButton
           onClick={() => setIsAddingTask(!isAddingTask)}
-          className={`btn ${styles.addTaskButton} ${!canAddTask ? styles.disabled : ''}`}
           disabled={!canAddTask}
+          variant="primary"
+          fullWidth
         >
           Dodaj zadanie
-        </button>
+        </ActionButton>
       </div>
       
       {isAddingTask && (
@@ -146,19 +104,19 @@ const Column: React.FC<ColumnProps> = ({
             className={`form-control ${styles.taskInput}`}
           />
           <div className={styles.confirmTaskActions}>
-            <button
+            <ActionButton
               onClick={handleAddTask}
-              className={`btn ${styles.confirmTaskButton}`}
+              variant="success"
               disabled={!newTaskTitle.trim()}
             >
               Dodaj
-            </button>
-            <button
+            </ActionButton>
+            <ActionButton
               onClick={() => setIsAddingTask(false)}
-              className={`btn ${styles.cancelButton}`}
+              variant="default"
             >
               Anuluj
-            </button>
+            </ActionButton>
           </div>
         </div>
       )}
@@ -171,12 +129,12 @@ const Column: React.FC<ColumnProps> = ({
             className={styles.columnContent}
           >
             {col.tasks.map((task, index) => (
-              <Item
+              <TaskItem
                 key={`${col.id}-${task.id}-${index}`}
                 text={task.title}
                 index={index}
                 columnId={col.id}
-                uniqueId={col.uniqueCounter - index}
+                uniqueId={task.id}
                 onDeleteTask={() => onDeleteTask(col.id, index)}
               />
             ))}
@@ -185,7 +143,7 @@ const Column: React.FC<ColumnProps> = ({
         )}
       </Droppable>
     </div>
-  )
-}
+  );
+};
 
-export default Column
+export default Column;

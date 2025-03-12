@@ -3,11 +3,11 @@ import { Draggable } from '@hello-pangea/dnd'
 import styles from './TaskItem.module.scss'
 
 interface ItemProps {
-  text: string
-  index: number
-  columnId: string
-  uniqueId: number
-  onDeleteTask: () => void
+  text: string;
+  index: number;
+  columnId: string;
+  uniqueId: string;
+  onDeleteTask: () => void;
 }
 
 const Item: React.FC<ItemProps> = ({

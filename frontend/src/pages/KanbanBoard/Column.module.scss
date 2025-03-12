@@ -1,11 +1,6 @@
-$formGradientStart: #030030;
-$formGradientEnd: #a5082e;
-$textColor: #E0E0E0;
-$backgroundColor: #121212;
-$cardBackground: #1E1E1E;
-$inProgressColor: #02a676;
-$dangerColor: #ff4d4d;
-$successColor: #02a676;
+@use "sass:color";
+@use "../../styles/mixins" as *;
+@use "../../styles/variables" as *;
 
 .column {
   width: 300px;
@@ -62,7 +57,7 @@ $successColor: #02a676;
   font-size: 16px;
 
   &:hover {
-    color: darken($dangerColor, 10%);
+    background-color: color.mix(black, $dangerColor, 10%);
   }
 }
 
@@ -151,7 +146,7 @@ $successColor: #02a676;
   color: white;
 
   &:hover {
-    background-color: darken($successColor, 10%);
+    background-color: color.mix(black, $successColor, 10%);
   }
 }
 
@@ -160,7 +155,7 @@ $successColor: #02a676;
   color: white;
 
   &:hover {
-    background-color: darken($dangerColor, 10%);
+    background-color: color.mix(black, $dangerColor, 10%);
   }
 }
 
@@ -233,7 +228,7 @@ $successColor: #02a676;
   color: white;
 
   &:hover {
-    background-color: darken($successColor, 10%);
+    background-color: color.mix(black, $successColor, 10%);
   }
 
   &:disabled {
