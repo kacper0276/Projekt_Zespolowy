@@ -4,7 +4,9 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Patch,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -59,6 +61,29 @@ export class UsersController {
       response.status(HttpStatus.OK).send({
         message: 'successfully-logged-in',
         data: res,
+      });
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        response.status(HttpStatus.BAD_REQUEST).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'a-server-error-occurred',
+        });
+      }
+    }
+  }
+
+  @Patch('activate-account')
+  async activateAccount(
+    @Query('userEmail') userEmail: string,
+    @Res() response: Response,
+  ) {
+    try {
+      await this.usersService.activateAccount(userEmail);
+      response.status(HttpStatus.OK).send({
+        message: 'your-account-has-been-successfully-activated',
       });
     } catch (error) {
       if (error instanceof BadRequestException) {

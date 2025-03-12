@@ -67,4 +67,17 @@ export class UsersService {
 
     return user;
   }
+
+  async activateAccount(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new BadRequestException('user-not-found');
+    }
+
+    user.isActive = true;
+    return this.userRepository.save(user);
+  }
 }
