@@ -1,47 +1,47 @@
-import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { ColumnsState, ColumnData } from '../types/kanban.types';
-import { ApiResponse } from '../types/api.types';
-import { UserType } from '../interfaces/IUser';
-import { useApiJson } from '../config/api';
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { ColumnsState, ColumnData } from "../types/kanban.types";
+import { ApiResponse } from "../types/api.types";
+import { IUser } from "../interfaces/IUser";
+import { useApiJson } from "../config/api";
 
 export const useKanbanBoard = () => {
   const api = useApiJson();
-  const [newColumnTitle, setNewColumnTitle] = useState<string>('');
+  const [newColumnTitle, setNewColumnTitle] = useState<string>("");
   const [columns, setColumns] = useState<ColumnsState>({});
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
-  const [users, setUsers] = useState<UserType[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
 
   // Initialize with default columns
   useEffect(() => {
     if (Object.keys(columns).length === 0) {
       const initialColumns: ColumnsState = {
         todo: {
-          id: 'todo',
-          title: 'To Do',
+          id: "todo",
+          title: "To Do",
           tasks: [],
           uniqueCounter: 0,
           wipLimit: 0, // 0 means no limit
         },
         inprogress: {
-          id: 'inprogress',
-          title: 'In Progress',
+          id: "inprogress",
+          title: "In Progress",
           tasks: [],
           uniqueCounter: 0,
           wipLimit: 5, // Default WIP limit for In Progress
         },
         done: {
-          id: 'done',
-          title: 'Done',
+          id: "done",
+          title: "Done",
           tasks: [],
           uniqueCounter: 0,
           wipLimit: 0, // No limit
         },
       };
       setColumns(initialColumns);
-      setColumnOrder(['todo', 'inprogress', 'done']);
+      setColumnOrder(["todo", "inprogress", "done"]);
 
-      api.get<ApiResponse<UserType[]>>('users/all').then((response) => {
+      api.get<ApiResponse<IUser[]>>("users/all").then((response) => {
         setUsers(response.data.data ?? []);
       });
     }
@@ -66,8 +66,8 @@ export const useKanbanBoard = () => {
       const normalizedColumnId = newColumnTitle
         .trim()
         .toLowerCase()
-        .replace(/\s+/g, '-')
-        .replace(/[^a-z0-9-]/g, '');
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
 
       const uniqueColumnId = Object.keys(columns).includes(normalizedColumnId)
         ? `${normalizedColumnId}-${Object.keys(columns).length}`
@@ -84,7 +84,7 @@ export const useKanbanBoard = () => {
         },
       }));
       setColumnOrder((prev) => [...prev, uniqueColumnId]);
-      setNewColumnTitle('');
+      setNewColumnTitle("");
     }
   };
 
@@ -112,7 +112,7 @@ export const useKanbanBoard = () => {
       toast.error(
         `Nie można dodać zadania do kolumny "${columns[columnId].title}" - osiągnięto limit WIP (${columns[columnId].wipLimit})`,
         {
-          position: 'top-center',
+          position: "top-center",
           autoClose: 3000,
         }
       );
@@ -151,7 +151,10 @@ export const useKanbanBoard = () => {
     });
   };
 
-  const checkWipLimitForMove = (sourceColumnId: string, destColumnId: string) => {
+  const checkWipLimitForMove = (
+    sourceColumnId: string,
+    destColumnId: string
+  ) => {
     const destColumn = columns[destColumnId];
     if (
       sourceColumnId !== destColumnId &&
@@ -161,7 +164,7 @@ export const useKanbanBoard = () => {
       toast.error(
         `Nie można przenieść zadania do kolumny "${destColumn.title}" - osiągnięto limit WIP (${destColumn.wipLimit})`,
         {
-          position: 'top-center',
+          position: "top-center",
           autoClose: 3000,
         }
       );
@@ -184,6 +187,6 @@ export const useKanbanBoard = () => {
     canAddTaskToColumn,
     onAddTask,
     onDeleteTask,
-    checkWipLimitForMove
+    checkWipLimitForMove,
   };
 };

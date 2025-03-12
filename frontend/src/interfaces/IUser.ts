@@ -1,4 +1,4 @@
-export interface UserType {
+export interface IUser {
   email: string;
   login: string;
   isActivated: boolean;
