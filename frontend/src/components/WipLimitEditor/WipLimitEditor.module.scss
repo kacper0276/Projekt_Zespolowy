@@ -1,7 +1,6 @@
 @use "sass:color";
-@use "../../../styles/mixins" as *;
-@use "../../../styles/variables" as *;
-
+@use "../../styles/mixins" as *;
+@use "../../styles/variables" as *;
 
 .wipLimitEditor {
   display: flex;
@@ -31,7 +30,8 @@
   gap: 5px;
 }
 
-.confirmWipButton, .cancelWipButton {
+.confirmWipButton,
+.cancelWipButton {
   width: 24px;
   height: 24px;
   border-radius: 4px;
