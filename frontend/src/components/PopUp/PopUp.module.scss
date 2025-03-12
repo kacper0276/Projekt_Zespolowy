@@ -1,3 +1,6 @@
+@use "../../styles/mixins" as *;
+@use "../../styles/variables" as *;
+
 .popup {
   position: fixed;
   top: 0;
@@ -9,25 +12,25 @@
   align-items: center;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
-  color: black;
+  color: #000;
 }
 
 .popup_inner {
-  background-color: #c1c1c1;
-  padding: 20px;
+  background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 400px;
+  width: 800px;
   max-width: 90%;
+  min-height: 400px;
   display: flex;
   flex-direction: column;
 }
 
 .header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
   margin-bottom: 20px;
+  padding: 5px;
+  border-radius: 8px 8px 0 0;
 }
 
 .body {
