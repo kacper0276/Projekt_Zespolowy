@@ -129,7 +129,7 @@ const BoardsNew: React.FC = () => {
             }
           />
           <input
-            type="text"
+            type="color"
             placeholder="Kolor statusu"
             value={statusInput.color}
             onChange={(e) =>
