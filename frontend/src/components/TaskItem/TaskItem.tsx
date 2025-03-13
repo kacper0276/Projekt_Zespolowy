@@ -24,7 +24,9 @@ const Item: React.FC<ItemProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskText, setTaskText] = useState(text);
   const [taskUsers, setTaskUsers] = useState<IUser[]>(users);
-  const uniqueDraggableId = `${columnId}-${uniqueId}`;
+
+  // Ensure uniqueness by combining columnId, uniqueId and index
+  const uniqueDraggableId = `${columnId}-${uniqueId}-${index}`;
 
   const handleTaskClick = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest(`.${styles.deleteTaskButton}`)) {
@@ -101,7 +103,6 @@ const Item: React.FC<ItemProps> = ({
           </div>
         )}
       </Draggable>
-
       <TaskModal
         taskId={uniqueId}
         taskText={taskText}

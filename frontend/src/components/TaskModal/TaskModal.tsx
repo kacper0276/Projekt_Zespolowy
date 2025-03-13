@@ -102,10 +102,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const handleSaveTask = async () => {
     setIsLoading(true);
     try {
-      // Tu byłby normalnie kod do zapisania zadania przez API
-      // api.put(`/tasks/${taskId}`, { name: taskData.name, users: taskData.users });
-      
-      // Po udanym zapisie wywołujemy callback z aktualizacją
+        //tu api potem
       if (onTaskUpdate) {
         onTaskUpdate({
           name: taskData.name,
@@ -114,7 +111,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       }
 
       toast.success('Zadanie zostało zaktualizowane');
-      onClose(); // Zamykamy modal po udanym zapisie
+      onClose(); 
     } catch (error: any) {
       toast.error(error.response?.data.message || 'Wystąpił błąd podczas aktualizacji zadania');
     } finally {
