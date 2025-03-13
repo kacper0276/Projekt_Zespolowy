@@ -68,10 +68,9 @@ function KanbanBoard() {
       const sourceTasks = Array.from(sourceColumn.tasks);
       const destTasks = Array.from(destColumn.tasks);
       
-      // Important: Get the complete task object with users
+
       const [removed] = sourceTasks.splice(source.index, 1);
       
-      // Make sure we preserve the users array when moving tasks
       destTasks.splice(destination.index, 0, removed);
 
       setColumns((prev) => ({
