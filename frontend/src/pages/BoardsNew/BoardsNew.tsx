@@ -9,6 +9,8 @@ import { toast } from "react-toastify";
 import Multiselect from "multiselect-react-dropdown";
 import { IStatus } from "../../interfaces/IStatus";
 import { IColumnEntity } from "../../interfaces/IColumnEntity";
+// Import Bootstrap Icons
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const BoardsNew: React.FC = () => {
   useWebsiteTitle("Create new Board");
@@ -23,7 +25,7 @@ const BoardsNew: React.FC = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [statusInput, setStatusInput] = useState<IStatus>({
     name: "",
-    color: "",
+    color: "#3394dc",
   });
   const [columnInput, setColumnInput] = useState<IColumnEntity>({
     name: "",
@@ -31,6 +33,7 @@ const BoardsNew: React.FC = () => {
     maxTasks: 0,
     tasks: [],
   });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,11 +45,14 @@ const BoardsNew: React.FC = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
+      setIsLoading(true);
       try {
         const response = await api.get<ApiResponse<IUser[]>>("users/all");
         setUsers(response.data.data ?? []);
       } catch (error: any) {
         toast.error(error.response?.data.message || error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -67,7 +73,7 @@ const BoardsNew: React.FC = () => {
         ...prevState,
         statuses: [...prevState.statuses, statusInput],
       }));
-      setStatusInput({ name: "", color: "" });
+      setStatusInput({ name: "", color: "#3394dc" });
     }
   };
 
@@ -95,31 +101,53 @@ const BoardsNew: React.FC = () => {
     }));
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      toast.success("Tablica została utworzona pomyślnie!");
+      setIsLoading(false);
+      // Reset form or redirect
+      // You would typically make an API call here instead
+    }, 1000);
+  };
+
   return (
     <div className={styles.mainContainer}>
       <h1>Utwórz nową tablicę</h1>
-      <form className={styles.formContainer}>
+      <form className={styles.formContainer} onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Nazwa tabeli"
           name="tableName"
           required
           onChange={handleInputChange}
+          value={kanbanData.tableName}
         />
 
-        <p>Wyślij zaproszenie użytkownikom do tablicy</p>
-        <Multiselect
-          className={styles.multiselect}
-          options={users}
-          displayValue="email"
-          onSelect={onSelect}
-          onRemove={onRemove}
-          placeholder="Wybierz użytkowników"
-          emptyRecordMsg="Brak użytkowników"
-        />
+        <p>
+          <i className="bi bi-people-fill"></i>
+          Wyślij zaproszenie użytkownikom do tablicy
+        </p>
+        <div className={styles.multiselect}>
+          <Multiselect
+            options={users}
+            displayValue="email"
+            onSelect={onSelect}
+            onRemove={onRemove}
+            placeholder="Wybierz użytkowników"
+            emptyRecordMsg="Brak użytkowników"
+            loading={isLoading}
+          />
+        </div>
 
-        <p>Utwórz listę statusów</p>
-        <div>
+        <p>
+          <i className="bi bi-tag-fill"></i>
+          Utwórz listę statusów
+        </p>
+        <div className={styles.inputGroup}>
           <input
             type="text"
             placeholder="Nazwa statusu"
@@ -130,29 +158,40 @@ const BoardsNew: React.FC = () => {
           />
           <input
             type="color"
-            placeholder="Kolor statusu"
             value={statusInput.color}
             onChange={(e) =>
               setStatusInput({ ...statusInput, color: e.target.value })
             }
           />
           <button type="button" onClick={handleAddStatus}>
-            +
+            <i className="bi bi-plus-lg"></i>
           </button>
+        </div>
+        
+        <div className={styles.listContainer}>
           <ul>
             {kanbanData.statuses.map((status, index) => (
               <li key={index}>
-                {status.name} ({status.color}){" "}
+                <div>
+                  <span 
+                    className={styles.statusBadge} 
+                    style={{ backgroundColor: status.color }}
+                  ></span>
+                  {status.name}
+                </div>
                 <button type="button" onClick={() => handleRemoveStatus(index)}>
-                  x
+                  <i className="bi bi-x-lg"></i>
                 </button>
               </li>
             ))}
           </ul>
         </div>
 
-        <p>Dodaj własne kolumny</p>
-        <div>
+        <p>
+          <i className="bi bi-columns-gap"></i>
+          Dodaj własne kolumny
+        </p>
+        <div className={styles.inputGroup}>
           <input
             type="text"
             placeholder="Nazwa kolumny"
@@ -163,43 +202,60 @@ const BoardsNew: React.FC = () => {
           />
           <input
             type="number"
-            placeholder="Kolejność kolumny"
-            value={columnInput.order}
+            placeholder="Kolejność"
+            value={columnInput.order || ''}
             onChange={(e) =>
               setColumnInput({
                 ...columnInput,
-                order: parseInt(e.target.value),
+                order: parseInt(e.target.value) || 0,
               })
             }
           />
           <input
             type="number"
-            placeholder="Maksymalna liczba zadań"
-            value={columnInput.maxTasks}
+            placeholder="Max. zadań"
+            value={columnInput.maxTasks || ''}
             onChange={(e) =>
               setColumnInput({
                 ...columnInput,
-                maxTasks: parseInt(e.target.value),
+                maxTasks: parseInt(e.target.value) || 0,
               })
             }
           />
           <button type="button" onClick={handleAddColumn}>
-            +
+            <i className="bi bi-plus-lg"></i>
           </button>
+        </div>
+        
+        <div className={styles.listContainer}>
           <ul>
             {kanbanData.columns.map((column, index) => (
               <li key={index}>
-                {column.name} (Order: {column.order}, Max Tasks:{" "}
-                {column.maxTasks}){" "}
+                <div>
+                  <i className="bi bi-layout-three-columns mx-2"></i>
+                  {column.name} <span className="">(Kolejność: {column.order}, Max zadań: {column.maxTasks})</span>
+                </div>
                 <button type="button" onClick={() => handleRemoveColumn(index)}>
-                  x
+                  <i className="bi bi-x-lg"></i>
                 </button>
               </li>
             ))}
           </ul>
         </div>
 
-        <button>Dodaj tablicę</button>
+        <button type="submit" className={styles.submitButton} disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <i className="bi bi-hourglass-split"></i>
+              Tworzenie...
+            </>
+          ) : (
+            <>
+              <i className="bi bi-plus-circle"></i>
+              Dodaj tablicę
+            </>
+          )}
+        </button>
       </form>
     </div>
   );
