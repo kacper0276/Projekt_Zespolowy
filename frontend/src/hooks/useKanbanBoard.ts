@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { ColumnsState, ColumnData, TaskData } from "../types/kanban.types";
+import { ColumnsState, TaskData } from "../types/kanban.types";
 import { ApiResponse } from "../types/api.types";
 import { IUser } from "../interfaces/IUser";
 import { useApiJson } from "../config/api";

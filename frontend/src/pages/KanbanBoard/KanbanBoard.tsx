@@ -1,4 +1,3 @@
-import React from "react";
 import {
   DragDropContext,
   Droppable,
@@ -6,7 +5,7 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import styles from "./KanbanBoard.module.scss";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 import { useKanbanBoard } from "../../hooks/useKanbanBoard";
