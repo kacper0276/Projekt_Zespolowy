@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { ColumnsState, ColumnData } from "../types/kanban.types";
+import { ColumnsState, ColumnData, TaskData } from "../types/kanban.types";
 import { ApiResponse } from "../types/api.types";
 import { IUser } from "../interfaces/IUser";
 import { useApiJson } from "../config/api";
@@ -121,9 +121,10 @@ export const useKanbanBoard = () => {
 
     setColumns((prev) => {
       const column = prev[columnId];
-      const newTask = {
+      const newTask: TaskData = {
         id: `task-${column.uniqueCounter}`,
         title: taskTitle,
+        users: []
       };
 
       return {
@@ -146,6 +147,26 @@ export const useKanbanBoard = () => {
         [columnId]: {
           ...column,
           tasks: newTasks,
+        },
+      };
+    });
+  };
+
+  const updateTaskUsers = (columnId: string, taskId: string, users: IUser[]) => {
+    setColumns((prev) => {
+      const column = prev[columnId];
+      const updatedTasks = column.tasks.map(task => {
+        if (task.id === taskId) {
+          return { ...task, users };
+        }
+        return task;
+      });
+      
+      return {
+        ...prev,
+        [columnId]: {
+          ...column,
+          tasks: updatedTasks,
         },
       };
     });
@@ -187,6 +208,7 @@ export const useKanbanBoard = () => {
     canAddTaskToColumn,
     onAddTask,
     onDeleteTask,
+    updateTaskUsers,
     checkWipLimitForMove,
   };
 };

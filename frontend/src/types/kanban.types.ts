@@ -1,6 +1,9 @@
+import { IUser } from "../interfaces/IUser";
+
 export type TaskData = {
     id: string;
     title: string;
+    users: IUser[];
   };
   
   export type ColumnData = {

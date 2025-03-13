@@ -137,6 +137,7 @@ const Column: React.FC<ColumnProps> = ({
                 columnId={col.id}
                 uniqueId={task.id}
                 onDeleteTask={() => onDeleteTask(col.id, index)}
+                users={task.users || []} // Pass users from task
               />
             ))}
             {provided.placeholder}
