@@ -17,6 +17,9 @@ export class ColumnEntity extends BaseEntity {
   @Column()
   maxTasks: number;
 
+  @Column()
+  order: number;
+
   @ManyToOne(() => Kanban, (kanban) => kanban.columns)
   kanban: Kanban;
 }

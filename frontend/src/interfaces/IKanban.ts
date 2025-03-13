@@ -6,8 +6,8 @@ import { IUser } from "./IUser";
 
 export interface IKanban extends IBaseEntity {
   tableName: string;
-  users: IUser[];
-  tasks: ITask[];
+  users?: IUser[];
+  tasks?: ITask[];
   columns: IColumnEntity[];
   statuses: IStatus[];
 }
