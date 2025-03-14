@@ -103,7 +103,7 @@
   }
  
   strong {
-    color: lighten($textColor, 15%);
+    color: color.adjust($textColor, $lightness: 15%);
     margin-right: 8px;
   }
 }
@@ -116,7 +116,7 @@
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: lighten($textColor, 15%);
+    color: color.adjust($textColor, $lightness: 15%);
     font-size: 0.95rem;
   }
 }
@@ -124,7 +124,7 @@
 .formControl {
   width: 100%;
   padding: 12px 14px;
-  background-color: darken($cardBackground, 3%);
+  background-color: color.adjust($cardBackground, $lightness: -3%);
   border: 1px solid #444;
   border-radius: 6px;
   color: $textColor;
@@ -151,7 +151,7 @@
     min-height: 42px;
     color: $textColor;
     padding: 6px 10px;
-    background: darken($cardBackground, 3%) !important;
+    background: color.adjust($cardBackground, $lightness: -3%) !important;
     border-radius: 6px !important;
     border: 1px solid #444 !important;
     transition: all 0.2s ease;
@@ -250,7 +250,7 @@
   transition: background-color 0.2s ease;
   
   &:hover {
-    background-color: darken($inProgressColor, 10%);
+    background-color:color.adjust($inProgressColor, $lightness: -10%);
   }
   
   &:disabled {
@@ -285,7 +285,7 @@
   border-radius: 4px;
   margin-bottom: 6px;
   font-weight: 500;
-  color: lighten($textColor, 10%);
+  color:color.adjust($textColor, $lightness: 10%); 
 }
 
 /* Make the height of the chip list adaptive */
