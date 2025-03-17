@@ -10,7 +10,7 @@ import Multiselect from "multiselect-react-dropdown";
 import { IStatus } from "../../interfaces/IStatus";
 import { IColumnEntity } from "../../interfaces/IColumnEntity";
 // Import Bootstrap Icons
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const BoardsNew: React.FC = () => {
   useWebsiteTitle("Create new Board");
@@ -104,14 +104,18 @@ const BoardsNew: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      toast.success("Tablica została utworzona pomyślnie!");
-      setIsLoading(false);
-      // Reset form or redirect
-      // You would typically make an API call here instead
-    }, 1000);
+
+    api
+      .post<ApiResponse<IKanban>>("kanban", kanbanData)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((_err) => {
+        console.log("Błąd");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -167,14 +171,14 @@ const BoardsNew: React.FC = () => {
             <i className="bi bi-plus-lg"></i>
           </button>
         </div>
-        
+
         <div className={styles.listContainer}>
           <ul>
             {kanbanData.statuses.map((status, index) => (
               <li key={index}>
                 <div>
-                  <span 
-                    className={styles.statusBadge} 
+                  <span
+                    className={styles.statusBadge}
                     style={{ backgroundColor: status.color }}
                   ></span>
                   {status.name}
@@ -203,7 +207,7 @@ const BoardsNew: React.FC = () => {
           <input
             type="number"
             placeholder="Kolejność"
-            value={columnInput.order || ''}
+            value={columnInput.order || ""}
             onChange={(e) =>
               setColumnInput({
                 ...columnInput,
@@ -214,7 +218,7 @@ const BoardsNew: React.FC = () => {
           <input
             type="number"
             placeholder="Max. zadań"
-            value={columnInput.maxTasks || ''}
+            value={columnInput.maxTasks || ""}
             onChange={(e) =>
               setColumnInput({
                 ...columnInput,
@@ -226,14 +230,17 @@ const BoardsNew: React.FC = () => {
             <i className="bi bi-plus-lg"></i>
           </button>
         </div>
-        
+
         <div className={styles.listContainer}>
           <ul>
             {kanbanData.columns.map((column, index) => (
               <li key={index}>
                 <div>
                   <i className="bi bi-layout-three-columns mx-2"></i>
-                  {column.name} <span className="">(Kolejność: {column.order}, Max zadań: {column.maxTasks})</span>
+                  {column.name}{" "}
+                  <span className="">
+                    (Kolejność: {column.order}, Max zadań: {column.maxTasks})
+                  </span>
                 </div>
                 <button type="button" onClick={() => handleRemoveColumn(index)}>
                   <i className="bi bi-x-lg"></i>
@@ -243,7 +250,11 @@ const BoardsNew: React.FC = () => {
           </ul>
         </div>
 
-        <button type="submit" className={styles.submitButton} disabled={isLoading}>
+        <button
+          type="submit"
+          className={styles.submitButton}
+          disabled={isLoading}
+        >
           {isLoading ? (
             <>
               <i className="bi bi-hourglass-split"></i>
