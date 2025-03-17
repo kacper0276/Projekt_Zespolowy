@@ -84,4 +84,15 @@ export class KanbanService {
 
     return kanban;
   }
+
+  async getKanbansByUserEmail(email: string): Promise<Kanban[]> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['kanbans'],
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.kanbans;
+  }
 }

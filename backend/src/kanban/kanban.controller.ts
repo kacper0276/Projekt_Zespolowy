@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   HttpStatus,
   Param,
   Patch,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import { AssignUserDto } from './dto/assign-user.dto';
@@ -37,6 +39,24 @@ export class KanbanController {
       });
     } catch (_error) {
       response.send(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: 'internal-server-error',
+      });
+    }
+  }
+
+  @Get('user')
+  async getKanbanByUserEmail(
+    @Query('email') email: string,
+    @Res() response: Response,
+  ) {
+    try {
+      const res = await this.kanbanService.getKanbansByUserEmail(email);
+      response.status(HttpStatus.OK).send({
+        message: 'kanban-board-retrieved',
+        data: res,
+      });
+    } catch (_error) {
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
         message: 'internal-server-error',
       });
     }
