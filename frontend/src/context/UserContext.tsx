@@ -1,5 +1,8 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { IUser } from "../interfaces/IUser";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
+import localStorageService from "../services/localStorage.service";
 
 interface UserContextType {
   user: IUser | null;
@@ -15,6 +18,7 @@ const UserContext = createContext<UserContextType | null>(null);
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const location = useLocation();
   const [user, setUser] = useState<IUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
@@ -35,6 +39,36 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     setToken(newToken);
     setRefreshToken(newRefreshToken);
   };
+
+  useEffect(() => {
+    if (!token || !refreshToken) {
+      updateTokens(
+        localStorageService.getItem("accessToken") ?? "",
+        localStorageService.getItem("refreshToken") ?? ""
+      );
+    }
+
+    const fetchUser = async () => {
+      if (!user && token) {
+        try {
+          const response = await axios.get(
+            "http://localhost:3000/api/auth/me",
+            {
+              headers: {
+                Authorization: `${token}`,
+              },
+            }
+          );
+
+          setUser(response.data.data);
+        } catch (error) {
+          console.error("Failed to fetch user:", error);
+        }
+      }
+    };
+
+    fetchUser();
+  }, [token, location.pathname]);
 
   return (
     <UserContext.Provider

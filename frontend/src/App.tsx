@@ -63,11 +63,11 @@ function App() {
   );
 
   return (
-    <UserProvider>
-      <Router>
+    <Router>
+      <UserProvider>
         <Layout header={header} content={content} footer={footer} />
-      </Router>
-    </UserProvider>
+      </UserProvider>
+    </Router>
   );
 }
 
