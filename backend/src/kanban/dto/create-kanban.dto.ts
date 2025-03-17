@@ -1,6 +1,7 @@
 import { IsString, IsArray, IsOptional, ValidateNested } from 'class-validator';
 import { ColumnEntity } from '../../columns/entities/column.entity';
 import { Status } from 'src/status/entities/status.entity';
+import { User } from 'src/users/entities/user.entity';
 
 export class CreateKanbanDto {
   @IsString()
@@ -8,7 +9,7 @@ export class CreateKanbanDto {
 
   @IsArray()
   @IsOptional()
-  users: number[];
+  users: User[];
 
   @IsArray()
   @IsOptional()
