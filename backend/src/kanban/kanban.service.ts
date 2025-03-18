@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kanban } from './entities/kanban.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { ColumnEntity } from 'src/columns/entities/column.entity';
 import { Status } from 'src/status/entities/status.entity';
@@ -92,10 +92,19 @@ export class KanbanService {
         relations: ['kanbans'],
       });
 
+      const kanbanIds = user.kanbans.map((kanban) => kanban.id);
+
+      const kanbans = await this.kanbanRepository.find({
+        where: { id: In(kanbanIds) },
+        relations: ['users'],
+      });
+
+      console.log(kanbans);
+
       if (!user) {
         throw new Error('User not found');
       }
-      return user.kanbans;
+      return kanbans;
     } catch (error) {
       console.log(error);
     }
