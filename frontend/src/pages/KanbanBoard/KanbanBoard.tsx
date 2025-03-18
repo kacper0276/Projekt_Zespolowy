@@ -11,9 +11,16 @@ import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 import { useKanbanBoard } from "../../hooks/useKanbanBoard";
 import Column from "../../components/Column/Column";
 import ActionButton from "../../components/ActionButton/ActionButton";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useApiJson } from "../../config/api";
+import { ApiResponse } from "../../types/api.types";
+import { IKanban } from "../../interfaces/IKanban";
 
 function KanbanBoard() {
   useWebsiteTitle("Kanban Board");
+  const params = useParams();
+  const api = useApiJson();
   const {
     columns,
     setColumns,
@@ -29,6 +36,17 @@ function KanbanBoard() {
     onDeleteTask,
     checkWipLimitForMove,
   } = useKanbanBoard();
+  const [board, setBoard] = useState<IKanban>();
+
+  useEffect(() => {
+    api.get<ApiResponse<IKanban>>(`kanban/board/${params.id}`).then((res) => {
+      res.data.data?.columns.sort(function (colA, colB) {
+        return colA.order - colB.order;
+      });
+
+      setBoard(res.data.data);
+    });
+  }, []);
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination, type } = result;
@@ -67,10 +85,9 @@ function KanbanBoard() {
       // Moving to a different column
       const sourceTasks = Array.from(sourceColumn.tasks);
       const destTasks = Array.from(destColumn.tasks);
-      
 
       const [removed] = sourceTasks.splice(source.index, 1);
-      
+
       destTasks.splice(destination.index, 0, removed);
 
       setColumns((prev) => ({

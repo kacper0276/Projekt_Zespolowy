@@ -35,6 +35,7 @@ function App() {
           </AuthenticatedRoute>
         }
       />
+      <Route path="/boards/:id" element={<KanbanBoard />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

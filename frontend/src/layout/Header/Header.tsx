@@ -61,7 +61,6 @@ const Header: React.FC = () => {
       const { data } = await api.get<ApiResponse<IKanban[]>>("kanban/user", {
         params: { email: user?.email },
       });
-      console.log(data.data);
       setKanbanBoards(data.data ?? []);
     } catch (error) {
       console.error("Failed to fetch kanban boards:", error);
