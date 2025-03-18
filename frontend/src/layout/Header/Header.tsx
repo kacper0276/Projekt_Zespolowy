@@ -181,14 +181,14 @@ const Header: React.FC = () => {
             </div>
             <div className={styles.modalBody}>
               <div className={styles.boardsGrid}>
-                {sampleBoards.map((board) => (
+                {kanbanBoards.map((board) => (
                   <div key={board.id} className={styles.boardCard}>
-                    <h6>{board.name}</h6>
+                    <h6>{board.tableName}</h6>
                     <div className={styles.descriptionWrapper}>
-                      <p>{board.description}</p>
+                      {/* <p>{board.description}</p> */}
                     </div>
                     <div className={styles.boardMeta}>
-                      <span>{board.members} uczestników</span>
+                      <span>{board.users?.length} uczestników</span>
                       <a
                         href={`/boards/${board.id}`}
                         className={styles.viewBoardBtn}
