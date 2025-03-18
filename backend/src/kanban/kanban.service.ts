@@ -99,12 +99,27 @@ export class KanbanService {
         relations: ['users'],
       });
 
-      console.log(kanbans);
-
       if (!user) {
         throw new Error('User not found');
       }
       return kanbans;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getKanbanById(id: number): Promise<Kanban> {
+    try {
+      const kanban = await this.kanbanRepository.findOne({
+        where: { id },
+        relations: ['users', 'columns', 'statuses', 'tasks'],
+      });
+
+      if (!kanban) {
+        throw new Error('Kanban board not found');
+      }
+
+      return kanban;
     } catch (error) {
       console.log(error);
     }

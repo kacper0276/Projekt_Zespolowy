@@ -61,4 +61,19 @@ export class KanbanController {
       });
     }
   }
+
+  @Get('board/:id')
+  async getKanbanById(@Param('id') id: number, @Res() response: Response) {
+    try {
+      const res = await this.kanbanService.getKanbanById(id);
+      response.status(HttpStatus.OK).send({
+        message: 'kanban-board',
+        data: res,
+      });
+    } catch (_error) {
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: 'internal-server-error',
+      });
+    }
+  }
 }
