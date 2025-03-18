@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState,useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { IKanban } from '../interfaces/IKanban';
-import { IColumnEntity } from '../interfaces/IColumnEntity';
-import { ITask } from '../interfaces/ITask';
+
 
 interface ColumnState {
   [key: string]: {
