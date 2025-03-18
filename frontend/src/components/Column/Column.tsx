@@ -1,16 +1,20 @@
 import React from "react";
 import { Droppable } from "@hello-pangea/dnd";
 import styles from "./Column.module.scss";
-import { ColumnData } from "../../types/kanban.types";
 import { useKanbanColumn } from "../../hooks/useKanbanColumn";
 import ActionButton from "../ActionButton/ActionButton";
 import TaskItem from "../TaskItem/TaskItem";
 import WipLimitEditor from "../WipLimitEditor/WipLimitEditor";
 
 interface ColumnProps {
-  col: ColumnData;
+  col: {
+    id: string;
+    title: string;
+    tasks: any[];
+    wipLimit: number;
+  };
   onAddTask: (columnId: string, taskTitle: string) => void;
-  onDeleteTask: (columnId: string, taskIndex: number) => void;
+  onDeleteTask: (columnId: string, taskId: string) => void;
   onDeleteColumn: () => void;
   canDeleteColumn: boolean;
   updateWipLimit: (columnId: string, limit: number) => void;
@@ -132,11 +136,10 @@ const Column: React.FC<ColumnProps> = ({
             {col.tasks.map((task, index) => (
               <TaskItem
                 key={`${col.id}-${task.id}-${index}`}
-                text={task.title}
+                task={task}
                 index={index}
                 columnId={col.id}
-                uniqueId={task.id}
-                onDeleteTask={() => onDeleteTask(col.id, index)}
+                onDeleteTask={() => onDeleteTask(col.id, task.id)}
               />
             ))}
             {provided.placeholder}

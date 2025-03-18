@@ -1,36 +1,40 @@
 import { useState } from 'react';
-import { toast } from 'react-toastify';
-import { ColumnData } from '../types/kanban.types';
+
 interface UseKanbanColumnProps {
-  column: ColumnData;
+  column: {
+    id: string;
+    title: string;
+    tasks: any[];
+    wipLimit: number;
+  };
   onAddTask: (columnId: string, taskTitle: string) => void;
   updateWipLimit: (columnId: string, limit: number) => void;
 }
-export const useKanbanColumn = ({ column, onAddTask, updateWipLimit }: UseKanbanColumnProps) => {
+
+export function useKanbanColumn({
+  column,
+  onAddTask,
+  updateWipLimit,
+}: UseKanbanColumnProps) {
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [isEditingWipLimit, setIsEditingWipLimit] = useState(false);
+  
   const handleAddTask = () => {
-    if (newTaskTitle.trim()) {
-      onAddTask(column.id, newTaskTitle.trim());
-      setNewTaskTitle('');
-      setIsAddingTask(false);
-    }
+    if (!newTaskTitle.trim()) return;
+    
+    onAddTask(column.id, newTaskTitle);
+    setNewTaskTitle('');
+    setIsAddingTask(false);
   };
+  
   const handleWipLimitSave = (newLimit: number) => {
-    if (isNaN(newLimit) || newLimit < 0) {
-      toast.error('Limit WIP musi być liczbą większą lub równą 0', {
-        position: 'top-center',
-        autoClose: 3000,
-      });
-      return;
-    }
-   
     updateWipLimit(column.id, newLimit);
     setIsEditingWipLimit(false);
   };
+  
   const isLimitReached = column.wipLimit > 0 && column.tasks.length >= column.wipLimit;
- 
+  
   return {
     isAddingTask,
     setIsAddingTask,
@@ -40,6 +44,6 @@ export const useKanbanColumn = ({ column, onAddTask, updateWipLimit }: UseKanban
     setIsEditingWipLimit,
     handleAddTask,
     handleWipLimitSave,
-    isLimitReached
+    isLimitReached,
   };
-};
+}

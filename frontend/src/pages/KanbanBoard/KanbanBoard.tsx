@@ -12,7 +12,7 @@ import { useKanbanBoard } from "../../hooks/useKanbanBoard";
 import Column from "../../components/Column/Column";
 import ActionButton from "../../components/ActionButton/ActionButton";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
@@ -35,18 +35,32 @@ function KanbanBoard() {
     onAddTask,
     onDeleteTask,
     checkWipLimitForMove,
+    initializeBoard,
+    boardData
   } = useKanbanBoard();
-  const [board, setBoard] = useState<IKanban>();
 
   useEffect(() => {
-    api.get<ApiResponse<IKanban>>(`kanban/board/${params.id}`).then((res) => {
-      res.data.data?.columns.sort(function (colA, colB) {
-        return colA.order - colB.order;
-      });
+    let isMounted = true;
+    
+    const fetchBoard = async () => {
+      try {
+        const res = await api.get<ApiResponse<IKanban>>(`kanban/board/${params.id}`);
+        if (isMounted && res.data && res.data.data) {
+          initializeBoard(res.data.data);
+          console.log(res.data.data)
+        }
+      } catch (error) {
+        console.error("Error fetching board data:", error);
+      }
+    };
+  
+    fetchBoard();
+    
+    return () => {
+      isMounted = false;
+    };
 
-      setBoard(res.data.data);
-    });
-  }, []);
+  }, [params.id, initializeBoard]); 
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination, type } = result;
@@ -102,7 +116,7 @@ function KanbanBoard() {
     <div className={styles.kanbanBoard}>
       <ToastContainer theme="dark" />
       <div className={styles.boardHeader}>
-        <h1>Tablica Kanban</h1>
+        <h1>{boardData?.tableName || "Tablica Kanban"}</h1>
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>

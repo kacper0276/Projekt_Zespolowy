@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './WipLimitEditor.module.scss';
+import ActionButton from '../ActionButton/ActionButton';
 
 interface WipLimitEditorProps {
   currentLimit: number;
@@ -10,49 +10,40 @@ interface WipLimitEditorProps {
 const WipLimitEditor: React.FC<WipLimitEditorProps> = ({
   currentLimit,
   onSave,
-  onCancel
+  onCancel,
 }) => {
-  const [tempWipLimit, setTempWipLimit] = useState(currentLimit.toString());
+  const [limit, setLimit] = useState(currentLimit);
 
-  const handleWipLimitChange = () => {
-    const newLimit = parseInt(tempWipLimit, 10);
-    if (isNaN(newLimit) || newLimit < 0) {
-      // Could add toast notification here
-      return;
-    }
-    
-    onSave(newLimit);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    setLimit(isNaN(value) ? 0 : value);
   };
 
   return (
-    <div className={styles.wipLimitEditor}>
-      <input
-        type="number"
-        min="0"
-        value={tempWipLimit}
-        onChange={(e) => setTempWipLimit(e.target.value)}
-        className={styles.wipLimitInput}
-        autoFocus
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') handleWipLimitChange();
-          if (e.key === 'Escape') onCancel();
-        }}
-      />
-      <div className={styles.wipLimitButtons}>
-        <button 
-          onClick={handleWipLimitChange} 
-          className={styles.confirmWipButton} 
-          title="Zapisz"
+    <div className="wip-limit-editor">
+      <div className="input-group mb-2">
+        <input
+          type="number"
+          min="0"
+          value={limit}
+          onChange={handleChange}
+          className="form-control"
+          placeholder="WIP Limit"
+        />
+      </div>
+      <div className="d-flex gap-2">
+        <ActionButton
+          onClick={() => onSave(limit)}
+          variant="success"
         >
-          <i className="bi bi-check-lg"></i>
-        </button>
-        <button 
-          onClick={onCancel} 
-          className={styles.cancelWipButton}
-          title="Anuluj"
+          Zapisz
+        </ActionButton>
+        <ActionButton
+          onClick={onCancel}
+          variant="default"
         >
-          <i className="bi bi-x-lg"></i>
-        </button>
+          Anuluj
+        </ActionButton>
       </div>
     </div>
   );
