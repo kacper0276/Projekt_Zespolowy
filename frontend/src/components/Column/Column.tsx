@@ -1,11 +1,11 @@
-import React from 'react';
-import { Droppable } from '@hello-pangea/dnd';
-import styles from './Column.module.scss';
-import TaskItem from './TaskItem';
-import WipLimitEditor from './KanbanBoardComponents/WipLimitEditor';
-import ActionButton from './KanbanBoardComponents/ActionButton';
-import { ColumnData } from '../../types/kanban.types';
-import { useKanbanColumn } from '../../hooks/useKanbanColumn';
+import React from "react";
+import { Droppable } from "@hello-pangea/dnd";
+import styles from "./Column.module.scss";
+import { ColumnData } from "../../types/kanban.types";
+import { useKanbanColumn } from "../../hooks/useKanbanColumn";
+import ActionButton from "../ActionButton/ActionButton";
+import TaskItem from "../TaskItem/TaskItem";
+import WipLimitEditor from "../WipLimitEditor/WipLimitEditor";
 
 interface ColumnProps {
   col: ColumnData;
@@ -24,7 +24,7 @@ const Column: React.FC<ColumnProps> = ({
   onDeleteColumn,
   canDeleteColumn,
   updateWipLimit,
-  canAddTask
+  canAddTask,
 }) => {
   const {
     isAddingTask,
@@ -35,11 +35,11 @@ const Column: React.FC<ColumnProps> = ({
     setIsEditingWipLimit,
     handleAddTask,
     handleWipLimitSave,
-    isLimitReached
+    isLimitReached,
   } = useKanbanColumn({
     column: col,
     onAddTask,
-    updateWipLimit
+    updateWipLimit,
   });
 
   return (
@@ -48,7 +48,8 @@ const Column: React.FC<ColumnProps> = ({
         <h3>{col.title}</h3>
         <div className={styles.columnHeaderActions}>
           <span className={`badge ${styles.taskCount}`}>
-            {col.tasks.length}{col.wipLimit > 0 && `/${col.wipLimit}`}
+            {col.tasks.length}
+            {col.wipLimit > 0 && `/${col.wipLimit}`}
           </span>
           {canDeleteColumn && (
             <button
@@ -61,7 +62,7 @@ const Column: React.FC<ColumnProps> = ({
           )}
         </div>
       </div>
-      
+
       <div className={styles.wipLimitSection}>
         {isEditingWipLimit ? (
           <WipLimitEditor
@@ -70,19 +71,19 @@ const Column: React.FC<ColumnProps> = ({
             onCancel={() => setIsEditingWipLimit(false)}
           />
         ) : (
-          <div 
-            className={`${styles.wipLimitDisplay} ${isLimitReached ? styles.limitReached : ''}`}
+          <div
+            className={`${styles.wipLimitDisplay} ${
+              isLimitReached ? styles.limitReached : ""
+            }`}
             onClick={() => setIsEditingWipLimit(true)}
             title="Kliknij, aby edytować limit zadań"
           >
-            <span>
-              WIP Limit: {col.wipLimit === 0 ? "Brak" : col.wipLimit}
-            </span>
+            <span>WIP Limit: {col.wipLimit === 0 ? "Brak" : col.wipLimit}</span>
             <i className="bi bi-pencil-fill ms-2"></i>
           </div>
         )}
       </div>
-      
+
       <div className={styles.columnActions}>
         <ActionButton
           onClick={() => setIsAddingTask(!isAddingTask)}
@@ -93,7 +94,7 @@ const Column: React.FC<ColumnProps> = ({
           Dodaj zadanie
         </ActionButton>
       </div>
-      
+
       {isAddingTask && (
         <div className={styles.inlineTaskInput}>
           <input
@@ -120,9 +121,9 @@ const Column: React.FC<ColumnProps> = ({
           </div>
         </div>
       )}
-      
+
       <Droppable droppableId={col.id}>
-        {provided => (
+        {(provided) => (
           <div
             {...provided.droppableProps}
             ref={provided.innerRef}

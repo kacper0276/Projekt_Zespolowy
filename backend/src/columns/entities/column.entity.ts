@@ -8,14 +8,17 @@ export class ColumnEntity extends BaseEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: 'no-assigned' })
   status: string;
 
   @OneToMany(() => Task, (task) => task.column)
   tasks: Task[];
 
-  @Column()
+  @Column({ default: 0 })
   maxTasks: number;
+
+  @Column({ default: -1 })
+  order: number;
 
   @ManyToOne(() => Kanban, (kanban) => kanban.columns)
   kanban: Kanban;

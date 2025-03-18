@@ -16,6 +16,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "i18next": "^24.2.2",
+    "multiselect-react-dropdown": "^2.0.25",
     "react": "^19.0.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-bootstrap": "^2.10.9",

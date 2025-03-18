@@ -10,7 +10,7 @@ export class Kanban extends BaseEntity {
   @Column()
   tableName: string;
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, (user) => user.kanbans)
   @JoinTable()
   users: User[];
 

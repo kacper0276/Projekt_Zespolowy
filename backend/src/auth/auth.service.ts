@@ -40,4 +40,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
+
+  async getUserFromToken(token: string) {
+    const decoded = this.jwtService.verify(token);
+    return this.usersService.findOneById(decoded.sub);
+  }
 }

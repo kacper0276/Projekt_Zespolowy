@@ -13,6 +13,8 @@ import NotFound from "./pages/NotFound/NotFound";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import { UserProvider } from "./context/UserContext";
 import ActivateAccount from "./pages/ActivateAccount/ActivateAccount";
+import BoardsNew from "./pages/BoardsNew/BoardsNew";
+import AuthenticatedRoute from "./hoc/AuthenticatedRoute";
 
 function App() {
   const content = (
@@ -24,6 +26,14 @@ function App() {
       <Route
         path="/activate-account/:userEmail"
         element={<ActivateAccount />}
+      />
+      <Route
+        path="/boards/new"
+        element={
+          <AuthenticatedRoute>
+            <BoardsNew />
+          </AuthenticatedRoute>
+        }
       />
       <Route path="*" element={<NotFound />} />
     </Routes>
@@ -53,11 +63,11 @@ function App() {
   );
 
   return (
-    <UserProvider>
-      <Router>
+    <Router>
+      <UserProvider>
         <Layout header={header} content={content} footer={footer} />
-      </Router>
-    </UserProvider>
+      </UserProvider>
+    </Router>
   );
 }
 

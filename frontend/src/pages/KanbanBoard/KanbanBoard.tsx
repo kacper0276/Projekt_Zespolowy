@@ -1,17 +1,16 @@
-import React from "react";
 import {
   DragDropContext,
   Droppable,
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import Column from "./Column";
 import styles from "./KanbanBoard.module.scss";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 import { useKanbanBoard } from "../../hooks/useKanbanBoard";
-import ActionButton from "./KanbanBoardComponents/ActionButton";
+import Column from "../../components/Column/Column";
+import ActionButton from "../../components/ActionButton/ActionButton";
 
 function KanbanBoard() {
   useWebsiteTitle("Kanban Board");
@@ -28,7 +27,7 @@ function KanbanBoard() {
     canAddTaskToColumn,
     onAddTask,
     onDeleteTask,
-    checkWipLimitForMove
+    checkWipLimitForMove,
   } = useKanbanBoard();
 
   const onDragEnd = (result: DropResult) => {
@@ -68,7 +67,10 @@ function KanbanBoard() {
       // Moving to a different column
       const sourceTasks = Array.from(sourceColumn.tasks);
       const destTasks = Array.from(destColumn.tasks);
+      
+
       const [removed] = sourceTasks.splice(source.index, 1);
+      
       destTasks.splice(destination.index, 0, removed);
 
       setColumns((prev) => ({

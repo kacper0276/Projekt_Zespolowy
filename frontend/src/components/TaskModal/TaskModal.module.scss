@@ -1,0 +1,334 @@
+@use "../../styles/mixins" as *;
+@use "../../styles/variables" as *;
+@use "sass:color";
+
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+  transition: all 0.3s ease;
+}
+
+.modalContent {
+  background-color: $cardBackground;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 550px;
+  max-height: 100vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  transform: translateY(0);
+  transition: transform 0.3s ease;
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 0 8px 8px 0;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba($inProgressColor, 0.6);
+    border-radius: 10px;
+    
+    &:hover {
+      background: $inProgressColor;
+    }
+  }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, $formGradientStart, $formGradientEnd);
+  border-radius: 12px 12px 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+ 
+  h3 {
+    color: white;
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+}
+
+.closeButton {
+  background: rgba(255, 255, 255, 0.0);
+  border: none;
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  transition: all 0.2s ease;
+ 
+  &:hover {
+    background: rgba(255, 255, 255, 0);
+    transform: rotate(90deg);
+  }
+}
+
+.modalBody {
+  padding: 24px;
+  color: $textColor;
+}
+
+.taskInfo {
+  p {
+    margin: 12px 0;
+    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    font-size: 0.95rem;
+  }
+ 
+  strong {
+    color: color.adjust($textColor, $lightness: 15%);
+    margin-right: 8px;
+  }
+}
+
+/* Form styling */
+.formGroup {
+  margin-bottom: 20px;
+ 
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: color.adjust($textColor, $lightness: 15%);
+    font-size: 0.95rem;
+  }
+}
+
+.formControl {
+  width: 100%;
+  padding: 12px 14px;
+  background-color: color.adjust($cardBackground, $lightness: -3%);
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: $textColor;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+ 
+  &:focus {
+    outline: none;
+    border-color: $inProgressColor;
+    box-shadow: 0 0 0 3px rgba($inProgressColor, 0.2);
+  }
+}
+
+.multiselectContainer {
+  /* Custom styles for multiselect dropdown */
+  position: relative;
+  margin-bottom: 24px; // Add space between multiselect and save button
+  
+  :global(.multiSelectContainer) {
+    width: 100%;
+  }
+ 
+  :global(.searchBox) {
+    min-height: 42px;
+    color: $textColor;
+    padding: 6px 10px;
+    background: color.adjust($cardBackground, $lightness: -3%) !important;
+    border-radius: 6px !important;
+    border: 1px solid #444 !important;
+    transition: all 0.2s ease;
+   
+    &:focus-within {
+      border-color: $inProgressColor !important;
+      box-shadow: 0 0 0 3px rgba($inProgressColor, 0.2);
+    }
+  }
+ 
+  // Improve chips display
+  :global(.chip) {
+    background: $inProgressColor !important;
+    border-radius: 50px;
+    padding: 4px 10px;
+    margin: 4px;
+    display: inline-flex;
+    align-items: center;
+   
+    :global(.chipText) {
+      margin-right: 4px;
+      max-width: 150px; // Limit chip text width
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+   
+    :global(.chipRemove) {
+      opacity: 0.7;
+     
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+ 
+  // Fix dropdown container positioning and scrolling
+  :global(.optionContainer) {
+    position: absolute !important;
+    z-index: 999 !important;
+    border-radius: 8px !important;
+    margin-top: 8px;
+    padding: 6px;
+    max-height: 200px !important; // Set fixed height for scrolling
+    overflow-y: auto !important; // Enable vertical scrolling
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+    width: 100%;
+   
+    :global(.option) {
+      padding: 10px 14px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+     
+      &:hover {
+        background-color: rgba($inProgressColor, 0.15) !important;
+      }
+    }
+   
+    :global(.highlightOption) {
+      background-color: rgba($inProgressColor, 0.25) !important;
+    }
+   
+    :global(.notFound) {
+      padding: 10px;
+      color: #999;
+      font-style: italic;
+    }
+  }
+ 
+  // Fix the chips container
+  :global(.multiSelectContainer ul) {
+    flex-wrap: wrap;
+    padding: 4px 0;
+    max-height: 100px !important; // Limit height of chips container
+    overflow-y: auto !important; // Allow scrolling for many selections
+    margin-bottom: 0;
+  }
+}
+
+// Make sure form actions are displayed properly
+.formActions {
+  margin-top: 20px;
+  position: relative;
+  z-index: 1; // Ensure button stays above dropdown
+}
+
+// Adjust button styling
+.saveButton {
+  background-color: $inProgressColor;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color:color.adjust($inProgressColor, $lightness: -10%);
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+/* Animation for modal appearance */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modalContent {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* User chips styling */
+:global(.chip) {
+  height: auto !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 10px);
+}
+
+/* User list container styling */
+:global(.groupHeading) {
+  padding: 8px 14px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color:color.adjust($textColor, $lightness: 10%); 
+}
+
+/* Make the height of the chip list adaptive */
+:global(.chipBody) {
+  max-height: none !important;
+  overflow-y: visible !important;
+  padding: 6px 0;
+}
+
+/* Ensure the multiselect box expands as needed */
+.multiselectWrapper {
+  min-height: 42px;
+  height: auto;
+}
+
+/* Improve the look of placeholders */
+:global(.searchBox::placeholder) {
+  color: #777;
+  opacity: 1;
+}
+
+/* Loading state styling */
+:global(.loadingMsg) {
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $inProgressColor;
+  
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba($inProgressColor, 0.2);
+    border-left-color: $inProgressColor;
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

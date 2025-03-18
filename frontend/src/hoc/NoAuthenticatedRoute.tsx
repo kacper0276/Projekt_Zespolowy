@@ -1,7 +1,7 @@
 import { ReactNode, useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import { UserType } from "../interfaces/IUser";
+import { IUser } from "../interfaces/IUser";
 import localStorageService from "../services/localStorage.service";
 
 const NoAuthenticatedRoute: React.FC<{ children: ReactNode }> = ({
@@ -16,7 +16,7 @@ const NoAuthenticatedRoute: React.FC<{ children: ReactNode }> = ({
       if (userContext.user) {
         setIsAuthenticated(true);
       } else {
-        const storedUser = localStorageService.getItem<UserType>("user");
+        const storedUser = localStorageService.getItem<IUser>("user");
         const storedAccessToken =
           localStorageService.getItem<string>("accessToken");
         const storedRefreshToken =
