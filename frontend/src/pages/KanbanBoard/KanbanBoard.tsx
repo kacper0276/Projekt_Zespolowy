@@ -136,8 +136,6 @@ function KanbanBoard() {
       return;
     }
 
-    // Extract the task ID from draggableId (format: columnId-taskId-index)
-    const taskId = draggableId.split('-').slice(1, -1).join('-');
 
     if (sourceColumn.id === destColumn.id) {
       // Moving within the same column
