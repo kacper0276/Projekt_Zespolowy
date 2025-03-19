@@ -1,7 +1,9 @@
-import { useState,useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { IKanban } from '../interfaces/IKanban';
-
+import { useApiJson } from '../config/api';
+import { ApiResponse } from '../types/api.types';
+import { ITask } from '../interfaces/ITask';
 
 interface ColumnState {
   [key: string]: {
@@ -9,6 +11,7 @@ interface ColumnState {
     title: string;
     tasks: any[];
     wipLimit: number;
+    columnId?: number; // Store the actual database ID
   };
 }
 
@@ -17,6 +20,7 @@ export function useKanbanBoard() {
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
   const [newColumnTitle, setNewColumnTitle] = useState('');
   const [boardData, setBoardData] = useState<IKanban | null>(null);
+  const api = useApiJson();
 
   // Initialize board from API data
   const initializeBoard = useCallback((kanbanData: IKanban) => {
@@ -42,9 +46,11 @@ export function useKanbanBoard() {
           status: task.status,
           priority: task.priority,
           deadline: task.deadline,
-          users: task.users || []
+          users: task.users || [],
+          dbId: task.id 
         })),
         wipLimit: column.maxTasks || 0,
+        columnId: column.id
       };
       
       initialColumnOrder.push(columnId);
@@ -127,56 +133,90 @@ export function useKanbanBoard() {
     const column = columns[columnId];
     if (!column) return false;
     
-    // If wipLimit is 0, there's no limit
     if (column.wipLimit === 0) return true;
     
     return column.tasks.length < column.wipLimit;
   };
   
   // Add a task to a column
-  const onAddTask = (columnId: string, taskName: string) => {
+  const onAddTask = async (columnId: string, taskName: string) => {
     if (!canAddTaskToColumn(columnId)) {
       toast.error(`Kolumna ${columns[columnId].title} osiągnęła limit zadań!`);
       return;
     }
     
-    const newTask = {
-      id: `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      content: taskName,
-      name: taskName,
-      description: '',
-      status: '',
-      priority: 'normal',
-      deadline: new Date(),
-      users: []
-    };
+    const column = columns[columnId];
     
-    setColumns((prev) => ({
-      ...prev,
-      [columnId]: {
-        ...prev[columnId],
-        tasks: [...prev[columnId].tasks, newTask],
-      },
-    }));
-    
-    toast.success(`Dodano zadanie do kolumny ${columns[columnId].title}`);
-    
-    // Here you would also create this task on the backend
+    try {
+      // Create task request payload
+      const taskData = {
+        name: taskName,
+        description: '',
+        status: column.title,
+        priority: 'normal',
+        deadline: new Date(),
+        users: [],
+        columnId: column.columnId 
+      };
+      
+      // Send request to create task in the database
+      const response = await api.post<ApiResponse<ITask>>('tasks/create-new', taskData);
+      
+      // If successful, add to UI with the database ID
+      if (response.data && response.data.data) {
+        const newTask = {
+          id: `task-${response.data.data.id}-${Math.random().toString(36).substr(2, 9)}`,
+          content: taskName,
+          name: taskName,
+          description: '',
+          status: column.title,
+          priority: 'normal',
+          deadline: new Date(),
+          users: [],
+          dbId: response.data.data.id 
+        };
+        
+        setColumns((prev) => ({
+          ...prev,
+          [columnId]: {
+            ...prev[columnId],
+            tasks: [...prev[columnId].tasks, newTask],
+          },
+        }));
+        
+        toast.success(`Dodano zadanie do kolumny ${columns[columnId].title}`);
+      }
+    } catch (error) {
+      console.error("Error creating task:", error);
+      toast.error("Nie udało się dodać zadania. Spróbuj ponownie później.");
+    }
   };
 
   // Delete a task
-  const onDeleteTask = (columnId: string, taskId: string) => {
-    setColumns((prev) => ({
-      ...prev,
-      [columnId]: {
-        ...prev[columnId],
-        tasks: prev[columnId].tasks.filter((task) => task.id !== taskId),
-      },
-    }));
+  const onDeleteTask = async (columnId: string, taskId: string) => {
+    const task = columns[columnId].tasks.find(t => t.id === taskId);
+    const dbId = task?.dbId;
     
-    toast.success('Usunięto zadanie');
-    
-    // Here you would also delete this task on the backend
+    try {
+      if (dbId) {
+        // Delete from the database
+        await api.delete(`tasks/${dbId}`);
+      }
+      
+      // Remove from UI
+      setColumns((prev) => ({
+        ...prev,
+        [columnId]: {
+          ...prev[columnId],
+          tasks: prev[columnId].tasks.filter((task) => task.id !== taskId),
+        },
+      }));
+      
+      toast.success('Usunięto zadanie');
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      toast.error("Nie udało się usunąć zadania. Spróbuj ponownie później.");
+    }
   };
   
   // Check if moving a task would violate WIP limits
@@ -193,6 +233,25 @@ export function useKanbanBoard() {
     
     return true;
   };
+
+  // Update task position when dragged to another column
+  const updateTaskPosition = async (taskId: string, sourceColumnId: string, destinationColumnId: string) => {
+    const task = columns[sourceColumnId].tasks.find(t => t.id === taskId);
+    const dbId = task?.dbId;
+    const destColumn = columns[destinationColumnId];
+    
+    if (dbId && destColumn.columnId) {
+      try {
+        // Update task's column in the database
+        await api.put(`tasks/${dbId}/update-column`, {
+          columnId: destColumn.columnId
+        });
+      } catch (error) {
+        console.error("Error updating task position:", error);
+        toast.error("Nie udało się zaktualizować pozycji zadania.");
+      }
+    }
+  };
   
   return {
     columns,
@@ -208,6 +267,7 @@ export function useKanbanBoard() {
     onAddTask,
     onDeleteTask,
     checkWipLimitForMove,
+    updateTaskPosition,
     initializeBoard,
     boardData
   };

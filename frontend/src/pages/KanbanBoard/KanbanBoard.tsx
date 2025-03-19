@@ -35,6 +35,7 @@ function KanbanBoard() {
     onAddTask,
     onDeleteTask,
     checkWipLimitForMove,
+    updateTaskPosition,
     initializeBoard,
     boardData
   } = useKanbanBoard();
@@ -63,7 +64,7 @@ function KanbanBoard() {
   }, [params.id, initializeBoard]); 
 
   const onDragEnd = (result: DropResult) => {
-    const { source, destination, type } = result;
+    const { source, destination, type, draggableId } = result;
     if (!destination) return;
 
     // Handle column reordering
@@ -84,6 +85,9 @@ function KanbanBoard() {
     if (!checkWipLimitForMove(source.droppableId, destination.droppableId)) {
       return;
     }
+
+    // Extract the task ID from draggableId (format: columnId-taskId-index)
+    const taskId = draggableId.split('-').slice(1, -1).join('-');
 
     if (sourceColumn.id === destColumn.id) {
       // Moving within the same column
@@ -109,6 +113,11 @@ function KanbanBoard() {
         [sourceColumn.id]: { ...sourceColumn, tasks: sourceTasks },
         [destColumn.id]: { ...destColumn, tasks: destTasks },
       }));
+
+      // Update task position in the database when moved between columns
+      const taskIdParts = draggableId.split('-');
+      const actualTaskId = taskIdParts[1]; 
+      updateTaskPosition(`task-${actualTaskId}`, source.droppableId, destination.droppableId);
     }
   };
 
