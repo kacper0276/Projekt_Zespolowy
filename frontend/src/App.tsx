@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Layout from "./layout/Layout";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import Header from "../src/layout/Header/Header";
 import Footer from "../src/layout/Footer/Footer";
 import MainPage from "../src/pages/MainPage/MainPage";
@@ -11,6 +10,7 @@ import KanbanBoard from "./pages/KanbanBoard/KanbanBoard";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import NotFound from "./pages/NotFound/NotFound";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import { UserProvider } from "./context/UserContext";
 import ActivateAccount from "./pages/ActivateAccount/ActivateAccount";
 import BoardsNew from "./pages/BoardsNew/BoardsNew";
@@ -36,10 +36,18 @@ function App() {
         }
       />
       <Route path="/boards/:id" element={<KanbanBoard />} />
+      <Route
+        path="/profilePage"
+        element={
+          <AuthenticatedRoute>
+            <ProfilePage />
+          </AuthenticatedRoute>
+        }
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
-
+  
   const header = (
     <>
       <Routes>
@@ -50,10 +58,11 @@ function App() {
       </Routes>
     </>
   );
-
+  
   const footer = (
     <>
       <Routes>
+        <Route path="/profilePage" element={<></>} />
         <Route path="/login" element={<></>} />
         <Route path="/signup" element={<></>} />
         <Route path="/KanbanBoard" element={<></>} />
@@ -62,7 +71,7 @@ function App() {
       </Routes>
     </>
   );
-
+  
   return (
     <Router>
       <UserProvider>
