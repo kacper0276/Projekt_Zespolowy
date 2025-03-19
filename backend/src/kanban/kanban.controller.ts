@@ -13,6 +13,7 @@ import { AssignUserDto } from './dto/assign-user.dto';
 import { KanbanService } from './kanban.service';
 import { CreateKanbanDto } from './dto/create-kanban.dto';
 import { Response } from 'express';
+import { ChangeTableNameDto } from './dto/change-table-name.dto';
 
 @Controller('kanban')
 export class KanbanController {
@@ -71,6 +72,25 @@ export class KanbanController {
         data: res,
       });
     } catch (_error) {
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: 'internal-server-error',
+      });
+    }
+  }
+
+  @Patch('change-table-name')
+  async changeTableName(
+    @Body() data: ChangeTableNameDto,
+    @Res() response: Response,
+  ) {
+    try {
+      const res = await this.kanbanService.changeTableName(data);
+
+      response.status(HttpStatus.OK).send({
+        message: 'table-name-changed',
+        data: res,
+      });
+    } catch (error) {
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
         message: 'internal-server-error',
       });

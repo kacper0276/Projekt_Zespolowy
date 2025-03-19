@@ -7,6 +7,7 @@ import { ColumnEntity } from 'src/columns/entities/column.entity';
 import { Status } from 'src/status/entities/status.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 import { CreateKanbanDto } from './dto/create-kanban.dto';
+import { ChangeTableNameDto } from './dto/change-table-name.dto';
 
 @Injectable()
 export class KanbanService {
@@ -120,6 +121,23 @@ export class KanbanService {
       }
 
       return kanban;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async changeTableName(data: ChangeTableNameDto) {
+    try {
+      const kanban = await this.kanbanRepository.findOne({
+        where: { id: data.id },
+      });
+
+      if (!kanban) {
+        throw new Error('Kanban board not found');
+      }
+
+      kanban.tableName = data.tableName;
+      return this.kanbanRepository.save(kanban);
     } catch (error) {
       console.log(error);
     }
