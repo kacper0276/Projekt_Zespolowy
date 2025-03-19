@@ -9,16 +9,16 @@ export class Task extends BaseEntity {
   @Column()
   name: string;
 
-  @Column('text')
+  @Column({ type: 'text' })
   description: string;
 
-  @Column()
+  @Column({ default: '' })
   status: string;
 
-  @Column()
+  @Column({ default: '' })
   priority: string;
 
-  @Column()
+  @Column({ nullable: true })
   deadline: Date;
 
   @ManyToMany(() => User)
