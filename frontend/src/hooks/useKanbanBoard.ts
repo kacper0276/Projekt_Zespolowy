@@ -269,6 +269,7 @@ export function useKanbanBoard() {
     checkWipLimitForMove,
     updateTaskPosition,
     initializeBoard,
-    boardData
+    boardData,
+    setBoardData
   };
 }

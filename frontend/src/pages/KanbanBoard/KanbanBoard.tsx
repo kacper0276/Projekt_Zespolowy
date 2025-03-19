@@ -5,14 +5,14 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import styles from "./KanbanBoard.module.scss";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 import { useKanbanBoard } from "../../hooks/useKanbanBoard";
 import Column from "../../components/Column/Column";
 import ActionButton from "../../components/ActionButton/ActionButton";
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
@@ -21,6 +21,9 @@ function KanbanBoard() {
   useWebsiteTitle("Kanban Board");
   const params = useParams();
   const api = useApiJson();
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [newTableName, setNewTableName] = useState("");
+  
   const {
     columns,
     setColumns,
@@ -37,7 +40,8 @@ function KanbanBoard() {
     checkWipLimitForMove,
     updateTaskPosition,
     initializeBoard,
-    boardData
+    boardData,
+    setBoardData
   } = useKanbanBoard();
 
   useEffect(() => {
@@ -48,7 +52,8 @@ function KanbanBoard() {
         const res = await api.get<ApiResponse<IKanban>>(`kanban/board/${params.id}`);
         if (isMounted && res.data && res.data.data) {
           initializeBoard(res.data.data);
-          console.log(res.data.data)
+          setNewTableName(res.data.data.tableName);
+          console.log(res.data.data);
         }
       } catch (error) {
         console.error("Error fetching board data:", error);
@@ -62,6 +67,51 @@ function KanbanBoard() {
     };
 
   }, [params.id, initializeBoard]); 
+
+  const handleEditTableName = () => {
+    setIsEditingTitle(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingTitle(false);
+    setNewTableName(boardData?.tableName || "");
+  };
+
+  const handleSaveTableName = async () => {
+    if (!newTableName.trim()) {
+      toast.error("Nazwa tablicy nie może być pusta!");
+      return;
+    }
+
+    try {
+      const res = await api.patch<ApiResponse<IKanban>>(`kanban/change-table-name`, {
+        id: params.id,
+        tableName: newTableName.trim()
+      });
+
+      if (res.data && res.data.data) {
+        // Update the board data with the new name
+        setBoardData({
+          ...boardData!,
+          tableName: newTableName.trim()
+        });
+        toast.success("Nazwa tablicy została zaktualizowana!");
+      }
+
+      setIsEditingTitle(false);
+    } catch (error) {
+      console.error("Error updating table name:", error);
+      toast.error("Nie udało się zaktualizować nazwy tablicy.");
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSaveTableName();
+    } else if (e.key === "Escape") {
+      handleCancelEdit();
+    }
+  };
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination, type, draggableId } = result;
@@ -125,7 +175,39 @@ function KanbanBoard() {
     <div className={styles.kanbanBoard}>
       <ToastContainer theme="dark" />
       <div className={styles.boardHeader}>
-        <h1>{boardData?.tableName || "Tablica Kanban"}</h1>
+        {isEditingTitle ? (
+          <div className={styles.editTitleContainer}>
+            <input
+              type="text"
+              value={newTableName}
+              onChange={(e) => setNewTableName(e.target.value)}
+              onKeyDown={handleKeyPress}
+              autoFocus
+              className={styles.editTitleInput}
+            />
+            <div className={styles.editTitleActions}>
+              <i 
+                className="bi bi-check-lg" 
+                onClick={handleSaveTableName}
+                title="Zapisz"
+              ></i>
+              <i 
+                className="bi bi-x-lg" 
+                onClick={handleCancelEdit}
+                title="Anuluj"
+              ></i>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.boardTitle}>
+            <h1>{boardData?.tableName || "Tablica Kanban"}</h1>
+            <i 
+              className="bi bi-pencil-square" 
+              onClick={handleEditTableName}
+              title="Edytuj nazwę tablicy"
+            ></i>
+          </div>
+        )}
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>

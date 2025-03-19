@@ -2,7 +2,6 @@ import React from "react";
 import styles from "./MainPage.module.scss";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 
 const MainPage: React.FC = () => {
