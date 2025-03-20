@@ -206,4 +206,20 @@ export class UsersService {
     }
     return user;
   }
+
+  async updateUserStatus(userId: number, isOnline: boolean): Promise<void> {
+    await this.userRepository.update({ id: userId }, { isOnline });
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
 }

@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  NotFoundException,
   Patch,
   Post,
   Query,
@@ -88,6 +89,30 @@ export class UsersController {
     } catch (error) {
       if (error instanceof BadRequestException) {
         response.status(HttpStatus.BAD_REQUEST).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'a-server-error-occurred',
+        });
+      }
+    }
+  }
+
+  @Get('by-email')
+  async getUserByEmail(
+    @Query('userEmail') userEmail: string,
+    @Res() response: Response,
+  ) {
+    try {
+      const user = await this.usersService.findOneByEmail(userEmail);
+      response.status(HttpStatus.OK).send({
+        message: 'user-found',
+        data: user,
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
           message: error.message,
         });
       } else {

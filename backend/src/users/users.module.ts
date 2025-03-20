@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { mailerConfig } from 'src/config/mailer.config';
+import { UserStatusGateway } from './users.gateway';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { mailerConfig } from 'src/config/mailer.config';
     MailerModule.forRoot(mailerConfig),
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, UserStatusGateway],
   exports: [UsersService],
 })
 export class UsersModule {}
