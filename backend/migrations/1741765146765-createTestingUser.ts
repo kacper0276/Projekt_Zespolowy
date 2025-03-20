@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 
 export class CreateTestingUser1741765146765 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const email = 'test1example.com';
+    const email = 'test1@example.com';
     const login = 'testuser1';
     const password = await bcrypt.hash('testpassword', 10);
     const firstName = 'Test1';

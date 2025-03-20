@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useUser } from "../../context/UserContext";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { IUser } from "../../interfaces/IUser";
 import { IKanban } from "../../interfaces/IKanban";
 import { toast } from "react-toastify";
@@ -69,16 +69,16 @@ const ProfilePage: React.FC = () => {
         }
       } catch (error: any) {
         toast.error("Failed to fetch users list");
-        setUsersLoaded(true); 
+        setUsersLoaded(true);
       }
     };
 
     fetchAllUsers();
-  }, []); 
+  }, []);
 
   const fetchKanbanBoards = async () => {
     if (!currentUser) return;
-    
+
     try {
       const { data } = await api.get<ApiResponse<IKanban[]>>("kanban/user", {
         params: { email: currentUser.email },
@@ -104,7 +104,7 @@ const ProfilePage: React.FC = () => {
           setProfileUser(currentUser);
           setIsOwnProfile(true);
           setUserBoards(dummyBoards);
-          fetchKanbanBoards(); 
+          fetchKanbanBoards();
           return;
         }
 
@@ -112,7 +112,7 @@ const ProfilePage: React.FC = () => {
           setProfileUser(currentUser);
           setIsOwnProfile(true);
           setUserBoards(dummyBoards);
-          fetchKanbanBoards(); 
+          fetchKanbanBoards();
           return;
         }
 
@@ -122,10 +122,10 @@ const ProfilePage: React.FC = () => {
           if (targetUser) {
             setProfileUser(targetUser);
             setIsOwnProfile(false);
-            setUserBoards(dummyBoards.slice(0, 2)); 
+            setUserBoards(dummyBoards.slice(0, 2));
           } else {
             toast.error("User not found");
-            navigate("/profilePage"); 
+            navigate("/profilePage");
           }
         }
       } catch (error: any) {
@@ -137,7 +137,6 @@ const ProfilePage: React.FC = () => {
       loadUserProfile();
     }
   }, [currentUser, emailParam, usersLoaded, allUsers, navigate]);
-
 
   const handleFollowToggle = () => {
     setIsFollowing(!isFollowing);
@@ -223,7 +222,9 @@ const ProfilePage: React.FC = () => {
             <p className={styles.bio}>{dummyBio}</p>
             <div className={styles.statsContainer}>
               <div className={styles.statItem}>
-                <span className={styles.statValue}>{kanbanBoards.length || userBoards.length}</span>
+                <span className={styles.statValue}>
+                  {kanbanBoards.length || userBoards.length}
+                </span>
                 <span className={styles.statLabel}>Boards</span>
               </div>
               <div className={styles.statItem}>

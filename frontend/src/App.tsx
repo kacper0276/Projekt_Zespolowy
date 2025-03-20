@@ -37,7 +37,7 @@ function App() {
       />
       <Route path="/boards/:id" element={<KanbanBoard />} />
       <Route
-        path="/profilePage"
+        path="/profile"
         element={
           <AuthenticatedRoute>
             <ProfilePage />
@@ -47,7 +47,7 @@ function App() {
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
-  
+
   const header = (
     <>
       <Routes>
@@ -58,11 +58,11 @@ function App() {
       </Routes>
     </>
   );
-  
+
   const footer = (
     <>
       <Routes>
-        <Route path="/profilePage" element={<></>} />
+        <Route path="/profile" element={<></>} />
         <Route path="/login" element={<></>} />
         <Route path="/signup" element={<></>} />
         <Route path="/KanbanBoard" element={<></>} />
@@ -71,7 +71,7 @@ function App() {
       </Routes>
     </>
   );
-  
+
   return (
     <Router>
       <UserProvider>

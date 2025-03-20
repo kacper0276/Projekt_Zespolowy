@@ -6,45 +6,6 @@ import { IKanban } from "../../interfaces/IKanban";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 
-// Sample board data - this would typically come from an API
-const sampleBoards = [
-  {
-    id: 1,
-    name: "Projekt Alpha",
-    description:
-      "Rozwój aplikacji mobilnej dla klientów korporacyjnych z integracją API płatności. Obejmuje projektowanie UI/UX, implementację backendu oraz testy bezpieczeństwa przed wdrożeniem.",
-    members: 5,
-  },
-  {
-    id: 2,
-    name: "Marketing Q1",
-    description:
-      "Kampania social media dla nowego produktu z harmonogramem postów. Koordynacja z działem graficznym, przygotowanie treści i analiza wyników kampanii po jej zakończeniu.",
-    members: 3,
-  },
-  {
-    id: 3,
-    name: "Backlog Produktowy",
-    description:
-      "Zarządzanie funkcjami produktu i priorytetyzacja zadań deweloperskich. Obejmuje zbieranie feedbacku od użytkowników, planowanie sprintów oraz komunikację z interesariuszami.",
-    members: 7,
-  },
-  {
-    id: 4,
-    name: "Design System",
-    description:
-      "Projektowanie i wdrażanie komponentów UI dla spójności produktu. Tworzenie dokumentacji, przygotowanie biblioteki komponentów oraz współpraca z zespołami produktowymi w zakresie implementacji.",
-    members: 1,
-  },
-  {
-    id: 5,
-    name: "Design System",
-    description:
-      "Projektowanie i wdrażanie komponentów UI dla spójności produktu. Tworzenie dokumentacji, przygotowanie biblioteki komponentów oraz współpraca z zespołami produktowymi w zakresie implementacji.",
-    members: 300,
-  },
-];
-
 const Header: React.FC = () => {
   const api = useApiJson();
   const { user, logout } = useUser();
@@ -124,7 +85,10 @@ const Header: React.FC = () => {
                     </a>
                   </li>
                   <li className="nav-item">
-                    <a className={`nav-link ${styles.navLink}`} href="/profile">
+                    <a
+                      className={`nav-link ${styles.navLink}`}
+                      href={`/profile?email=${user.email}`}
+                    >
                       Profil
                     </a>
                   </li>
