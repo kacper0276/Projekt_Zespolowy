@@ -98,7 +98,8 @@ function KanbanBoard() {
             if (!newTaskGrid["Default"][colId]) {
               newTaskGrid["Default"][colId] = [];
             }
-            newTaskGrid["Default"][colId] = [...columns[colId].tasks];
+            // Make a deep copy of tasks to avoid reference issues
+            newTaskGrid["Default"][colId] = columns[colId].tasks.map(task => ({...task}));
           });
 
           setTaskGrid(newTaskGrid);
@@ -115,7 +116,7 @@ function KanbanBoard() {
     };
   }, [params.id, initializeBoard]);
 
-  // Update task grid when columns change
+  // Update task grid when columns change, but avoid resetting tasks that were moved
   useEffect(() => {
     const newTaskGrid = { ...taskGrid };
 
@@ -132,25 +133,24 @@ function KanbanBoard() {
       });
     });
 
-    // Ensure Default row has all tasks from columns
+    // Only initialize Default row with tasks if it's empty
     if (newTaskGrid["Default"]) {
       Object.keys(columns).forEach((colId) => {
-        if (
-          !newTaskGrid["Default"][colId] ||
-          newTaskGrid["Default"][colId].length === 0
-        ) {
-          newTaskGrid["Default"][colId] = [...columns[colId].tasks];
+        // Only fill empty columns, don't reset existing ones
+        if (!newTaskGrid["Default"][colId] || newTaskGrid["Default"][colId].length === 0) {
+          // Make a deep copy of tasks to avoid reference issues
+          newTaskGrid["Default"][colId] = columns[colId].tasks.map(task => ({...task}));
         }
       });
     }
 
     setTaskGrid(newTaskGrid);
-  }, [columns, columnOrder]);
+  }, [columnOrder]); // Only react to column order changes, not to all column changes
 
   const handleEditTableName = () => {
     setIsEditingTitle(true);
   };
-  
+
   const handleStartAddingTask = (rowId: string, colId: string) => {
     setIsAddingTaskMap((prev) => ({
       ...prev,
@@ -350,21 +350,25 @@ function KanbanBoard() {
 
         // Update columns for the database
         const updatedColumns = { ...columns };
-        const sourceColumn = { ...columns[sourceColId] };
-        const destColumn = { ...columns[destColId] };
+        const sourceColumn = { ...updatedColumns[sourceColId] };
+        const destColumn = { ...updatedColumns[destColId] };
 
-        // Remove task from source column
-        sourceColumn.tasks = sourceColumn.tasks.filter(
-          (t) => t.id !== `task-${actualTaskId}`
-        );
-
-        // Add task to destination column
-        destColumn.tasks = [...destColumn.tasks, removed];
-
-        updatedColumns[sourceColId] = sourceColumn;
-        updatedColumns[destColId] = destColumn;
-
-        setColumns(updatedColumns);
+        // Find the task in the source column
+        const movedTask = sourceColumn.tasks.find(t => t.id === draggableId);
+        
+        if (movedTask) {
+          // Remove task from source column
+          sourceColumn.tasks = sourceColumn.tasks.filter(t => t.id !== draggableId);
+          
+          // Add task to destination column
+          destColumn.tasks = [...destColumn.tasks, movedTask];
+          
+          // Update columns
+          updatedColumns[sourceColId] = sourceColumn;
+          updatedColumns[destColId] = destColumn;
+          
+          setColumns(updatedColumns);
+        }
       }
     }
 
@@ -372,8 +376,8 @@ function KanbanBoard() {
   };
 
   const onAddTaskToCell = (rowId: string, colId: string, taskTitle: string) => {
-    // Only add task if title is not empty
-    if (!taskTitle.trim()) return;
+    // Only add task if title is not empty and WIP limit allows
+    if (!taskTitle.trim() || !canAddTaskToColumn(colId)) return;
 
     const newTaskId = `task-${Date.now()}`;
     const newTask = {
@@ -577,7 +581,7 @@ function KanbanBoard() {
 
           {/* Grid rows */}
           <div className={styles.gridRows}>
-            {rows.map((rowId, rowIndex) => (
+            {rows.map((rowId) => (
               <div key={rowId} className={styles.gridRow}>
                 <div className={styles.rowLabel}>
                   {rowId}
@@ -605,25 +609,89 @@ function KanbanBoard() {
                       taskGrid[rowId][columnId] = [];
                     }
 
+                    const isAddingTaskToThisCell = !!isAddingTaskMap[`${rowId}-${columnId}`];
+                    const newTaskTitleForCell = newTaskTitleMap[`${rowId}-${columnId}`] || "";
+
                     return (
-                      <Column
-                        key={`${rowId}-${columnId}`}
-                        col={column}
-                        rowId={rowId}
-                        cellTasks={taskGrid[rowId][columnId]}
-                        isAddingTask={!!isAddingTaskMap[`${rowId}-${columnId}`]}
-                        newTaskTitle={newTaskTitleMap[`${rowId}-${columnId}`] || ""}
-                        onAddTask={onAddTask}
-                        onDeleteTask={(colId, taskId) => onDeleteTaskFromCell(rowId, colId, taskId)}
-                        onDeleteColumn={() => deleteColumn(columnId)}
-                        canDeleteColumn={!["todo", "inprogress", "done"].includes(columnId)}
-                        updateWipLimit={updateColumnWipLimit}
-                        canAddTask={canAddTaskToColumn(columnId)}
-                        onStartAddingTask={() => handleStartAddingTask(rowId, columnId)}
-                        onCancelAddingTask={() => handleCancelAddingTask(rowId, columnId)}
-                        onTaskTitleChange={(value) => handleTaskTitleChange(rowId, columnId, value)}
-                        onAddTaskSubmit={() => handleAddTaskSubmit(rowId, columnId)}
-                      />
+                      <div key={`${rowId}-${columnId}`} className={styles.gridCell}>
+                        <Droppable droppableId={`${rowId}-${columnId}`}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.droppableProps}
+                              className={`${styles.cellContent} ${
+                                snapshot.isDraggingOver ? styles.draggingOver : ""
+                              }`}
+                            >
+                              {taskGrid[rowId][columnId].map((task, index) => (
+                                <Draggable
+                                  key={task.id}
+                                  draggableId={task.id}
+                                  index={index}
+                                >
+                                  {(provided, snapshot) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className={`${styles.taskItem} ${
+                                        snapshot.isDragging ? styles.dragging : ""
+                                      }`}
+                                    >
+                                      <div className={styles.taskContent}>{task.content}</div>
+                                      <button
+                                        onClick={() => onDeleteTaskFromCell(rowId, columnId, task.id)}
+                                        className={styles.deleteTaskButton}
+                                        title="Usuń zadanie"
+                                      >
+                                        <i className="bi bi-x-circle"></i>
+                                      </button>
+                                    </div>
+                                  )}
+                                </Draggable>
+                              ))}
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+
+                        {isAddingTaskToThisCell ? (
+                          <div className={styles.addTaskForm}>
+                            <input
+                              type="text"
+                              value={newTaskTitleForCell}
+                              onChange={(e) => handleTaskTitleChange(rowId, columnId, e.target.value)}
+                              placeholder="Nazwa zadania"
+                              className={styles.taskInput}
+                              autoFocus
+                            />
+                            <div className={styles.addTaskActions}>
+                              <ActionButton
+                                onClick={() => handleAddTaskSubmit(rowId, columnId)}
+                                variant="success"
+                                disabled={!newTaskTitleForCell.trim()}
+                              >
+                                Dodaj
+                              </ActionButton>
+                              <ActionButton
+                                onClick={() => handleCancelAddingTask(rowId, columnId)}
+                                variant="default"
+                              >
+                                Anuluj
+                              </ActionButton>
+                            </div>
+                          </div>
+                        ) : (
+                          canAddTaskToColumn(columnId) && (
+                            <button
+                              onClick={() => handleStartAddingTask(rowId, columnId)}
+                              className={styles.addTaskButton}
+                            >
+                              <i className="bi bi-plus-circle"></i> Dodaj zadanie
+                            </button>
+                          )
+                        )}
+                      </div>
                     );
                   })}
                 </div>

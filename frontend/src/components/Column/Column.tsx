@@ -3,7 +3,6 @@ import { Droppable, Draggable } from "@hello-pangea/dnd";
 import styles from "./Column.module.scss";
 import { useKanbanColumn } from "../../hooks/useKanbanColumn";
 import ActionButton from "../ActionButton/ActionButton";
-import TaskItem from "../TaskItem/TaskItem";
 import WipLimitEditor from "../WipLimitEditor/WipLimitEditor";
 
 interface ColumnProps {
