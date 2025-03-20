@@ -16,6 +16,10 @@ import { Kanban } from './kanban/entities/kanban.entity';
 import { Status } from './status/entities/status.entity';
 import { Task } from './tasks/entities/task.entity';
 import { ToDoList } from './to-do-lists/entities/to-do-list.entity';
+import { ConversationsModule } from './conversations/conversations.module';
+import { MessagesModule } from './messages/messages.module';
+import { Message } from './messages/entities/message.entity';
+import { Conversation } from './conversations/entities/conversation.entity';
 
 @Module({
   imports: [
@@ -27,7 +31,16 @@ import { ToDoList } from './to-do-lists/entities/to-do-list.entity';
       username: process.env.DB_USER || 'root',
       password: process.env.DB_PASSWORD || 'root',
       database: process.env.DB_NAME || 'test',
-      entities: [User, ColumnEntity, Kanban, Status, Task, ToDoList],
+      entities: [
+        User,
+        ColumnEntity,
+        Kanban,
+        Status,
+        Task,
+        ToDoList,
+        Message,
+        Conversation,
+      ],
       synchronize: true,
       migrations: ['../migrations/**/*.ts'],
       migrationsTableName: 'migrations_typeorm',
@@ -39,6 +52,8 @@ import { ToDoList } from './to-do-lists/entities/to-do-list.entity';
     StatusModule,
     ColumnsModule,
     ToDoListsModule,
+    ConversationsModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
