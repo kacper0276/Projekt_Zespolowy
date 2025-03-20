@@ -119,6 +119,7 @@ export class KanbanService {
           'statuses',
           'tasks.column',
           'columns.tasks',
+          'tasks.users',
         ],
       });
 

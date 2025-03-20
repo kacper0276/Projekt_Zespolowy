@@ -81,4 +81,37 @@ export class TasksService {
 
     return updatedTask;
   }
+
+  async deleteTask(taskId: string) {
+    try {
+      const task = await this.taskRepository.findOne({
+        where: { id: +taskId },
+        relations: ['column', 'kanbans', 'kanbans.tasks'],
+      });
+
+      if (!task) {
+        throw new NotFoundException('Task not found');
+      }
+
+      if (task.kanbans && task.kanbans.length > 0) {
+        for (const kanban of task.kanbans) {
+          kanban.tasks = kanban.tasks.filter((t) => t.id !== task.id);
+          await this.kanbanRepository.save(kanban);
+        }
+      }
+
+      await this.kanbanRepository
+        .createQueryBuilder()
+        .delete()
+        .from('kanbans_tasks_tasks')
+        .where('tasksId = :taskId', { taskId: task.id })
+        .execute();
+
+      await this.taskRepository.delete(taskId);
+
+      return { message: 'Task deleted successfully' };
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

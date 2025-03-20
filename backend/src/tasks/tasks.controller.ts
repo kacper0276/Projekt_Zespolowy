@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -61,6 +63,24 @@ export class TasksController {
     } catch (error) {
       if (error instanceof BadRequestException) {
         response.status(HttpStatus.BAD_REQUEST).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'internal-server-error',
+        });
+      }
+    }
+  }
+
+  @Delete(':taskId')
+  async deleteTask(@Param('taskId') taskId: string, @Res() response: Response) {
+    try {
+      const result = await this.tasksService.deleteTask(taskId);
+      response.status(HttpStatus.OK).send(result);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
           message: error.message,
         });
       } else {

@@ -3,6 +3,7 @@ import { BaseEntity } from '../../entities/base.entity';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import { ToDoList } from '../../to-do-lists/entities/to-do-list.entity';
 import { ColumnEntity } from '../../columns/entities/column.entity';
+import { Kanban } from 'src/kanban/entities/kanban.entity';
 
 @Entity('tasks')
 export class Task extends BaseEntity {
@@ -30,4 +31,7 @@ export class Task extends BaseEntity {
 
   @ManyToOne(() => ToDoList, (todoList) => todoList.tasks)
   toDoList: ToDoList;
+
+  @ManyToMany(() => Kanban, (kanban) => kanban.tasks)
+  kanbans: Kanban[];
 }

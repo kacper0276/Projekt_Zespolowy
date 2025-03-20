@@ -14,7 +14,7 @@ export class Kanban extends BaseEntity {
   @JoinTable()
   users: User[];
 
-  @ManyToMany(() => Task)
+  @ManyToMany(() => Task, (task) => task.kanbans)
   @JoinTable()
   tasks: Task[];
 
