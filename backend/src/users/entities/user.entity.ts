@@ -27,6 +27,9 @@ export class User extends BaseEntity {
   @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
 
+  @Column({ default: false })
+  isOnline: boolean;
+
   @ManyToMany(() => Kanban, (kanban) => kanban.users)
   kanbans: Kanban[];
 
