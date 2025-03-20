@@ -12,7 +12,7 @@ export class CreateTestingUser1741765146765 implements MigrationInterface {
 
     await queryRunner.query(
       `INSERT INTO user (email, login, password, firstName, lastName, role, isActive)
-               VALUES ('${email}', '${login}', '${password}', '${firstName}', '${lastName}', '${role}', false)`,
+               VALUES ('${email}', '${login}', '${password}', '${firstName}', '${lastName}', '${role}', true)`,
     );
   }
 
