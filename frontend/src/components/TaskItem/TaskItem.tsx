@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Draggable } from "@hello-pangea/dnd";
 import styles from "./TaskItem.module.scss";
 import TaskModal from "../TaskModal/TaskModal";
 import { IUser } from "../../interfaces/IUser";
 import { useApiJson } from "../../config/api";
-import { useParams } from "react-router-dom";
 
 interface ItemProps {
   task: {
@@ -20,6 +19,7 @@ interface ItemProps {
   index: number;
   columnId: string;
   onDeleteTask: () => void;
+  onTaskUpdate?: (updatedData: { name: string; users: IUser[] }) => void;
 }
 
 const TaskItem: React.FC<ItemProps> = ({
@@ -27,9 +27,9 @@ const TaskItem: React.FC<ItemProps> = ({
   index,
   columnId,
   onDeleteTask,
+  onTaskUpdate,
 }) => {
   const api = useApiJson();
-  const params = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskText, setTaskText] = useState(task.name || task.content || "");
   const [taskUsers, setTaskUsers] = useState<IUser[]>(task.users || []);
@@ -49,18 +49,31 @@ const TaskItem: React.FC<ItemProps> = ({
   };
 
   const handleTaskUpdate = (updatedTask: { name: string; users: IUser[] }) => {
-    console.log(updatedTask);
-    console.log(task.id.split("-")[1]);
-    console.log(params.id);
-
+    const taskId = task.id.split("-")[1];
+  
+    api
+      .patch(`tasks/${taskId}/assign-users`, { users: updatedTask.users })
+      .then((res) => {
+        console.log(res);
+      });
+  
     setTaskText(updatedTask.name);
     setTaskUsers(updatedTask.users || []);
+    
+    // Add this line to call the passed onTaskUpdate prop if it exists
+    if (onTaskUpdate) {
+      onTaskUpdate(updatedTask);
+    }
   };
 
   const getUserInitials = (email: string): string => {
     if (!email) return "??";
     return email.substring(0, 2).toUpperCase();
   };
+
+  useEffect(() => {
+    console.log(task);
+  }, []);
 
   return (
     <>

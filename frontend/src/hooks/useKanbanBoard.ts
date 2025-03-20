@@ -219,20 +219,20 @@ export function useKanbanBoard() {
     }
   };
   
-  // Check if moving a task would violate WIP limits
-  const checkWipLimitForMove = (sourceColumnId: string, destinationColumnId: string) => {
-    if (sourceColumnId === destinationColumnId) return true;
-    
-    const destColumn = columns[destinationColumnId];
-    if (destColumn.wipLimit === 0) return true;
-    
-    if (destColumn.tasks.length >= destColumn.wipLimit) {
-      toast.error(`Kolumna ${destColumn.title} osiągnęła limit zadań!`);
-      return false;
-    }
-    
-    return true;
-  };
+const checkWipLimitForMove = (sourceColumnId: string, destinationColumnId: string) => {
+  if (sourceColumnId === destinationColumnId) return true;
+  
+  const destColumn = columns[destinationColumnId];
+  if (!destColumn || destColumn.wipLimit === 0) return true;
+  
+  // Check if adding one more task would exceed the limit
+  if (destColumn.tasks.length >= destColumn.wipLimit) {
+    toast.error(`Kolumna ${destColumn.title} osiągnęła limit zadań (${destColumn.wipLimit})!`);
+    return false;
+  }
+  
+  return true;
+};
 
   // Update task position when dragged to another column
   const updateTaskPosition = async (taskId: string, sourceColumnId: string, destinationColumnId: string) => {

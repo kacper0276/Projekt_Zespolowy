@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import ActionButton from '../ActionButton/ActionButton';
+import React, { useState } from "react";
+import styles from "./WipLimitEditor.module.scss";
+import ActionButton from "../ActionButton/ActionButton";
 
 interface WipLimitEditorProps {
   currentLimit: number;
-  onSave: (newLimit: number) => void;
+  onSave: (limit: number) => void;
   onCancel: () => void;
 }
 
@@ -12,39 +13,39 @@ const WipLimitEditor: React.FC<WipLimitEditorProps> = ({
   onSave,
   onCancel,
 }) => {
-  const [limit, setLimit] = useState(currentLimit);
+  const [limit, setLimit] = useState<number>(currentLimit);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
     setLimit(isNaN(value) ? 0 : value);
   };
 
+  const handleSave = () => {
+    onSave(limit);
+  };
+
   return (
-    <div className="wip-limit-editor">
-      <div className="input-group mb-2">
+    <div className={styles.wipEditor}>
+      <div className={styles.inputGroup}>
         <input
           type="number"
           min="0"
           value={limit}
           onChange={handleChange}
-          className="form-control"
-          placeholder="WIP Limit"
+          className={styles.wipInput}
+          placeholder="Limit zadań"
+          autoFocus
         />
+        <div className={styles.actions}>
+          <ActionButton onClick={handleSave} variant="success">
+            <i className="bi bi-check"></i>
+          </ActionButton>
+          <ActionButton onClick={onCancel} variant="default">
+            <i className="bi bi-x"></i>
+          </ActionButton>
+        </div>
       </div>
-      <div className="d-flex gap-2">
-        <ActionButton
-          onClick={() => onSave(limit)}
-          variant="success"
-        >
-          Zapisz
-        </ActionButton>
-        <ActionButton
-          onClick={onCancel}
-          variant="default"
-        >
-          Anuluj
-        </ActionButton>
-      </div>
+      <small className={styles.hint}>0 = brak limitu</small>
     </div>
   );
 };

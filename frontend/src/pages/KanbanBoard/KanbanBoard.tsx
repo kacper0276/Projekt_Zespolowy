@@ -10,12 +10,15 @@ import "react-toastify/dist/ReactToastify.css";
 import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 import { useKanbanBoard } from "../../hooks/useKanbanBoard";
 import Column from "../../components/Column/Column";
+import TaskItem from "../../components/TaskItem/TaskItem";
 import ActionButton from "../../components/ActionButton/ActionButton";
+import WipLimitEditor from "../../components/WipLimitEditor/WipLimitEditor";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
+import { IUser } from "../../interfaces/IUser";
 
 function KanbanBoard() {
   useWebsiteTitle("Kanban Board");
@@ -35,6 +38,10 @@ function KanbanBoard() {
   }>({});
   const [newTaskTitleMap, setNewTaskTitleMap] = useState<{
     [key: string]: string;
+  }>({});
+  // Dodajemy stan dla edycji limitów WIP
+  const [isEditingWipLimitMap, setIsEditingWipLimitMap] = useState<{
+    [columnId: string]: boolean;
   }>({});
 
   const {
@@ -286,6 +293,53 @@ function KanbanBoard() {
     toast.success("Wiersz został usunięty!");
   };
 
+  // Zaimplementowane funkcje do obsługi WIP limitów
+  const handleStartEditingWipLimit = (columnId: string) => {
+    setIsEditingWipLimitMap((prev) => ({
+      ...prev,
+      [columnId]: true,
+    }));
+  };
+
+  const handleCancelEditingWipLimit = (columnId: string) => {
+    setIsEditingWipLimitMap((prev) => ({
+      ...prev,
+      [columnId]: false,
+    }));
+  };
+
+  const handleWipLimitSave = (columnId: string, limit: number) => {
+    updateColumnWipLimit(columnId, limit);
+    handleCancelEditingWipLimit(columnId);
+    toast.success(`Limit zadań dla kolumny został zaktualizowany na ${limit === 0 ? "brak limitu" : limit}!`);
+  };
+
+  const isLimitReached = (columnId: string): boolean => {
+    const column = columns[columnId];
+    if (!column || column.wipLimit === 0) return false;
+    
+    // Calculate total tasks in the column across all rows
+    let totalTasks = 0;
+    rows.forEach(rowId => {
+      if (taskGrid[rowId] && taskGrid[rowId][columnId]) {
+        totalTasks += taskGrid[rowId][columnId].length;
+      }
+    });
+    
+    return totalTasks >= column.wipLimit;
+  };
+
+  // Helper function to count tasks in a column across all rows
+  const countTasksInColumn = (columnId: string): number => {
+    let count = 0;
+    rows.forEach(rowId => {
+      if (taskGrid[rowId] && taskGrid[rowId][columnId]) {
+        count += taskGrid[rowId][columnId].length;
+      }
+    });
+    return count;
+  };
+
   const onDragEnd = (result: DropResult) => {
     const { source, destination, type, draggableId } = result;
     if (!destination) return;
@@ -306,12 +360,17 @@ function KanbanBoard() {
     const destRowId = destination.droppableId.split("-")[0];
     const destColId = destination.droppableId.split("-")[1];
 
-    // Check WIP limit for different column moves
-    if (
-      sourceColId !== destColId &&
-      !checkWipLimitForMove(sourceColId, destColId)
-    ) {
-      return;
+    // Check if we're moving to a different column
+    if (sourceColId !== destColId) {
+      // Count current tasks in destination column
+      const destColumnTaskCount = countTasksInColumn(destColId);
+      
+      // Get destination column's WIP limit
+      const destColumn = columns[destColId];
+      if (destColumn && destColumn.wipLimit > 0 && destColumnTaskCount >= destColumn.wipLimit) {
+        toast.error(`Nie można dodać więcej zadań do kolumny ${destColumn.title} - limit WIP osiągnięty!`);
+        return;
+      }
     }
 
     // Create a new task grid
@@ -350,22 +409,27 @@ function KanbanBoard() {
 
         // Update columns for the database
         const updatedColumns = { ...columns };
-        const sourceColumn = { ...updatedColumns[sourceColId] };
-        const destColumn = { ...updatedColumns[destColId] };
-
+        
         // Find the task in the source column
-        const movedTask = sourceColumn.tasks.find(t => t.id === draggableId);
+        let movedTask = null;
+        for (const row of rows) {
+          if (taskGrid[row] && taskGrid[row][sourceColId]) {
+            movedTask = taskGrid[row][sourceColId].find(t => t.id === draggableId);
+            if (movedTask) break;
+          }
+        }
         
         if (movedTask) {
-          // Remove task from source column
-          sourceColumn.tasks = sourceColumn.tasks.filter(t => t.id !== draggableId);
+          // Update tasks in each column - important for WIP limit calculations
+          updatedColumns[sourceColId] = {
+            ...updatedColumns[sourceColId],
+            tasks: updatedColumns[sourceColId].tasks.filter(t => t.id !== draggableId),
+          };
           
-          // Add task to destination column
-          destColumn.tasks = [...destColumn.tasks, movedTask];
-          
-          // Update columns
-          updatedColumns[sourceColId] = sourceColumn;
-          updatedColumns[destColId] = destColumn;
+          updatedColumns[destColId] = {
+            ...updatedColumns[destColId],
+            tasks: [...updatedColumns[destColId].tasks, movedTask],
+          };
           
           setColumns(updatedColumns);
         }
@@ -376,14 +440,25 @@ function KanbanBoard() {
   };
 
   const onAddTaskToCell = (rowId: string, colId: string, taskTitle: string) => {
-    // Only add task if title is not empty and WIP limit allows
-    if (!taskTitle.trim() || !canAddTaskToColumn(colId)) return;
+    // Get current task count in the column to check WIP limit
+    const currentTaskCount = countTasksInColumn(colId);
+    const column = columns[colId];
+    
+    // Check if adding a task would exceed the WIP limit
+    if (column && column.wipLimit > 0 && currentTaskCount >= column.wipLimit) {
+      toast.error(`Nie można dodać więcej zadań do kolumny ${column.title} - limit WIP osiągnięty!`);
+      return;
+    }
+
+    // Only add task if title is not empty
+    if (!taskTitle.trim()) return;
 
     const newTaskId = `task-${Date.now()}`;
     const newTask = {
       id: newTaskId,
       content: taskTitle,
       name: taskTitle,
+      users: [], // Dodajemy pustą tablicę użytkowników
     };
 
     // Add task to the column for database
@@ -419,6 +494,38 @@ function KanbanBoard() {
     onDeleteTask(colId, taskId);
 
     setTaskGrid(newTaskGrid);
+  };
+
+  // Funkcja do aktualizacji danych zadania (nazwa i przypisani użytkownicy)
+  const handleTaskUpdate = (rowId: string, colId: string, taskId: string, updatedData: { name: string; users: IUser[] }) => {
+    // Aktualizuj dane w taskGrid
+    const newTaskGrid = { ...taskGrid };
+    
+    if (newTaskGrid[rowId] && newTaskGrid[rowId][colId]) {
+      const taskIndex = newTaskGrid[rowId][colId].findIndex(task => task.id === taskId);
+      
+      if (taskIndex !== -1) {
+        newTaskGrid[rowId][colId][taskIndex] = {
+          ...newTaskGrid[rowId][colId][taskIndex],
+          content: updatedData.name,
+          name: updatedData.name,
+          users: updatedData.users,
+        };
+      }
+    }
+    
+    setTaskGrid(newTaskGrid);
+    
+    // Aktualizacja w bazie danych
+    const actualTaskId = taskId.split("-")[1];
+    api.patch(`tasks/${actualTaskId}/assign-users`, { users: updatedData.users })
+      .then(() => {
+        toast.success("Zadanie zostało zaktualizowane!");
+      })
+      .catch((error) => {
+        console.error("Error updating task:", error);
+        toast.error("Nie udało się zaktualizować zadania.");
+      });
   };
 
   return (
@@ -518,6 +625,9 @@ function KanbanBoard() {
                     const column = columns[columnId];
                     if (!column) return null;
 
+                    // Count total tasks in this column across all rows
+                    const totalTasksInColumn = countTasksInColumn(columnId);
+
                     return (
                       <Draggable
                         key={column.id}
@@ -533,10 +643,39 @@ function KanbanBoard() {
                           >
                             <h3>{column.title}</h3>
                             <div className={styles.columnHeaderActions}>
-                              <span className={`badge ${styles.taskCount}`}>
-                                {column.tasks.length}
+                              <span className={`badge ${styles.taskCount} ${
+                                column.wipLimit > 0 && totalTasksInColumn >= column.wipLimit 
+                                  ? styles.limitReached 
+                                  : ""
+                              }`}>
+                                {totalTasksInColumn}
                                 {column.wipLimit > 0 && `/${column.wipLimit}`}
                               </span>
+                              
+                              {/* Dodajemy edytor limitów WIP */}
+                              <div className={styles.wipLimitSection}>
+                                {isEditingWipLimitMap[column.id] ? (
+                                  <WipLimitEditor
+                                    currentLimit={column.wipLimit}
+                                    onSave={(limit) => handleWipLimitSave(column.id, limit)}
+                                    onCancel={() => handleCancelEditingWipLimit(column.id)}
+                                  />
+                                ) : (
+                                  <div
+                                    className={`${styles.wipLimitDisplay} ${
+                                      column.wipLimit > 0 && totalTasksInColumn >= column.wipLimit 
+                                        ? styles.limitReached 
+                                        : ""
+                                    }`}
+                                    onClick={() => handleStartEditingWipLimit(column.id)}
+                                    title="Kliknij, aby edytować limit zadań"
+                                  >
+                                    <span>WIP: {column.wipLimit === 0 ? "Brak" : column.wipLimit}</span>
+                                    <i className="bi bi-pencil-fill ms-2"></i>
+                                  </div>
+                                )}
+                              </div>
+                              
                               {!["todo", "inprogress", "done"].includes(
                                 column.id
                               ) && (
@@ -611,6 +750,7 @@ function KanbanBoard() {
 
                     const isAddingTaskToThisCell = !!isAddingTaskMap[`${rowId}-${columnId}`];
                     const newTaskTitleForCell = newTaskTitleMap[`${rowId}-${columnId}`] || "";
+                    const columnHasSpace = column.wipLimit === 0 || countTasksInColumn(columnId) < column.wipLimit;
 
                     return (
                       <div key={`${rowId}-${columnId}`} className={styles.gridCell}>
@@ -621,34 +761,21 @@ function KanbanBoard() {
                               {...provided.droppableProps}
                               className={`${styles.cellContent} ${
                                 snapshot.isDraggingOver ? styles.draggingOver : ""
+                              } ${
+                                column.wipLimit > 0 && countTasksInColumn(columnId) >= column.wipLimit 
+                                  ? styles.limitReached 
+                                  : ""
                               }`}
                             >
                               {taskGrid[rowId][columnId].map((task, index) => (
-                                <Draggable
+                                <TaskItem
                                   key={task.id}
-                                  draggableId={task.id}
+                                  task={task}
                                   index={index}
-                                >
-                                  {(provided, snapshot) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      className={`${styles.taskItem} ${
-                                        snapshot.isDragging ? styles.dragging : ""
-                                      }`}
-                                    >
-                                      <div className={styles.taskContent}>{task.content}</div>
-                                      <button
-                                        onClick={() => onDeleteTaskFromCell(rowId, columnId, task.id)}
-                                        className={styles.deleteTaskButton}
-                                        title="Usuń zadanie"
-                                      >
-                                        <i className="bi bi-x-circle"></i>
-                                      </button>
-                                    </div>
-                                  )}
-                                </Draggable>
+                                  columnId={columnId}
+                                  onDeleteTask={() => onDeleteTaskFromCell(rowId, columnId, task.id)}
+                                  onTaskUpdate={(updatedData) => handleTaskUpdate(rowId, columnId, task.id, updatedData)}
+                                />
                               ))}
                               {provided.placeholder}
                             </div>
@@ -682,7 +809,7 @@ function KanbanBoard() {
                             </div>
                           </div>
                         ) : (
-                          canAddTaskToColumn(columnId) && (
+                          columnHasSpace && (
                             <button
                               onClick={() => handleStartAddingTask(rowId, columnId)}
                               className={styles.addTaskButton}
