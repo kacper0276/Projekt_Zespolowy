@@ -1,8 +1,10 @@
 import { BaseEntity } from '../../entities/base.entity';
 import { Role } from '../../enums/role.enum';
-import { Column, Entity, ManyToMany } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 import { Kanban } from '../../kanban/entities/kanban.entity';
 import { Task } from '../../tasks/entities/task.entity';
+import { Conversation } from 'src/conversations/entities/conversation.entity';
+import { Message } from 'src/messages/entities/message.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -35,4 +37,10 @@ export class User extends BaseEntity {
 
   @ManyToMany(() => Task, (task) => task.users)
   tasks: Task[];
+
+  @ManyToMany(() => Conversation, (conversation) => conversation.participants)
+  conversations: Conversation[];
+
+  @OneToMany(() => Message, (message) => message.sender)
+  messages: Message[];
 }
