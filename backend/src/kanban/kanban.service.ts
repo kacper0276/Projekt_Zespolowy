@@ -120,6 +120,7 @@ export class KanbanService {
           'tasks.column',
           'columns.tasks',
           'tasks.users',
+          'columns.tasks.users',
         ],
       });
 
