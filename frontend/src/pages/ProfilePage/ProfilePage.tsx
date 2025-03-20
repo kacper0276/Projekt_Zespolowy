@@ -27,8 +27,6 @@ const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"info" | "boards">("info");
   const [userBoards, setUserBoards] = useState<Board[]>([]);
   const [kanbanBoards, setKanbanBoards] = useState<IKanban[]>([]);
-  const [allUsers, setAllUsers] = useState<IUser[]>([]);
-  const [usersLoaded, setUsersLoaded] = useState<boolean>(false);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const api = useApiJson();
 
@@ -58,22 +56,32 @@ const ProfilePage: React.FC = () => {
 
   // Fetch all users only once when the component mounts
   useEffect(() => {
-    const fetchAllUsers = async () => {
-      if (usersLoaded) return; // Prevent fetching if already loaded
+    const fetchUserData = async () => {
+      // if (usersLoaded) return; // Prevent fetching if already loaded
 
       try {
-        const response = await api.get<ApiResponse<IUser[]>>("users/all");
+        const response = await api.get<ApiResponse<IUser>>(
+          `users/by-email?userEmail=${emailParam}`
+        );
+
         if (response.data && response.data.data) {
-          setAllUsers(response.data.data);
-          setUsersLoaded(true);
+          setProfileUser(response.data.data);
+
+          if (response.data.data.email === currentUser?.email) {
+            setIsOwnProfile(true);
+          } else {
+            setIsOwnProfile(false);
+          }
+
+          setUserBoards(dummyBoards);
+          fetchKanbanBoards();
         }
       } catch (error: any) {
         toast.error("Failed to fetch users list");
-        setUsersLoaded(true);
       }
     };
 
-    fetchAllUsers();
+    fetchUserData();
   }, []);
 
   const fetchKanbanBoards = async () => {
@@ -89,54 +97,6 @@ const ProfilePage: React.FC = () => {
       toast.error("Failed to fetch kanban boards");
     }
   };
-
-  // Load user profile after users are loaded or when we're viewing our own profile
-  useEffect(() => {
-    const loadUserProfile = async () => {
-      if (!currentUser) {
-        toast.error("You need to be logged in to view profiles");
-        navigate("/login");
-        return;
-      }
-
-      try {
-        if (!emailParam) {
-          setProfileUser(currentUser);
-          setIsOwnProfile(true);
-          setUserBoards(dummyBoards);
-          fetchKanbanBoards();
-          return;
-        }
-
-        if (emailParam === currentUser.email) {
-          setProfileUser(currentUser);
-          setIsOwnProfile(true);
-          setUserBoards(dummyBoards);
-          fetchKanbanBoards();
-          return;
-        }
-
-        if (usersLoaded) {
-          const targetUser = allUsers.find((user) => user.email === emailParam);
-
-          if (targetUser) {
-            setProfileUser(targetUser);
-            setIsOwnProfile(false);
-            setUserBoards(dummyBoards.slice(0, 2));
-          } else {
-            toast.error("User not found");
-            navigate("/profilePage");
-          }
-        }
-      } catch (error: any) {
-        toast.error(error.response?.data.message || "Failed to load profile");
-      }
-    };
-
-    if (!emailParam || emailParam === currentUser?.email || usersLoaded) {
-      loadUserProfile();
-    }
-  }, [currentUser, emailParam, usersLoaded, allUsers, navigate]);
 
   const handleFollowToggle = () => {
     setIsFollowing(!isFollowing);
@@ -185,7 +145,7 @@ const ProfilePage: React.FC = () => {
           <p className={styles.email}>{profileUser.email}</p>
           <p className={styles.userStatus}>
             Status:{" "}
-            {profileUser.isActivated ? (
+            {profileUser.isOnline ? (
               <span className={styles.activeStatus}>Active</span>
             ) : (
               <span className={styles.inactiveStatus}>Inactive</span>

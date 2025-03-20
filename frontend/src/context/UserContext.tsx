@@ -3,6 +3,7 @@ import { IUser } from "../interfaces/IUser";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import localStorageService from "../services/localStorage.service";
+import webSocketService from "../services/webSocket.service";
 
 interface UserContextType {
   user: IUser | null;
@@ -30,6 +31,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const logout = () => {
+    localStorageService.clear();
     setUser(null);
     setToken(null);
     setRefreshToken(null);
@@ -69,6 +71,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
     fetchUser();
   }, [token, location.pathname]);
+
+  useEffect(() => {
+    const user = localStorageService.getItem("user") as IUser;
+    if (user) {
+      webSocketService.connect(user?.id + "");
+    }
+  }, [location]);
 
   return (
     <UserContext.Provider

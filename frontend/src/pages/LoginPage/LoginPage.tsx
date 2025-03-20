@@ -8,6 +8,7 @@ import { ApiResponse } from "../../types/api.types";
 import { useUser } from "../../context/UserContext";
 import localStorageService from "../../services/localStorage.service";
 import { toast } from "react-toastify";
+import webSocketService from "../../services/webSocket.service";
 
 const LoginPage: React.FC = () => {
   useWebsiteTitle("Strona logowania");
@@ -43,6 +44,9 @@ const LoginPage: React.FC = () => {
       );
 
       toast.success(res.data.message);
+
+      const userId = loginDataRes.user.id;
+      webSocketService.connect(userId);
 
       navigate("/");
     } catch (err: any) {

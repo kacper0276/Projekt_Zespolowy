@@ -7,4 +7,5 @@ export interface IUser {
   id: number;
   firstName: string | null;
   lastname: string | null;
+  isOnline: boolean;
 }
