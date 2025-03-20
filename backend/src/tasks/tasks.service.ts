@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { CreateNewTaskDto } from './dto/create-new-task.dto';
 import { Kanban } from 'src/kanban/entities/kanban.entity';
 import { ColumnEntity } from 'src/columns/entities/column.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class TasksService {
@@ -18,6 +19,8 @@ export class TasksService {
     private readonly kanbanRepository: Repository<Kanban>,
     @InjectRepository(ColumnEntity)
     private readonly columnRepository: Repository<ColumnEntity>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async createNewTask(data: CreateNewTaskDto) {
@@ -56,5 +59,26 @@ export class TasksService {
       console.log(error);
       throw error;
     }
+  }
+
+  async assignUsersToTask(taskId: string, users: User[]) {
+    const task = await this.taskRepository.findOne({
+      where: { id: +taskId },
+      relations: ['users'],
+    });
+
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+
+    if (!users || users.length === 0) {
+      throw new NotFoundException('No users provided');
+    }
+
+    task.users = [...task.users, ...users];
+
+    const updatedTask = await this.taskRepository.save(task);
+
+    return updatedTask;
   }
 }
