@@ -27,136 +27,207 @@
   }
 }
 
-.inProgressInfo {
+.boardControls {
   display: flex;
-  justify-content: center;
-  margin-top: 10px;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
 
-.limitEditor {
-  min-width: 240px;
-}
-
-.inProgressCount {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  background-color: rgba(2, 166, 118, 0.2);
-  color: $inProgressColor;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  i {
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
-  }
-  
-  &:hover {
-    background-color: rgba(2, 166, 118, 0.3);
-    
-    i {
-      opacity: 1;
-    }
-  }
-  
-  &.limitReached {
-    background-color: rgba(255, 77, 77, 0.2);
-    color: $dangerColor;
-    
-    &:hover {
-      background-color: rgba(255, 77, 77, 0.3);
-    }
-  }
-}
-
-.limitInputGroup {
+.rowControls {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 8px;
 }
 
-.limitInput {
-  width: 60px;
-  padding: 6px 10px;
-  text-align: center;
+.addRowForm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rowInput {
   background-color: $cardBackground;
-  border: 1px solid $inProgressColor;
-  border-radius: 4px;
+  border: 1px solid $formGradientStart;
   color: $textColor;
+  padding: 10px;
+  border-radius: 4px;
+  min-width: 200px;
   
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(2, 166, 118, 0.3);
+    border-color: $formGradientEnd;
+    box-shadow: 0 0 0 2px rgba(165, 8, 46, 0.2);
   }
 }
 
-.limitButtons {
+.rowActions {
   display: flex;
-  gap: 4px;
+  gap: 10px;
 }
 
-.confirmLimitButton, .cancelLimitButton {
-  width: 30px;
-  height: 30px;
-  border-radius: 15px;
-  border: none;
+.gridContainer {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 10px;
+}
+
+.rowLabel {
+  width: 150px;
+  min-width: 150px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 4px;
+  margin-right: 10px;
+  font-weight: bold;
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  
-  i {
-    font-size: 14px;
-  }
+  justify-content: space-between;
 }
 
-.confirmLimitButton {
-  background-color: $successColor;
-  color: white;
-  
-  &:hover {
-    background-color: color.mix(black, $successColor, 10%);
-  }
-}
-
-.cancelLimitButton {
-  background-color: $dangerColor;
-  color: white;
-  
-  &:hover {
-    background-color: color.mix(black, $dangerColor, 10%);
-  }
-}
-
-.boardContainer {
-  overflow-x: auto;
-}
-
-.boardColumns {
+.columnHeaders {
   display: flex;
-  gap: 20px;
-  padding-bottom: 20px;
-  align-items: flex-start;
+  flex: 1;
+}
+
+.columnHeader {
+  width: 300px;
+  min-width: 300px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-right: 10px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  h3 {
+    margin: 0;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+}
+
+.columnHeaderActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gridRows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gridRow {
+  display: flex;
+  align-items: stretch;
+  min-height: 120px;
+}
+
+.rowCells {
+  display: flex;
+  flex: 1;
+}
+
+.cell {
+  width: 300px;
+  min-width: 300px;
+  background-color: $cardBackground;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-right: 10px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.cellContent {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cellActions {
+  margin-top: 10px;
+}
+
+.task {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 6px;
+  cursor: grab;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.taskContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.taskText {
+  word-break: break-word;
+}
+
+.deleteTaskButton, .deleteRowButton {
+  background: none;
+  border: none;
+  color: $dangerColor;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.deleteColumnButton {
+  background: none;
+  border: none;
+  color: $dangerColor;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .addColumnSection {
-  margin-left: 2px;
-  margin-top: 2px;
-  display: flex;
-  align-items: flex-start;
+  margin-left: 0;
+  width: 300px;
+  min-width: 300px;
+  margin-right: 10px;
 }
 
 .columnCreation {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 300px;
-  position: sticky;
-  right: 0;
-  top: 0;
+  width: 100%;
 }
 
 .columnInput {
@@ -173,18 +244,11 @@
   }
 }
 
-.addColumnButton {
-  background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
-  color: $textColor;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: opacity 0.3s;
-  
-  &:hover {
-    opacity: 0.8;
-  }
+.taskCount {
+  padding: 4px 8px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
 }
 
 .boardTitle {
