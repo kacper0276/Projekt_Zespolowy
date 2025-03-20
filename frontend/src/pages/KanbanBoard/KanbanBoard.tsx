@@ -23,7 +23,7 @@ function KanbanBoard() {
   const api = useApiJson();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTableName, setNewTableName] = useState("");
-  
+
   const {
     columns,
     setColumns,
@@ -41,32 +41,32 @@ function KanbanBoard() {
     updateTaskPosition,
     initializeBoard,
     boardData,
-    setBoardData
+    setBoardData,
   } = useKanbanBoard();
 
   useEffect(() => {
     let isMounted = true;
-    
+
     const fetchBoard = async () => {
       try {
-        const res = await api.get<ApiResponse<IKanban>>(`kanban/board/${params.id}`);
+        const res = await api.get<ApiResponse<IKanban>>(
+          `kanban/board/${params.id}`
+        );
         if (isMounted && res.data && res.data.data) {
           initializeBoard(res.data.data);
           setNewTableName(res.data.data.tableName);
-          console.log(res.data.data);
         }
       } catch (error) {
         console.error("Error fetching board data:", error);
       }
     };
-  
+
     fetchBoard();
-    
+
     return () => {
       isMounted = false;
     };
-
-  }, [params.id, initializeBoard]); 
+  }, [params.id, initializeBoard]);
 
   const handleEditTableName = () => {
     setIsEditingTitle(true);
@@ -84,16 +84,19 @@ function KanbanBoard() {
     }
 
     try {
-      const res = await api.patch<ApiResponse<IKanban>>(`kanban/change-table-name`, {
-        id: params.id,
-        tableName: newTableName.trim()
-      });
+      const res = await api.patch<ApiResponse<IKanban>>(
+        `kanban/change-table-name`,
+        {
+          id: params.id,
+          tableName: newTableName.trim(),
+        }
+      );
 
       if (res.data && res.data.data) {
         // Update the board data with the new name
         setBoardData({
           ...boardData!,
-          tableName: newTableName.trim()
+          tableName: newTableName.trim(),
         });
         toast.success("Nazwa tablicy została zaktualizowana!");
       }
@@ -136,7 +139,6 @@ function KanbanBoard() {
       return;
     }
 
-
     if (sourceColumn.id === destColumn.id) {
       // Moving within the same column
       const newTasks = Array.from(sourceColumn.tasks);
@@ -163,9 +165,13 @@ function KanbanBoard() {
       }));
 
       // Update task position in the database when moved between columns
-      const taskIdParts = draggableId.split('-');
-      const actualTaskId = taskIdParts[1]; 
-      updateTaskPosition(`task-${actualTaskId}`, source.droppableId, destination.droppableId);
+      const taskIdParts = draggableId.split("-");
+      const actualTaskId = taskIdParts[1];
+      updateTaskPosition(
+        `task-${actualTaskId}`,
+        source.droppableId,
+        destination.droppableId
+      );
     }
   };
 
@@ -184,13 +190,13 @@ function KanbanBoard() {
               className={styles.editTitleInput}
             />
             <div className={styles.editTitleActions}>
-              <i 
-                className="bi bi-check-lg" 
+              <i
+                className="bi bi-check-lg"
                 onClick={handleSaveTableName}
                 title="Zapisz"
               ></i>
-              <i 
-                className="bi bi-x-lg" 
+              <i
+                className="bi bi-x-lg"
                 onClick={handleCancelEdit}
                 title="Anuluj"
               ></i>
@@ -199,8 +205,8 @@ function KanbanBoard() {
         ) : (
           <div className={styles.boardTitle}>
             <h1>{boardData?.tableName || "Tablica Kanban"}</h1>
-            <i 
-              className="bi bi-pencil-square" 
+            <i
+              className="bi bi-pencil-square"
               onClick={handleEditTableName}
               title="Edytuj nazwę tablicy"
             ></i>

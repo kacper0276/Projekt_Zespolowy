@@ -126,8 +126,6 @@ export class KanbanService {
         throw new Error('Kanban board not found');
       }
 
-      console.log(kanban);
-
       return kanban;
     } catch (error) {
       console.log(error);

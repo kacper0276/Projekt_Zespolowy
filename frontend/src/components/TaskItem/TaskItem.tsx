@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { Draggable } from '@hello-pangea/dnd';
-import styles from './TaskItem.module.scss';
-import TaskModal from '../TaskModal/TaskModal';
-import { IUser } from '../../interfaces/IUser';
+import React, { useState } from "react";
+import { Draggable } from "@hello-pangea/dnd";
+import styles from "./TaskItem.module.scss";
+import TaskModal from "../TaskModal/TaskModal";
+import { IUser } from "../../interfaces/IUser";
+import { useApiJson } from "../../config/api";
+import { useParams } from "react-router-dom";
 
 interface ItemProps {
   task: {
@@ -26,34 +28,40 @@ const TaskItem: React.FC<ItemProps> = ({
   columnId,
   onDeleteTask,
 }) => {
+  const api = useApiJson();
+  const params = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [taskText, setTaskText] = useState(task.name || task.content || '');
+  const [taskText, setTaskText] = useState(task.name || task.content || "");
   const [taskUsers, setTaskUsers] = useState<IUser[]>(task.users || []);
-  
+
   // Ensure uniqueness by combining columnId and task id
   const uniqueDraggableId = `${columnId}-${task.id}-${index}`;
-  
+
   const handleTaskClick = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest(`.${styles.deleteTaskButton}`)) {
       return;
     }
     setIsModalOpen(true);
   };
-  
+
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  
+
   const handleTaskUpdate = (updatedTask: { name: string; users: IUser[] }) => {
+    console.log(updatedTask);
+    console.log(task.id.split("-")[1]);
+    console.log(params.id);
+
     setTaskText(updatedTask.name);
     setTaskUsers(updatedTask.users || []);
   };
-  
+
   const getUserInitials = (email: string): string => {
-    if (!email) return '??';
+    if (!email) return "??";
     return email.substring(0, 2).toUpperCase();
   };
-  
+
   return (
     <>
       <Draggable draggableId={uniqueDraggableId} index={index}>
@@ -75,7 +83,7 @@ const TaskItem: React.FC<ItemProps> = ({
                         <div
                           key={index}
                           className={styles.userAvatar}
-                          title={user.email || 'Unknown user'}
+                          title={user.email || "Unknown user"}
                         >
                           {getUserInitials(user.email)}
                         </div>
