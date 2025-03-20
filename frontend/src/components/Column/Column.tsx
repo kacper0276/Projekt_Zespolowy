@@ -1,5 +1,5 @@
-import React from "react";
-import { Droppable } from "@hello-pangea/dnd";
+import React, { useState } from "react";
+import { Droppable, Draggable } from "@hello-pangea/dnd";
 import styles from "./Column.module.scss";
 import { useKanbanColumn } from "../../hooks/useKanbanColumn";
 import ActionButton from "../ActionButton/ActionButton";
@@ -13,31 +13,42 @@ interface ColumnProps {
     tasks: any[];
     wipLimit: number;
   };
+  rowId: string;
+  cellTasks: any[];
+  isAddingTask: boolean;
+  newTaskTitle: string;
   onAddTask: (columnId: string, taskTitle: string) => void;
   onDeleteTask: (columnId: string, taskId: string) => void;
   onDeleteColumn: () => void;
   canDeleteColumn: boolean;
   updateWipLimit: (columnId: string, limit: number) => void;
   canAddTask: boolean;
+  onStartAddingTask: () => void;
+  onCancelAddingTask: () => void;
+  onTaskTitleChange: (value: string) => void;
+  onAddTaskSubmit: () => void;
 }
 
 const Column: React.FC<ColumnProps> = ({
   col,
+  rowId,
+  cellTasks,
+  isAddingTask,
+  newTaskTitle,
   onAddTask,
   onDeleteTask,
   onDeleteColumn,
   canDeleteColumn,
   updateWipLimit,
   canAddTask,
+  onStartAddingTask,
+  onCancelAddingTask,
+  onTaskTitleChange,
+  onAddTaskSubmit
 }) => {
   const {
-    isAddingTask,
-    setIsAddingTask,
-    newTaskTitle,
-    setNewTaskTitle,
     isEditingWipLimit,
     setIsEditingWipLimit,
-    handleAddTask,
     handleWipLimitSave,
     isLimitReached,
   } = useKanbanColumn({
@@ -47,26 +58,88 @@ const Column: React.FC<ColumnProps> = ({
   });
 
   return (
-    <div className={styles.column}>
-      <div className={styles.columnHeader}>
-        <h3>{col.title}</h3>
-        <div className={styles.columnHeaderActions}>
-          <span className={`badge ${styles.taskCount}`}>
-            {col.tasks.length}
-            {col.wipLimit > 0 && `/${col.wipLimit}`}
-          </span>
-          {canDeleteColumn && (
-            <button
-              onClick={onDeleteColumn}
-              className={styles.deleteColumnButton}
-              title="Usuń kolumnę"
-            >
-              <i className="bi bi-x-circle-fill"></i>
-            </button>
-          )}
-        </div>
+    <div className={styles.cell}>
+      <Droppable droppableId={`${rowId}-${col.id}`}>
+        {(provided) => (
+          <div
+            className={styles.cellContent}
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            {cellTasks.map((task, index) => (
+              <Draggable
+                key={`${rowId}-${col.id}-${task.id}-${index}`}
+                draggableId={`${rowId}-${col.id}-${task.id}-${index}`}
+                index={index}
+              >
+                {(providedTask) => (
+                  <div
+                    ref={providedTask.innerRef}
+                    {...providedTask.draggableProps}
+                    {...providedTask.dragHandleProps}
+                    className={styles.task}
+                  >
+                    <div className={styles.taskContent}>
+                      <span className={styles.taskText}>
+                        {task.name || task.content}
+                      </span>
+                      <button
+                        onClick={() => onDeleteTask(col.id, task.id)}
+                        className={styles.deleteTaskButton}
+                        title="Usuń zadanie"
+                      >
+                        <i className="bi bi-x-circle"></i>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+
+      <div className={styles.cellActions}>
+        {isAddingTask ? (
+          <div className={styles.inlineTaskInput}>
+            <input
+              type="text"
+              value={newTaskTitle}
+              onChange={(e) => onTaskTitleChange(e.target.value)}
+              placeholder="Wpisz tytuł zadania"
+              className={styles.taskInput}
+              autoFocus
+            />
+            <div className={styles.confirmTaskActions}>
+              <ActionButton
+                onClick={onAddTaskSubmit}
+                variant="success"
+                disabled={!newTaskTitle.trim()}
+              >
+                Dodaj
+              </ActionButton>
+              <ActionButton
+                onClick={onCancelAddingTask}
+                variant="default"
+              >
+                Anuluj
+              </ActionButton>
+            </div>
+          </div>
+        ) : (
+          <ActionButton
+            onClick={onStartAddingTask}
+            variant="primary"
+            fullWidth
+            disabled={!canAddTask}
+          >
+            Dodaj zadanie
+          </ActionButton>
+        )}
       </div>
 
+      {/* WIP Limit editor (optional) */}
       <div className={styles.wipLimitSection}>
         {isEditingWipLimit ? (
           <WipLimitEditor
@@ -87,65 +160,6 @@ const Column: React.FC<ColumnProps> = ({
           </div>
         )}
       </div>
-
-      <div className={styles.columnActions}>
-        <ActionButton
-          onClick={() => setIsAddingTask(!isAddingTask)}
-          disabled={!canAddTask}
-          variant="primary"
-          fullWidth
-        >
-          Dodaj zadanie
-        </ActionButton>
-      </div>
-
-      {isAddingTask && (
-        <div className={styles.inlineTaskInput}>
-          <input
-            type="text"
-            value={newTaskTitle}
-            onChange={(e) => setNewTaskTitle(e.target.value)}
-            placeholder="Wpisz tytuł zadania"
-            className={`form-control ${styles.taskInput}`}
-          />
-          <div className={styles.confirmTaskActions}>
-            <ActionButton
-              onClick={handleAddTask}
-              variant="success"
-              disabled={!newTaskTitle.trim()}
-            >
-              Dodaj
-            </ActionButton>
-            <ActionButton
-              onClick={() => setIsAddingTask(false)}
-              variant="default"
-            >
-              Anuluj
-            </ActionButton>
-          </div>
-        </div>
-      )}
-
-      <Droppable droppableId={col.id}>
-        {(provided) => (
-          <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            className={styles.columnContent}
-          >
-            {col.tasks.map((task, index) => (
-              <TaskItem
-                key={`${col.id}-${task.id}-${index}`}
-                task={task}
-                index={index}
-                columnId={col.id}
-                onDeleteTask={() => onDeleteTask(col.id, task.id)}
-              />
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
     </div>
   );
 };

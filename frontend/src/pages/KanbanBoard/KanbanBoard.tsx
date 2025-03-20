@@ -150,6 +150,7 @@ function KanbanBoard() {
   const handleEditTableName = () => {
     setIsEditingTitle(true);
   };
+  
   const handleStartAddingTask = (rowId: string, colId: string) => {
     setIsAddingTaskMap((prev) => ({
       ...prev,
@@ -396,6 +397,7 @@ function KanbanBoard() {
     newTaskGrid[rowId][colId] = [...newTaskGrid[rowId][colId], newTask];
     setTaskGrid(newTaskGrid);
   };
+
   const onDeleteTaskFromCell = (
     rowId: string,
     colId: string,
@@ -604,116 +606,24 @@ function KanbanBoard() {
                     }
 
                     return (
-                      <Droppable
+                      <Column
                         key={`${rowId}-${columnId}`}
-                        droppableId={`${rowId}-${columnId}`}
-                      >
-                        {(provided) => (
-                          <div
-                            className={styles.cell}
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
-                          >
-                            <div className={styles.cellContent}>
-                              {taskGrid[rowId][columnId].map((task, index) => (
-                                <Draggable
-                                  key={`${rowId}-${columnId}-${task.id}-${index}`}
-                                  draggableId={`${rowId}-${columnId}-${task.id}-${index}`}
-                                  index={index}
-                                >
-                                  {(providedTask) => (
-                                    <div
-                                      ref={providedTask.innerRef}
-                                      {...providedTask.draggableProps}
-                                      {...providedTask.dragHandleProps}
-                                      className={styles.task}
-                                    >
-                                      <div className={styles.taskContent}>
-                                        <span className={styles.taskText}>
-                                          {task.name || task.content}
-                                        </span>
-                                        <button
-                                          onClick={() =>
-                                            onDeleteTaskFromCell(
-                                              rowId,
-                                              columnId,
-                                              task.id
-                                            )
-                                          }
-                                          className={styles.deleteTaskButton}
-                                          title="Usuń zadanie"
-                                        >
-                                          <i className="bi bi-x-circle"></i>
-                                        </button>
-                                      </div>
-                                    </div>
-                                  )}
-                                </Draggable>
-                              ))}
-                              {provided.placeholder}
-                            </div>
-                            <div className={styles.cellActions}>
-                              {isAddingTaskMap[`${rowId}-${columnId}`] ? (
-                                <div className={styles.inlineTaskInput}>
-                                  <input
-                                    type="text"
-                                    value={
-                                      newTaskTitleMap[`${rowId}-${columnId}`] ||
-                                      ""
-                                    }
-                                    onChange={(e) =>
-                                      handleTaskTitleChange(
-                                        rowId,
-                                        columnId,
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder="Wpisz tytuł zadania"
-                                    className={styles.taskInput}
-                                    autoFocus
-                                  />
-                                  <div className={styles.confirmTaskActions}>
-                                    <ActionButton
-                                      onClick={() =>
-                                        handleAddTaskSubmit(rowId, columnId)
-                                      }
-                                      variant="success"
-                                      disabled={
-                                        !(
-                                          newTaskTitleMap[
-                                            `${rowId}-${columnId}`
-                                          ] || ""
-                                        ).trim()
-                                      }
-                                    >
-                                      Dodaj
-                                    </ActionButton>
-                                    <ActionButton
-                                      onClick={() =>
-                                        handleCancelAddingTask(rowId, columnId)
-                                      }
-                                      variant="default"
-                                    >
-                                      Anuluj
-                                    </ActionButton>
-                                  </div>
-                                </div>
-                              ) : (
-                                <ActionButton
-                                  onClick={() =>
-                                    handleStartAddingTask(rowId, columnId)
-                                  }
-                                  variant="primary"
-                                  fullWidth
-                                  disabled={!canAddTaskToColumn(columnId)}
-                                >
-                                  Dodaj zadanie
-                                </ActionButton>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </Droppable>
+                        col={column}
+                        rowId={rowId}
+                        cellTasks={taskGrid[rowId][columnId]}
+                        isAddingTask={!!isAddingTaskMap[`${rowId}-${columnId}`]}
+                        newTaskTitle={newTaskTitleMap[`${rowId}-${columnId}`] || ""}
+                        onAddTask={onAddTask}
+                        onDeleteTask={(colId, taskId) => onDeleteTaskFromCell(rowId, colId, taskId)}
+                        onDeleteColumn={() => deleteColumn(columnId)}
+                        canDeleteColumn={!["todo", "inprogress", "done"].includes(columnId)}
+                        updateWipLimit={updateColumnWipLimit}
+                        canAddTask={canAddTaskToColumn(columnId)}
+                        onStartAddingTask={() => handleStartAddingTask(rowId, columnId)}
+                        onCancelAddingTask={() => handleCancelAddingTask(rowId, columnId)}
+                        onTaskTitleChange={(value) => handleTaskTitleChange(rowId, columnId, value)}
+                        onAddTaskSubmit={() => handleAddTaskSubmit(rowId, columnId)}
+                      />
                     );
                   })}
                 </div>
