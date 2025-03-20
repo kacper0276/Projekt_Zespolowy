@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsDate, IsNumber, IsString } from 'class-validator';
 
 export class CreateNewTaskDto {
   @IsString()
@@ -9,4 +9,16 @@ export class CreateNewTaskDto {
 
   @IsNumber()
   columnId: number;
+
+  @IsString()
+  status: string;
+
+  @IsString()
+  priority: string;
+
+  @IsString()
+  description: string;
+
+  @IsDate()
+  deadline: Date;
 }

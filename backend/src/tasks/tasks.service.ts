@@ -34,15 +34,16 @@ export class TasksService {
         where: { id: data.columnId },
         relations: ['tasks'],
       });
+
       if (!kanban) {
         throw new NotFoundException('Tablica Kanban nie została znaleziona');
       }
 
       const task = new Task();
       task.name = data.name;
-      task.description = '';
-      task.status = '';
-      task.priority = '';
+      task.description = data.description;
+      task.status = data.status;
+      task.priority = data.priority;
       task.column = column;
 
       const savedTask = await this.taskRepository.save(task);

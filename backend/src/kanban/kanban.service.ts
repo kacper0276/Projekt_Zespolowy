@@ -113,12 +113,20 @@ export class KanbanService {
     try {
       const kanban = await this.kanbanRepository.findOne({
         where: { id },
-        relations: ['users', 'columns', 'statuses', 'tasks'],
+        relations: [
+          'users',
+          'columns',
+          'statuses',
+          'tasks.column',
+          'columns.tasks',
+        ],
       });
 
       if (!kanban) {
         throw new Error('Kanban board not found');
       }
+
+      console.log(kanban);
 
       return kanban;
     } catch (error) {
