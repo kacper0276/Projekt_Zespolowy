@@ -4,6 +4,7 @@ import { IKanban } from "../interfaces/IKanban";
 import { useApiJson } from "../config/api";
 import { ApiResponse } from "../types/api.types";
 import { ITask } from "../interfaces/ITask";
+import { IColumnEntity } from "../interfaces/IColumnEntity";
 
 interface ColumnState {
   [key: string]: {
@@ -86,8 +87,18 @@ export function useKanbanBoard() {
   };
 
   // Add a new column
-  const addColumn = () => {
+  const addColumn = async () => {
     if (!newColumnTitle.trim()) return;
+
+    console.log(newColumnTitle);
+    console.log(boardData?.id);
+
+    const newColumnResponse = await api.post<ApiResponse<IColumnEntity>>(
+      `columns/${boardData?.id}`,
+      {
+        name: newColumnTitle,
+      }
+    );
 
     const columnId = newColumnTitle.toLowerCase().replace(/\s+/g, "");
 
@@ -97,7 +108,7 @@ export function useKanbanBoard() {
     }
 
     const newColumn = {
-      id: columnId,
+      id: newColumnResponse.data.data?.id + "",
       title: newColumnTitle,
       tasks: [],
       wipLimit: 0,
@@ -112,8 +123,6 @@ export function useKanbanBoard() {
     setNewColumnTitle("");
 
     toast.success(`Dodano kolumnę ${newColumnTitle}`);
-
-    // Here you would also create this column on the backend
   };
 
   // Delete a column
