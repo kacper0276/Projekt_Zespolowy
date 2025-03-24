@@ -116,7 +116,7 @@ function KanbanBoard() {
     }
   };
 
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = async (result: DropResult) => {
     const { source, destination, type, draggableId } = result;
     if (!destination) return;
 
@@ -127,6 +127,17 @@ function KanbanBoard() {
       const [reorderedColumn] = newColumnOrder.splice(source.index, 1);
       newColumnOrder.splice(destination.index, 0, reorderedColumn);
       setColumnOrder(newColumnOrder);
+
+      // TOMEK [*] za to ale muszę XD
+      const newColumnOrderWithNames = newColumnOrder.map((columnId) => {
+        const column = columns[columnId];
+        return column ? column.title : columnId;
+      });
+
+      // TODO: Dodać notyfikację odnośnie tego, że kolejność została zmieniona
+      const res = await api.patch(`columns/edit-order/${params.id}`, {
+        columns: newColumnOrderWithNames,
+      });
       return;
     }
 
