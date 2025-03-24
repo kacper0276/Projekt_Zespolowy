@@ -74,7 +74,7 @@ export class KanbanService {
     await this.kanbanRepository.save(kanban);
 
     const defaultColumns = ['ToDo', 'In Progress', 'Done'].map((name, index) =>
-      this.columnRepository.create({ name, order: index, kanban }),
+      this.columnRepository.create({ name, order: index - 3, kanban }),
     );
 
     const customColumns = createKanbanDto.columns.map((col) =>
