@@ -24,7 +24,9 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     ports:
-      - "3001:3001"
+      - "3000:3000"
+    depends_on:
+      - mysql
     networks:
       - appNetwork
     dns:
@@ -35,6 +37,26 @@ services:
       - ./backend:/app
       - /app/node_modules
 
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: projekt_zespolowy
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3307:3306"
+    networks:
+      - appNetwork
+    volumes:
+      - mysql_data:/var/lib/mysql
+    dns:
+      - 8.8.8.8
+
 networks:
   appNetwork:
     driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
