@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ColumnEntity } from './entities/column.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -38,5 +38,37 @@ export class ColumnsService {
     });
 
     return await this.columnRepository.save(column);
+  }
+
+  async updateColumnOrder(
+    kanbanId: string,
+    columnNames: string[],
+  ): Promise<void> {
+    const kanban = await this.kanbanRepository.findOne({
+      where: { id: +kanbanId },
+      relations: ['columns'],
+    });
+
+    if (!kanban) {
+      throw new NotFoundException('Kanban not found');
+    }
+
+    const columnsToUpdate = kanban.columns.filter((column) =>
+      columnNames.includes(column.name),
+    );
+
+    if (columnsToUpdate.length !== columnNames.length) {
+      throw new NotFoundException('Some columns not found');
+    }
+
+    columnsToUpdate.sort((a, b) => {
+      return columnNames.indexOf(a.name) - columnNames.indexOf(b.name);
+    });
+
+    columnsToUpdate.forEach((column, index) => {
+      column.order = index;
+    });
+
+    await this.columnRepository.save(columnsToUpdate);
   }
 }
