@@ -10,6 +10,7 @@ import { CreateNewTaskDto } from './dto/create-new-task.dto';
 import { Kanban } from 'src/kanban/entities/kanban.entity';
 import { ColumnEntity } from 'src/columns/entities/column.entity';
 import { User } from 'src/users/entities/user.entity';
+import { EditTaskDescriptionDto } from './dto/edit-task-description.dto';
 
 @Injectable()
 export class TasksService {
@@ -76,6 +77,22 @@ export class TasksService {
     }
 
     task.users = [...task.users, ...users];
+
+    const updatedTask = await this.taskRepository.save(task);
+
+    return updatedTask;
+  }
+
+  async editTaskDescription(taskId: string, data: EditTaskDescriptionDto) {
+    const task = await this.taskRepository.findOne({
+      where: { id: +taskId },
+    });
+
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+
+    task.description = data.description;
 
     const updatedTask = await this.taskRepository.save(task);
 

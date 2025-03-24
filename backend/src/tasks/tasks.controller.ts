@@ -14,6 +14,7 @@ import { TasksService } from './tasks.service';
 import { CreateNewTaskDto } from './dto/create-new-task.dto';
 import { Response } from 'express';
 import { AssignUserToTaskDto } from './dto/assign-user-to-task.dto';
+import { EditTaskDescriptionDto } from './dto/edit-task-description.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -63,6 +64,32 @@ export class TasksController {
     } catch (error) {
       if (error instanceof BadRequestException) {
         response.status(HttpStatus.BAD_REQUEST).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'internal-server-error',
+        });
+      }
+    }
+  }
+
+  @Patch(':taskId/edit-description')
+  async editTaskDescription(
+    @Param('taskId') taskId: string,
+    @Body() data: EditTaskDescriptionDto,
+    @Res() response: Response,
+  ) {
+    try {
+      const result = await this.tasksService.editTaskDescription(taskId, data);
+
+      response.status(HttpStatus.OK).send({
+        message: 'changed-task-description',
+        data: result,
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
           message: error.message,
         });
       } else {
