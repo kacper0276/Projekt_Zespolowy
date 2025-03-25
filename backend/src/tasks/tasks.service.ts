@@ -12,6 +12,7 @@ import { ColumnEntity } from 'src/columns/entities/column.entity';
 import { User } from 'src/users/entities/user.entity';
 import { EditTaskDescriptionDto } from './dto/edit-task-description.dto';
 import { ChangeColumnDto } from './dto/change-column.dto';
+import { ChangeTasksOrderDto } from './dto/change-tasks-order.dto';
 
 @Injectable()
 export class TasksService {
@@ -113,6 +114,20 @@ export class TasksService {
     task.column = column;
 
     return await this.taskRepository.save(task);
+  }
+
+  async changeTasksOrder(data: ChangeTasksOrderDto) {
+    for (const taskOrder in data.tasksIds) {
+      const taskEntity = await this.taskRepository.findOne({
+        where: { id: data.tasksIds[taskOrder] },
+      });
+
+      taskEntity.order = +taskOrder;
+
+      await this.taskRepository.save(taskEntity);
+    }
+
+    return 'Tasks order changed successfully';
   }
 
   async deleteTask(taskId: string) {

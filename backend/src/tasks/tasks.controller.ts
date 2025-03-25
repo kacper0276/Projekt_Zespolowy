@@ -16,6 +16,7 @@ import { Response } from 'express';
 import { AssignUserToTaskDto } from './dto/assign-user-to-task.dto';
 import { EditTaskDescriptionDto } from './dto/edit-task-description.dto';
 import { ChangeColumnDto } from './dto/change-column.dto';
+import { ChangeTasksOrderDto } from './dto/change-tasks-order.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -113,6 +114,24 @@ export class TasksController {
       response.status(HttpStatus.OK).send({
         message: 'changed-task-column',
         data: res,
+      });
+    } catch (error) {
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: 'internal-server-error',
+      });
+    }
+  }
+
+  @Patch('change-order')
+  async changeTasksOrder(
+    @Body() data: ChangeTasksOrderDto,
+    @Res() response: Response,
+  ) {
+    try {
+      await this.tasksService.changeTasksOrder(data);
+
+      response.status(HttpStatus.OK).send({
+        message: 'changed-tasks-order',
       });
     } catch (error) {
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
