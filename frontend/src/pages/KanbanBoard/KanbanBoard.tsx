@@ -159,6 +159,12 @@ function KanbanBoard() {
       const [removed] = newTasks.splice(source.index, 1);
       newTasks.splice(destination.index, 0, removed);
 
+      console.log(newTasks);
+
+      const tasksIds = newTasks.map((task) => task.dbId);
+
+      api.patch("tasks/change-order", { tasksIds });
+
       setColumns((prev) => ({
         ...prev,
         [sourceColumn.id]: { ...sourceColumn, tasks: newTasks },
