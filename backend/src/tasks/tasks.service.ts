@@ -11,6 +11,7 @@ import { Kanban } from 'src/kanban/entities/kanban.entity';
 import { ColumnEntity } from 'src/columns/entities/column.entity';
 import { User } from 'src/users/entities/user.entity';
 import { EditTaskDescriptionDto } from './dto/edit-task-description.dto';
+import { ChangeColumnDto } from './dto/change-column.dto';
 
 @Injectable()
 export class TasksService {
@@ -97,6 +98,21 @@ export class TasksService {
     const updatedTask = await this.taskRepository.save(task);
 
     return updatedTask;
+  }
+
+  async changeTaskColumn(taskId: string, data: ChangeColumnDto) {
+    const task = await this.taskRepository.findOne({
+      where: { id: +taskId },
+      relations: ['column'],
+    });
+
+    const column = await this.columnRepository.findOne({
+      where: { id: data.columnId },
+    });
+
+    task.column = column;
+
+    return await this.taskRepository.save(task);
   }
 
   async deleteTask(taskId: string) {

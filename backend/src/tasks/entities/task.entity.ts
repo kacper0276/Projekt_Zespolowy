@@ -22,6 +22,9 @@ export class Task extends BaseEntity {
   @Column({ nullable: true })
   deadline: Date;
 
+  @Column({ default: -1 })
+  order: number;
+
   @ManyToMany(() => User)
   @JoinTable()
   users: User[];
