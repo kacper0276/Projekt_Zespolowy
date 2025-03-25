@@ -41,19 +41,21 @@ export function useKanbanBoard() {
       initialColumns[columnId] = {
         id: columnId,
         title: column.name,
-        tasks: (column.tasks || []).map((task) => ({
-          id: `task-${task.id || Date.now()}-${Math.random()
-            .toString(36)
-            .substr(2, 9)}`,
-          content: task.name,
-          name: task.name,
-          description: task.description,
-          status: task.status,
-          priority: task.priority,
-          deadline: task.deadline,
-          users: task.users || [],
-          dbId: task.id,
-        })),
+        tasks: (column.tasks || [])
+          .sort((a, b) => a.order - b.order)
+          .map((task) => ({
+            id: `task-${task.id || Date.now()}-${Math.random()
+              .toString(36)
+              .substr(2, 9)}`,
+            content: task.name,
+            name: task.name,
+            description: task.description,
+            status: task.status,
+            priority: task.priority,
+            deadline: task.deadline,
+            users: task.users || [],
+            dbId: task.id,
+          })),
         wipLimit: column.maxTasks || 0,
         columnId: column.id,
       };
