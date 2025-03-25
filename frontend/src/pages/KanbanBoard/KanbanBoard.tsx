@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
+import { ITask } from "../../interfaces/ITask";
 
 function KanbanBoard() {
   useWebsiteTitle("Kanban Board");
@@ -145,6 +146,8 @@ function KanbanBoard() {
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
 
+    console.log(sourceColumn, destColumn);
+
     // Check WIP limit for different column moves
     if (!checkWipLimitForMove(source.droppableId, destination.droppableId)) {
       return;
@@ -167,6 +170,8 @@ function KanbanBoard() {
 
       const [removed] = sourceTasks.splice(source.index, 1);
 
+      console.log(removed.dbId);
+
       destTasks.splice(destination.index, 0, removed);
 
       setColumns((prev) => ({
@@ -174,6 +179,10 @@ function KanbanBoard() {
         [sourceColumn.id]: { ...sourceColumn, tasks: sourceTasks },
         [destColumn.id]: { ...destColumn, tasks: destTasks },
       }));
+
+      api.patch<ApiResponse<ITask>>(`tasks/${removed.dbId}/change-column`, {
+        columnId: destColumn.columnId,
+      });
 
       // Update task position in the database when moved between columns
       const taskIdParts = draggableId.split("-");

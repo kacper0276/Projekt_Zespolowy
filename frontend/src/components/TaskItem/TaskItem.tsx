@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Draggable } from "@hello-pangea/dnd";
 import styles from "./TaskItem.module.scss";
 import TaskModal from "../TaskModal/TaskModal";
@@ -63,10 +63,6 @@ const TaskItem: React.FC<ItemProps> = ({
     if (!email) return "??";
     return email.substring(0, 2).toUpperCase();
   };
-
-  useEffect(() => {
-    console.log(task);
-  }, []);
 
   return (
     <>

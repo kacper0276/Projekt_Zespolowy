@@ -9,6 +9,7 @@ export interface ITask extends IBaseEntity {
   status: string;
   priority: string;
   deadline: Date;
+  order: number;
   users: IUser[];
   column: IColumnEntity;
   toDoList: IToDoList;
