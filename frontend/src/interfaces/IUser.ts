@@ -8,4 +8,5 @@ export interface IUser {
   firstName: string | null;
   lastname: string | null;
   isOnline: boolean;
+  maxTasks: number;
 }

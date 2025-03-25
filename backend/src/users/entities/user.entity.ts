@@ -32,6 +32,9 @@ export class User extends BaseEntity {
   @Column({ default: false })
   isOnline: boolean;
 
+  @Column({ default: 0 })
+  maxTasks: number;
+
   @ManyToMany(() => Kanban, (kanban) => kanban.users)
   kanbans: Kanban[];
 
