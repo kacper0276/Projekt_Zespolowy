@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ColumnEntity } from './entities/column.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { Kanban } from 'src/kanban/entities/kanban.entity';
 import { CreateColumnDto } from './dto/create-column.dto';
 
@@ -91,13 +91,20 @@ export class ColumnsService {
       relations: ['tasks'],
     });
 
+    console.log(column);
+
     if (!column) {
       throw new NotFoundException('Column not found');
     }
 
     const previousColumn = await this.columnRepository.findOne({
-      where: { order: column.order - 1 },
+      where: {
+        order: LessThan(column.order),
+      },
       relations: ['tasks'],
+      order: {
+        order: 'DESC',
+      },
     });
 
     if (previousColumn) {
