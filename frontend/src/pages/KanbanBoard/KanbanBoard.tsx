@@ -136,7 +136,7 @@ function KanbanBoard() {
       });
 
       // TODO: Dodać notyfikację odnośnie tego, że kolejność została zmieniona
-      const res = await api.patch(`columns/edit-order/${params.id}`, {
+      await api.patch(`columns/edit-order/${params.id}`, {
         columns: newColumnOrderWithNames,
       });
       return;
@@ -267,7 +267,9 @@ function KanbanBoard() {
                             col={column}
                             onAddTask={onAddTask}
                             onDeleteTask={onDeleteTask}
-                            onDeleteColumn={() => deleteColumn(column.id)}
+                            onDeleteColumn={() =>
+                              deleteColumn(column.id, column.columnId)
+                            }
                             canDeleteColumn={
                               !["todo", "inprogress", "done"].includes(
                                 column.id

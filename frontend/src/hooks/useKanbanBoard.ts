@@ -128,7 +128,10 @@ export function useKanbanBoard() {
   };
 
   // Delete a column
-  const deleteColumn = (columnId: string) => {
+  const deleteColumn = (
+    columnId: string,
+    columnFromDb: number | null = null
+  ) => {
     if (["todo", "inprogress", "done"].includes(columnId)) {
       toast.error("Nie można usunąć domyślnej kolumny!");
       return;
@@ -136,6 +139,10 @@ export function useKanbanBoard() {
 
     const updatedColumns = { ...columns };
     delete updatedColumns[columnId];
+
+    // TODO: Dopisać notyfikację ale dopiero po usunięciu z bazy (status 200)
+    // TODO: Napisać tak, jak na backendzie, że te taski przeskakują do kolumny poprzedniej (Na backendzie już tak jest)
+    api.delete(`columns/${columnFromDb}`);
 
     setColumns(updatedColumns);
     setColumnOrder((prev) => prev.filter((id) => id !== columnId));
