@@ -8,12 +8,28 @@ import {
   Post,
   Query,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AssignUserDto } from './dto/assign-user.dto';
 import { KanbanService } from './kanban.service';
 import { CreateKanbanDto } from './dto/create-kanban.dto';
 import { Response } from 'express';
 import { ChangeTableNameDto } from './dto/change-table-name.dto';
+import { diskStorage } from 'multer';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Multer } from 'multer';
+
+const storage = {
+  storage: diskStorage({
+    destination: '../frontend/public/kanbanBackgroundImg',
+    filename: function (req, file, cb) {
+      const name = Date.now() + Math.floor(Math.random() * 100) + '.jpg';
+
+      cb(null, name);
+    },
+  }),
+};
 
 @Controller('kanban')
 export class KanbanController {
@@ -28,12 +44,17 @@ export class KanbanController {
   }
 
   @Post()
+  @UseInterceptors(FileInterceptor('image', storage))
   async createKanban(
     @Body() createKanbanDto: CreateKanbanDto,
+    @UploadedFile() file: Multer.File,
     @Res() response: Response,
   ) {
     try {
-      const res = await this.kanbanService.createKanban(createKanbanDto);
+      const res = await this.kanbanService.createKanban(
+        createKanbanDto,
+        file.filename ?? '',
+      );
       response.status(HttpStatus.CREATED).send({
         message: 'kanban-board-created',
         data: res,

@@ -47,7 +47,7 @@ export class KanbanService {
     return kanban;
   }
 
-  async createKanban(createKanbanDto: CreateKanbanDto) {
+  async createKanban(createKanbanDto: CreateKanbanDto, fileName: string) {
     const users = await this.userRepository.findByIds(createKanbanDto.users);
     if (users.length !== createKanbanDto.users.length) {
       throw new Error('Jeden lub więcej użytkowników nie istnieje');
@@ -67,6 +67,7 @@ export class KanbanService {
 
     const kanban = this.kanbanRepository.create({
       tableName: createKanbanDto.tableName,
+      backgroundImage: fileName,
       users,
       tasks,
       statuses,

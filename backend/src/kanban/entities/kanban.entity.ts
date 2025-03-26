@@ -10,6 +10,9 @@ export class Kanban extends BaseEntity {
   @Column()
   tableName: string;
 
+  @Column({ default: '' })
+  backgroundImage: string;
+
   @ManyToMany(() => User, (user) => user.kanbans)
   @JoinTable()
   users: User[];
