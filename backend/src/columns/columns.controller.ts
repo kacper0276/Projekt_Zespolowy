@@ -12,6 +12,7 @@ import { ColumnsService } from './columns.service';
 import { CreateColumnDto } from './dto/create-column.dto';
 import { Response } from 'express';
 import { EditColumnOrderDto } from './dto/edit-column-order.dto';
+import { EditWipLimitDto } from './dto/edit-wip-limit.dto';
 
 @Controller('columns')
 export class ColumnsController {
@@ -51,6 +52,31 @@ export class ColumnsController {
       response
         .status(HttpStatus.OK)
         .send({ message: 'Column order updated successfully' });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'a-server-error-occurred',
+        });
+      }
+    }
+  }
+
+  @Patch('edit-wip-limit/:columnId')
+  async editWipLimit(
+    @Param('columnId') columnId: string,
+    @Body() data: EditWipLimitDto,
+    @Res() response: Response,
+  ) {
+    try {
+      await this.columnsService.editWipLimit(columnId, data.newLimit);
+
+      response
+        .status(HttpStatus.OK)
+        .send({ message: 'WIP limit updated successfully' });
     } catch (error) {
       if (error instanceof NotFoundException) {
         response.status(HttpStatus.NOT_FOUND).send({

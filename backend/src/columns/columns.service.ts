@@ -71,4 +71,17 @@ export class ColumnsService {
 
     await this.columnRepository.save(columnsToUpdate);
   }
+
+  async editWipLimit(columnId: string, limit: number): Promise<void> {
+    const column = await this.columnRepository.findOne({
+      where: { id: +columnId },
+    });
+
+    if (!column) {
+      throw new NotFoundException('Column not found');
+    }
+
+    column.maxTasks = limit;
+    await this.columnRepository.save(column);
+  }
 }
