@@ -1,4 +1,10 @@
-import { IsString, IsArray, IsOptional, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsArray,
+  IsOptional,
+  ValidateNested,
+  Matches,
+} from 'class-validator';
 import { ColumnEntity } from '../../columns/entities/column.entity';
 import { Status } from 'src/status/entities/status.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -24,4 +30,11 @@ export class CreateKanbanDto {
   @IsOptional()
   @ValidateNested({ each: true })
   statuses: Status[];
+
+  @IsString()
+  @IsOptional()
+  @Matches(/^data:image\/(png|jpg|jpeg);base64,/, {
+    message: 'Invalid Base64 format for background image',
+  })
+  backgroundImage: string;
 }

@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -31,6 +32,8 @@ async function bootstrap() {
   app.useWebSocketAdapter(new IoAdapter(app));
 
   app.use(cookieParser());
+
+  app.use(bodyParser.json({ limit: '10mb' }));
 
   await app.listen(process.env.PORT || 3001);
 }

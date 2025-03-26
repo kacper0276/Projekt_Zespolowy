@@ -10,7 +10,7 @@ export class Kanban extends BaseEntity {
   @Column()
   tableName: string;
 
-  @Column({ default: '' })
+  @Column({ type: 'longtext' })
   backgroundImage: string;
 
   @ManyToMany(() => User, (user) => user.kanbans)

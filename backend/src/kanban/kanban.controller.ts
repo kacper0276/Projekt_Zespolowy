@@ -19,6 +19,7 @@ import { ChangeTableNameDto } from './dto/change-table-name.dto';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Multer } from 'multer';
+import * as fs from 'fs';
 
 const storage = {
   storage: diskStorage({
@@ -51,16 +52,22 @@ export class KanbanController {
     @Res() response: Response,
   ) {
     try {
-      const res = await this.kanbanService.createKanban(
-        createKanbanDto,
-        file.filename ?? '',
-      );
+      let base64Image = null;
+      if (file) {
+        const filePath = `../frontend/public/kanbanBackgroundImg/${file.filename}`;
+        const fileBuffer = fs.readFileSync(filePath);
+        base64Image = fileBuffer.toString('base64');
+        createKanbanDto.backgroundImage = base64Image;
+      }
+
+      const res = await this.kanbanService.createKanban(createKanbanDto);
+
       response.status(HttpStatus.CREATED).send({
         message: 'kanban-board-created',
         data: res,
       });
     } catch (_error) {
-      response.send(HttpStatus.INTERNAL_SERVER_ERROR).send({
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
         message: 'internal-server-error',
       });
     }
