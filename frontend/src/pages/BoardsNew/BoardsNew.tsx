@@ -21,6 +21,7 @@ const BoardsNew: React.FC = () => {
     tasks: [],
     columns: [],
     statuses: [],
+    backgroundImage: null,
   });
   const [users, setUsers] = useState<IUser[]>([]);
   const [statusInput, setStatusInput] = useState<IStatus>({
@@ -99,6 +100,20 @@ const BoardsNew: React.FC = () => {
       ...prevState,
       columns: prevState.columns.filter((_, i) => i !== index),
     }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setKanbanData((prevState) => ({
+          ...prevState,
+          backgroundImage: reader.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -248,6 +263,16 @@ const BoardsNew: React.FC = () => {
               </li>
             ))}
           </ul>
+        </div>
+
+        <p>Zdjęcie w tle</p>
+        <div className={styles.inputGroup}>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            onChange={handleImageChange}
+          />
         </div>
 
         <button

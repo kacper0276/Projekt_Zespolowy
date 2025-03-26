@@ -10,4 +10,5 @@ export interface IKanban extends IBaseEntity {
   tasks?: ITask[];
   columns: IColumnEntity[];
   statuses: IStatus[];
+  backgroundImage: string | null;
 }
