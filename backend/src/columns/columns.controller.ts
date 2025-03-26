@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   HttpStatus,
   NotFoundException,
   Param,
@@ -77,6 +78,30 @@ export class ColumnsController {
       response
         .status(HttpStatus.OK)
         .send({ message: 'WIP limit updated successfully' });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'a-server-error-occurred',
+        });
+      }
+    }
+  }
+
+  @Delete(':columnId')
+  async deleteColumn(
+    @Param('columnId') columnId: string,
+    @Res() response: Response,
+  ) {
+    try {
+      await this.columnsService.deleteColumn(+columnId);
+
+      response
+        .status(HttpStatus.OK)
+        .send({ message: 'Column deleted successfully' });
     } catch (error) {
       if (error instanceof NotFoundException) {
         response.status(HttpStatus.NOT_FOUND).send({

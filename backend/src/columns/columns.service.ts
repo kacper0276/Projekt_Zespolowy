@@ -84,4 +84,28 @@ export class ColumnsService {
     column.maxTasks = limit;
     await this.columnRepository.save(column);
   }
+
+  async deleteColumn(columnId: number): Promise<void> {
+    const column = await this.columnRepository.findOne({
+      where: { id: columnId },
+      relations: ['tasks'],
+    });
+
+    if (!column) {
+      throw new NotFoundException('Column not found');
+    }
+
+    const previousColumn = await this.columnRepository.findOne({
+      where: { order: column.order - 1 },
+      relations: ['tasks'],
+    });
+
+    if (previousColumn) {
+      previousColumn.tasks = [...previousColumn.tasks, ...column.tasks];
+
+      await this.columnRepository.save(previousColumn);
+    }
+
+    await this.columnRepository.remove(column);
+  }
 }
