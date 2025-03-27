@@ -12,15 +12,15 @@
 .boardHeader {
   text-align: center;
   margin-bottom: 30px;
- 
+
   h1 {
     background: linear-gradient(
-      to right, 
-      color.mix(white, $formGradientStart, 20%), 
+      to right,
+      color.mix(white, $formGradientStart, 20%),
       color.mix(white, $formGradientEnd, 20%)
-    ); 
-    -webkit-background-clip: text; 
-    background-clip: text; 
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
@@ -47,24 +47,24 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   i {
     opacity: 0.5;
     transition: opacity 0.2s ease;
   }
-  
+
   &:hover {
     background-color: rgba(2, 166, 118, 0.3);
-    
+
     i {
       opacity: 1;
     }
   }
-  
+
   &.limitReached {
     background-color: rgba(255, 77, 77, 0.2);
     color: $dangerColor;
-    
+
     &:hover {
       background-color: rgba(255, 77, 77, 0.3);
     }
@@ -86,7 +86,7 @@
   border: 1px solid $inProgressColor;
   border-radius: 4px;
   color: $textColor;
-  
+
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(2, 166, 118, 0.3);
@@ -98,7 +98,8 @@
   gap: 4px;
 }
 
-.confirmLimitButton, .cancelLimitButton {
+.confirmLimitButton,
+.cancelLimitButton {
   width: 30px;
   height: 30px;
   border-radius: 15px;
@@ -107,7 +108,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  
+
   i {
     font-size: 14px;
   }
@@ -116,7 +117,7 @@
 .confirmLimitButton {
   background-color: $successColor;
   color: white;
-  
+
   &:hover {
     background-color: color.mix(black, $successColor, 10%);
   }
@@ -125,7 +126,7 @@
 .cancelLimitButton {
   background-color: $dangerColor;
   color: white;
-  
+
   &:hover {
     background-color: color.mix(black, $dangerColor, 10%);
   }
@@ -165,7 +166,7 @@
   color: $textColor;
   padding: 10px;
   border-radius: 4px;
-  
+
   &:focus {
     outline: none;
     border-color: $formGradientEnd;
@@ -181,7 +182,7 @@
   border-radius: 4px;
   cursor: pointer;
   transition: opacity 0.3s;
-  
+
   &:hover {
     opacity: 0.8;
   }
@@ -192,13 +193,13 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  
+
   i {
     font-size: 1.2rem;
     cursor: pointer;
     opacity: 0.7;
     transition: opacity 0.2s ease;
-    
+
     &:hover {
       opacity: 1;
       color: $formGradientEnd;
@@ -223,7 +224,7 @@
   font-size: 1.5rem;
   min-width: 300px;
   text-align: center;
-  
+
   &:focus {
     outline: none;
     border-color: $formGradientEnd;
@@ -235,7 +236,7 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  
+
   i {
     font-size: 1.5rem;
     cursor: pointer;
@@ -245,20 +246,20 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    
+
     &.bi-check-lg {
       color: $successColor;
       background-color: rgba(2, 166, 118, 0.1);
-      
+
       &:hover {
         background-color: rgba(2, 166, 118, 0.2);
       }
     }
-    
+
     &.bi-x-lg {
       color: $dangerColor;
       background-color: rgba(255, 77, 77, 0.1);
-      
+
       &:hover {
         background-color: rgba(255, 77, 77, 0.2);
       }

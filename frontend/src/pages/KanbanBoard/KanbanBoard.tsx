@@ -200,7 +200,14 @@ function KanbanBoard() {
   };
 
   return (
-    <div className={styles.kanbanBoard}>
+    <div
+      className={styles.kanbanBoard}
+      style={{
+        backgroundImage: `url(${boardData?.backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <ToastContainer theme="dark" />
       <div className={styles.boardHeader}>
         {isEditingTitle ? (
