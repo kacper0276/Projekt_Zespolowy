@@ -27,20 +27,20 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   transform: translateY(0);
   transition: transform 0.3s ease;
-  
+
   &::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.1);
     border-radius: 0 8px 8px 0;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: rgba($inProgressColor, 0.6);
     border-radius: 10px;
-    
+
     &:hover {
       background: $inProgressColor;
     }
@@ -58,7 +58,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
- 
+
   h3 {
     color: white;
     margin: 0;
@@ -69,7 +69,7 @@
 }
 
 .closeButton {
-  background: rgba(255, 255, 255, 0.0);
+  background: rgba(255, 255, 255, 0);
   border: none;
   color: white;
   font-size: 1.4rem;
@@ -81,7 +81,7 @@
   width: 32px;
   height: 32px;
   transition: all 0.2s ease;
- 
+
   &:hover {
     background: rgba(255, 255, 255, 0);
     transform: rotate(90deg);
@@ -101,7 +101,7 @@
     border-radius: 6px;
     font-size: 0.95rem;
   }
- 
+
   strong {
     color: color.adjust($textColor, $lightness: 15%);
     margin-right: 8px;
@@ -111,7 +111,7 @@
 /* Form styling */
 .formGroup {
   margin-bottom: 20px;
- 
+
   label {
     display: block;
     margin-bottom: 8px;
@@ -130,7 +130,7 @@
   color: $textColor;
   font-size: 1rem;
   transition: all 0.2s ease;
- 
+
   &:focus {
     outline: none;
     border-color: $inProgressColor;
@@ -142,11 +142,11 @@
   /* Custom styles for multiselect dropdown */
   position: relative;
   margin-bottom: 24px; // Add space between multiselect and save button
-  
+
   :global(.multiSelectContainer) {
     width: 100%;
   }
- 
+
   :global(.searchBox) {
     min-height: 42px;
     color: $textColor;
@@ -155,13 +155,13 @@
     border-radius: 6px !important;
     border: 1px solid #444 !important;
     transition: all 0.2s ease;
-   
+
     &:focus-within {
       border-color: $inProgressColor !important;
       box-shadow: 0 0 0 3px rgba($inProgressColor, 0.2);
     }
   }
- 
+
   // Improve chips display
   :global(.chip) {
     background: $inProgressColor !important;
@@ -170,7 +170,7 @@
     margin: 4px;
     display: inline-flex;
     align-items: center;
-   
+
     :global(.chipText) {
       margin-right: 4px;
       max-width: 150px; // Limit chip text width
@@ -178,16 +178,16 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-   
+
     :global(.chipRemove) {
       opacity: 0.7;
-     
+
       &:hover {
         opacity: 1;
       }
     }
   }
- 
+
   // Fix dropdown container positioning and scrolling
   :global(.optionContainer) {
     position: absolute !important;
@@ -199,28 +199,28 @@
     overflow-y: auto !important; // Enable vertical scrolling
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
     width: 100%;
-   
+
     :global(.option) {
       padding: 10px 14px;
       border-radius: 4px;
       transition: background-color 0.2s ease;
-     
+
       &:hover {
         background-color: rgba($inProgressColor, 0.15) !important;
       }
     }
-   
+
     :global(.highlightOption) {
       background-color: rgba($inProgressColor, 0.25) !important;
     }
-   
+
     :global(.notFound) {
       padding: 10px;
       color: #999;
       font-style: italic;
     }
   }
- 
+
   // Fix the chips container
   :global(.multiSelectContainer ul) {
     flex-wrap: wrap;
@@ -248,11 +248,11 @@
   cursor: pointer;
   font-weight: 600;
   transition: background-color 0.2s ease;
-  
+
   &:hover {
-    background-color:color.adjust($inProgressColor, $lightness: -10%);
+    background-color: color.adjust($inProgressColor, $lightness: -10%);
   }
-  
+
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -261,8 +261,14 @@
 
 /* Animation for modal appearance */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modalContent {
@@ -285,7 +291,7 @@
   border-radius: 4px;
   margin-bottom: 6px;
   font-weight: 500;
-  color:color.adjust($textColor, $lightness: 10%); 
+  color: color.adjust($textColor, $lightness: 10%);
 }
 
 /* Make the height of the chip list adaptive */
@@ -314,9 +320,9 @@
   align-items: center;
   justify-content: center;
   color: $inProgressColor;
-  
+
   &::before {
-    content: '';
+    content: "";
     display: inline-block;
     width: 16px;
     height: 16px;
@@ -329,6 +335,10 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

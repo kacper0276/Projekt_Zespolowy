@@ -11,7 +11,7 @@ const Layout: React.FC<LayoutProps> = ({ header, content, footer }) => {
   return (
     <div className={styles.layoutContainer}>
       <header className={styles.header}>{header}</header>
-      <div className="d-flex">
+      <div className="d-flex" style={{ overflow: "auto" }}>
         <main className={styles.content}>{content}</main>
       </div>
       <footer className={styles.footer}>{footer}</footer>
