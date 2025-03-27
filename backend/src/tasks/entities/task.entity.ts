@@ -32,8 +32,9 @@ export class Task extends BaseEntity {
   @ManyToOne(() => ColumnEntity, (column) => column.tasks)
   column: ColumnEntity;
 
-  @ManyToOne(() => ToDoList, (todoList) => todoList.tasks)
-  toDoList: ToDoList;
+  @ManyToMany(() => ToDoList, (todoList) => todoList.task, { cascade: true })
+  @JoinTable()
+  toDoLists: ToDoList[];
 
   @ManyToMany(() => Kanban, (kanban) => kanban.tasks)
   kanbans: Kanban[];
