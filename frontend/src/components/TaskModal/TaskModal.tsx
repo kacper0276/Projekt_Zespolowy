@@ -32,6 +32,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     description: "",
     status: "",
     priority: "",
+    order: 0,
     deadline: new Date(),
     users: users || [],
     column: {
