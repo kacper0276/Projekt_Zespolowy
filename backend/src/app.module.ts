@@ -20,6 +20,7 @@ import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
 import { Message } from './messages/entities/message.entity';
 import { Conversation } from './conversations/entities/conversation.entity';
+import { ToDoItem } from './to-do-lists/entities/to-do-item.entity';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { Conversation } from './conversations/entities/conversation.entity';
         ToDoList,
         Message,
         Conversation,
+        ToDoItem,
       ],
       synchronize: true,
       migrations: ['../migrations/**/*.ts'],
