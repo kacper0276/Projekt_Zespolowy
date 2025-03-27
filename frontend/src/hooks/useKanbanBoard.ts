@@ -92,9 +92,6 @@ export function useKanbanBoard() {
   const addColumn = async () => {
     if (!newColumnTitle.trim()) return;
 
-    console.log(newColumnTitle);
-    console.log(boardData?.id);
-
     const newColumnResponse = await api.post<ApiResponse<IColumnEntity>>(
       `columns/${boardData?.id}`,
       {
@@ -110,10 +107,11 @@ export function useKanbanBoard() {
     }
 
     const newColumn = {
-      id: newColumnResponse.data.data?.id + "",
+      id: newColumnTitle,
       title: newColumnTitle,
       tasks: [],
       wipLimit: 0,
+      columnId: newColumnResponse.data.data?.id,
     };
 
     setColumns((prev) => ({
@@ -147,7 +145,7 @@ export function useKanbanBoard() {
     setColumns(updatedColumns);
     setColumnOrder((prev) => prev.filter((id) => id !== columnId));
 
-    toast.success(`Usunięto kolumnę ${columns[columnId].title}`);
+    toast.success(`Usunięto kolumnę  ${columns[columnId].title}`);
 
     // Here you would also delete this column on the backend
   };
