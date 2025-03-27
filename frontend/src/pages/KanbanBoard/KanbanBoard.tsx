@@ -5,7 +5,7 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import styles from "./KanbanBoard.module.scss";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 import { useKanbanBoard } from "../../hooks/useKanbanBoard";
@@ -208,7 +208,6 @@ function KanbanBoard() {
         backgroundPosition: "center",
       }}
     >
-      <ToastContainer theme="dark" />
       <div className={styles.boardHeader}>
         {isEditingTitle ? (
           <div className={styles.editTitleContainer}>
