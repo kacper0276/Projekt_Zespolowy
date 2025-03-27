@@ -21,6 +21,7 @@ import { MessagesModule } from './messages/messages.module';
 import { Message } from './messages/entities/message.entity';
 import { Conversation } from './conversations/entities/conversation.entity';
 import { ToDoItem } from './to-do-lists/entities/to-do-item.entity';
+import { TeamsModule } from './teams/teams.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { ToDoItem } from './to-do-lists/entities/to-do-item.entity';
     ToDoListsModule,
     ConversationsModule,
     MessagesModule,
+    TeamsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
