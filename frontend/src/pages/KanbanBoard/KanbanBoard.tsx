@@ -206,6 +206,7 @@ function KanbanBoard() {
         backgroundImage: `url(${boardData?.backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
+
       }}
     >
       <div className={styles.boardHeader}>
@@ -243,6 +244,7 @@ function KanbanBoard() {
           </div>
         )}
       </div>
+     
 
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="board" type="COLUMN" direction="horizontal">
