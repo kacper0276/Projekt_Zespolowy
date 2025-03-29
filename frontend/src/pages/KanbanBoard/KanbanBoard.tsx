@@ -17,10 +17,11 @@ import ColumnHeader from "../../components/ColumnHeader/ColumnHeader";
 import KanbanGrid from "../../components/KanbanGrid/KanbanGrid";
 import { IColumnEntity } from "../../interfaces/IColumnEntity";
 import { IKanban } from "../../interfaces/IKanban";
+import { ApiResponse } from "../../types/api.types";
 
 function KanbanBoard() {
   useWebsiteTitle("Kanban Board");
-  const params = useParams<{ id: string }>(); // Add type parameter to useParams
+  const params = useParams<{ id: string }>(); 
   const api = useApiJson();
   const [rows, setRows] = useState<string[]>([
     "Default",
@@ -82,12 +83,11 @@ function KanbanBoard() {
 
     const fetchBoard = async () => {
       try {
-        const res = await api.get(
+        const res = await api.get<ApiResponse<IKanban>>(
           `kanban/board/${params.id}`
         );
         if (isMounted && res.data && res.data.data) {
           initializeBoard(res.data.data);
-          
           // After initializing board, distribute tasks to the first row
           const newTaskGrid = { ...taskGrid };
           if (!newTaskGrid["Default"]) {
@@ -101,7 +101,7 @@ function KanbanBoard() {
             // Make a deep copy of tasks to avoid reference issues
             newTaskGrid["Default"][colId] = columns[colId].tasks.map(task => ({...task}));
           });
-
+          
           setTaskGrid(newTaskGrid);
         }
       } catch (error) {
