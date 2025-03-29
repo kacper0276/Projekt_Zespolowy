@@ -343,19 +343,17 @@ function KanbanBoard() {
   
       // Only update position in database if column changed
       if (sourceColId !== destColId) {
-        // Extract the actual taskId from the draggableId format: "{columnId}-task-{dbId}-{random}-{index}"
         const taskIdParts = draggableId.split("-");
         // Get the task ID portion (should be "task-{dbId}-{random}")
         const taskId = taskIdParts.slice(1).join("-");
         
-        // Call updateTaskPosition with the correct task ID format
         updateTaskPosition(taskId, sourceColId, destColId);
   
         // Update columns for the database
         const updatedColumns = { ...columns };
         
         // Find the task in the source column
-        let movedTask = removed; // We already have the removed task from the source
+        let movedTask = removed; 
         
         if (movedTask) {
           // Update tasks in each column - important for WIP limit calculations

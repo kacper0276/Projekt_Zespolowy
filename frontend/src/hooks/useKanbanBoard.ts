@@ -274,7 +274,7 @@ export function useKanbanBoard() {
     return true;
   };
 
-  // Update task position when dragged to another column - UPDATED FUNCTION
+  // Update task position when dragged to another column
   const updateTaskPosition = async (
     taskId: string,
     _sourceColumnId: string,
