@@ -202,7 +202,7 @@ export function useKanbanBoard() {
         const newTask = {
           id: `task-${response.data.data.id}-${Math.random()
             .toString(36)
-            .substr(2, 9)}`,
+            .substr(2, 9)}`,  
           content: taskName,
           name: taskName,
           description: "",
@@ -211,7 +211,7 @@ export function useKanbanBoard() {
           deadline: new Date(),
           users: [],
           dbId: response.data.data.id,
-        };
+        };  
 
         setColumns((prev) => ({
           ...prev,
