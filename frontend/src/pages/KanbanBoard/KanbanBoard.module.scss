@@ -2,207 +2,29 @@
 @use "../../styles/mixins" as *;
 @use "../../styles/variables" as *;
 
+// Keep existing styles from your code
 .kanbanBoard {
   background-color: $backgroundColor;
   min-height: 100vh;
   color: $textColor;
   padding: 20px;
-  position: relative; 
-
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); 
-    z-index: 1; 
-  }
-
-  & > * {
-    position: relative;
-    z-index: 2;
-  }
 }
 
 .boardHeader {
   text-align: center;
   margin-bottom: 30px;
-
+ 
   h1 {
     background: linear-gradient(
-      to right,
-      color.mix(white, $formGradientStart, 20%),
+      to right, 
+      color.mix(white, $formGradientStart, 20%), 
       color.mix(white, $formGradientEnd, 20%)
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
+    ); 
+    -webkit-background-clip: text; 
+    background-clip: text; 
     -webkit-text-fill-color: transparent;
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-  }
-}
-
-.inProgressInfo {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
-.limitEditor {
-  min-width: 240px;
-}
-
-.inProgressCount {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  background-color: rgba(2, 166, 118, 0.2);
-  color: $inProgressColor;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  i {
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
-  }
-
-  &:hover {
-    background-color: rgba(2, 166, 118, 0.3);
-
-    i {
-      opacity: 1;
-    }
-  }
-
-  &.limitReached {
-    background-color: rgba(255, 77, 77, 0.2);
-    color: $dangerColor;
-
-    &:hover {
-      background-color: rgba(255, 77, 77, 0.3);
-    }
-  }
-}
-
-.limitInputGroup {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-
-.limitInput {
-  width: 60px;
-  padding: 6px 10px;
-  text-align: center;
-  background-color: $cardBackground;
-  border: 1px solid $inProgressColor;
-  border-radius: 4px;
-  color: $textColor;
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(2, 166, 118, 0.3);
-  }
-}
-
-.limitButtons {
-  display: flex;
-  gap: 4px;
-}
-
-.confirmLimitButton,
-.cancelLimitButton {
-  width: 30px;
-  height: 30px;
-  border-radius: 15px;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-
-  i {
-    font-size: 14px;
-  }
-}
-
-.confirmLimitButton {
-  background-color: $successColor;
-  color: white;
-
-  &:hover {
-    background-color: color.mix(black, $successColor, 10%);
-  }
-}
-
-.cancelLimitButton {
-  background-color: $dangerColor;
-  color: white;
-
-  &:hover {
-    background-color: color.mix(black, $dangerColor, 10%);
-  }
-}
-
-.boardContainer {
-  overflow-x: auto;
-}
-
-.boardColumns {
-  display: flex;
-  gap: 20px;
-  padding-bottom: 20px;
-  align-items: flex-start;
-}
-
-.addColumnSection {
-  margin-left: 2px;
-  margin-top: 2px;
-  display: flex;
-  align-items: flex-start;
-}
-
-.columnCreation {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 300px;
-  position: sticky;
-  right: 0;
-  top: 0;
-}
-
-.columnInput {
-  background-color: $cardBackground;
-  border: 1px solid $formGradientStart;
-  color: $textColor;
-  padding: 10px;
-  border-radius: 4px;
-
-  &:focus {
-    outline: none;
-    border-color: $formGradientEnd;
-    box-shadow: 0 0 0 2px rgba(165, 8, 46, 0.2);
-  }
-}
-
-.addColumnButton {
-  background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
-  color: $textColor;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: opacity 0.3s;
-
-  &:hover {
-    opacity: 0.8;
   }
 }
 
@@ -211,13 +33,13 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-
+  
   i {
     font-size: 1.2rem;
     cursor: pointer;
     opacity: 0.7;
     transition: opacity 0.2s ease;
-
+    
     &:hover {
       opacity: 1;
       color: $formGradientEnd;
@@ -242,7 +64,7 @@
   font-size: 1.5rem;
   min-width: 300px;
   text-align: center;
-
+  
   &:focus {
     outline: none;
     border-color: $formGradientEnd;
@@ -254,7 +76,7 @@
   display: flex;
   gap: 10px;
   align-items: center;
-
+  
   i {
     font-size: 1.5rem;
     cursor: pointer;
@@ -264,23 +86,573 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-
+    
     &.bi-check-lg {
       color: $successColor;
       background-color: rgba(2, 166, 118, 0.1);
-
+      
       &:hover {
         background-color: rgba(2, 166, 118, 0.2);
       }
     }
-
+    
     &.bi-x-lg {
       color: $dangerColor;
       background-color: rgba(255, 77, 77, 0.1);
-
+      
       &:hover {
         background-color: rgba(255, 77, 77, 0.2);
       }
     }
+  }
+}
+
+// Grid-specific styles
+.gridContainer {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; // Changed from auto to hidden
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  background-color: rgba(25, 27, 31, 0.6);
+  max-width: 100%;
+  position: relative; // Added position relative
+}
+
+.headerRow {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: rgba(32, 34, 39, 0.95);
+  border-bottom: 2px solid rgba(165, 8, 46, 0.3);
+  width: fit-content; // Ensures the header row extends to fit all columns
+  min-width: 100%; // Ensures it's at least as wide as the container
+}
+
+.rowLabel {
+  min-width: 150px;
+  width: 150px; // Fixed width to match across rows
+  padding: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(32, 34, 39, 0.8);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  flex-shrink: 0; // Prevents shrinking
+}
+
+.columnHeaders {
+  display: flex;
+  flex: 1;
+  gap: 2px;
+  padding: 8px;
+  overflow-x: auto;
+  width: fit-content; // Allows horizontal scrolling
+}
+
+.columnHeader {
+  min-width: 250px;
+  width: 250px; // Fixed width to match grid cells
+  padding: 15px;
+  text-align: center;
+  background: linear-gradient(
+    to bottom,
+    rgba(165, 8, 46, 0.2),
+    rgba(36, 37, 42, 0.6)
+  );
+  border-radius: 6px 6px 0 0;
+  transition: background 0.2s ease;
+  cursor: grab;
+  margin: 0 4px;
+  flex-shrink: 0; // Prevents shrinking
+  
+  &:hover {
+    background: linear-gradient(
+      to bottom,
+      rgba(165, 8, 46, 0.3),
+      rgba(36, 37, 42, 0.7)
+    );
+  }
+  
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.columnHeaderActions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.taskCount {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  
+  &.limitReached {
+    background-color: rgba(255, 77, 77, 0.2);
+    color: $dangerColor;
+  }
+}
+
+.deleteColumnButton {
+  background: none;
+  border: none;
+  color: rgba(255, 77, 77, 0.7);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    color: $dangerColor;
+    background-color: rgba(255, 77, 77, 0.1);
+  }
+  
+  i {
+    font-size: 0.85rem;
+  }
+}
+
+.addColumnSection {
+  padding: 8px;
+  min-width: 260px;
+  flex-shrink: 0; // Prevents shrinking
+}
+
+.columnCreation {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.columnInput {
+  background-color: $cardBackground;
+  border: 1px solid $formGradientStart;
+  color: $textColor;
+  padding: 10px;
+  border-radius: 4px;
+  
+  &:focus {
+    outline: none;
+    border-color: $formGradientEnd;
+    box-shadow: 0 0 0 2px rgba(165, 8, 46, 0.2);
+  }
+}
+
+.gridRows {
+  display: flex;
+  flex-direction: column;
+  overflow: auto; // Enables scrolling
+  max-height: calc(100vh - 250px); // Adjust based on your header height
+}
+
+.gridRow {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  width: fit-content; // Allows horizontal scrolling
+  min-width: 100%; // Ensures it's at least as wide as the container
+  
+  &:hover {
+    background-color: rgba(40, 42, 47, 0.4);
+  }
+}
+
+.rowCells {
+  display: flex;
+  flex: 1;
+  gap: 2px;
+  padding: 4px 8px;
+  overflow-x: visible; // Changed from auto to visible
+}
+
+.gridCell {
+  min-width: 250px;
+  width: 250px; // Fixed width to match column headers
+  min-height: 100px;
+  max-height: 400px;
+  margin: 0 4px;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(36, 37, 42, 0.4);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0; // Prevents shrinking
+  
+  &:hover {
+    background-color: rgba(36, 37, 42, 0.6);
+  }
+}
+
+.cellContent {
+  flex: 1;
+  padding: 8px;
+  overflow-y: auto;
+  min-height: 100px;
+  
+  &.draggingOver {
+    background-color: rgba(165, 8, 46, 0.1);
+    border-radius: 4px;
+  }
+  
+  &.limitReached {
+    background-color: rgba(255, 77, 77, 0.05);
+    border: 1px dashed rgba(255, 77, 77, 0.3);
+  }
+}
+
+.taskItem {
+  background: linear-gradient(
+    to right,
+    rgba(45, 47, 52, 0.95),
+    rgba(55, 57, 62, 0.95)
+  );
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  cursor: grab;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(
+      to right,
+      rgba(50, 52, 57, 0.95),
+      rgba(60, 62, 67, 0.95)
+    );
+  }
+  
+  &.dragging {
+    transform: rotate(2deg) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(
+      to right,
+      rgba(70, 72, 77, 0.95),
+      rgba(80, 82, 87, 0.95)
+    );
+  }
+}
+
+.taskContent {
+  flex: 1;
+  word-break: break-word;
+  font-size: 0.9rem;
+}
+
+// WIP Limit styles
+.wipLimitSection {
+  display: flex;
+  align-items: center;
+}
+
+.wipLimitDisplay {
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  &.limitReached {
+    background-color: rgba(255, 77, 77, 0.1);
+    color: $dangerColor;
+  }
+}
+
+// Ensure synchronized scrolling between headers and content
+.boardControls {
+  margin-bottom: 20px;
+}
+
+.rowControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.addRowForm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rowInput {
+  background-color: $cardBackground;
+  border: 1px solid $formGradientStart;
+  color: $textColor;
+  padding: 8px 12px;
+  border-radius: 4px;
+  min-width: 200px;
+  
+  &:focus {
+    outline: none;
+    border-color: $formGradientEnd;
+    box-shadow: 0 0 0 2px rgba(165, 8, 46, 0.2);
+  }
+}
+
+.rowActions {
+  display: flex;
+  gap: 8px;
+}
+
+.deleteRowButton {
+  background: none;
+  border: none;
+  color: rgba(255, 77, 77, 0.7);
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    color: $dangerColor;
+    background-color: rgba(255, 77, 77, 0.1);
+  }
+}
+
+.addTaskButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 8px;
+  margin-top: 4px;
+  border-radius: 4px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  
+  &:hover {
+    background-color: rgba(165, 8, 46, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.addTaskForm {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.taskInput {
+  background-color: $cardBackground;
+  border: 1px solid $formGradientStart;
+  color: $textColor;
+  padding: 8px;
+  border-radius: 4px;
+  
+  &:focus {
+    outline: none;
+    border-color: $formGradientEnd;
+    box-shadow: 0 0 0 2px rgba(165, 8, 46, 0.2);
+  }
+}
+
+.addTaskActions {
+  display: flex;
+  gap: 8px;
+}
+
+.deleteTaskButton {
+  background: none;
+  border: none;
+  color: rgba(255, 77, 77, 0.5);
+  cursor: pointer;
+  padding: 3px;
+  margin-left: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.5;
+  
+  &:hover {
+    color: $dangerColor;
+    opacity: 1;
+    background-color: rgba(255, 77, 77, 0.1);
+  }
+  
+  i {
+    font-size: 0.85rem;
+  }
+}
+
+.addTaskButton {
+  background: none;
+  border: none;
+  color: $successColor;
+  opacity: 0.7;
+  width: 100%;
+  padding: 8px;
+  border-radius: 0 0 4px 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 0.85rem;
+  
+  &:hover {
+    opacity: 1;
+    background-color: rgba(2, 166, 118, 0.1);
+  }
+  
+  i {
+    font-size: 0.9rem;
+  }
+}
+
+.addTaskForm {
+  padding: 8px;
+  background-color: rgba(2, 166, 118, 0.1);
+  border-radius: 0 0 4px 4px;
+}
+
+.taskInput {
+  width: 100%;
+  background-color: $cardBackground;
+  border: 1px solid $successColor;
+  color: $textColor;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  
+  &:focus {
+    outline: none;
+    border-color: $successColor;
+    box-shadow: 0 0 0 2px rgba(2, 166, 118, 0.2);
+  }
+}
+
+.addTaskActions {
+  display: flex;
+  gap: 8px;
+}
+
+// Row controls
+.boardControls {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rowControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.addRowForm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: rgba(36, 37, 42, 0.6);
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.rowInput {
+  background-color: $cardBackground;
+  border: 1px solid $formGradientStart;
+  color: $textColor;
+  padding: 8px 12px;
+  border-radius: 4px;
+  min-width: 200px;
+  
+  &:focus {
+    outline: none;
+    border-color: $formGradientEnd;
+    box-shadow: 0 0 0 2px rgba(165, 8, 46, 0.2);
+  }
+}
+
+.rowActions {
+  display: flex;
+  gap: 8px;
+}
+
+.deleteRowButton {
+  background: none;
+  border: none;
+  color: rgba(255, 77, 77, 0.7);
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    color: $dangerColor;
+    background-color: rgba(255, 77, 77, 0.1);
+  }
+  
+  i {
+    font-size: 0.9rem;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .gridContainer {
+    overflow-x: auto;
+  }
+  
+  .rowLabel {
+    min-width: 120px;
+    font-size: 0.9rem;
+  }
+  
+  .columnHeader {
+    min-width: 200px;
+  }
+  
+  .gridCell {
+    min-width: 200px;
   }
 }

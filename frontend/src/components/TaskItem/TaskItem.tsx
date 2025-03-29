@@ -19,6 +19,7 @@ interface ItemProps {
   index: number;
   columnId: string;
   onDeleteTask: () => void;
+  onTaskUpdate: (updatedData: any) => void; // Added this missing prop
 }
 
 const TaskItem: React.FC<ItemProps> = ({
@@ -26,44 +27,49 @@ const TaskItem: React.FC<ItemProps> = ({
   index,
   columnId,
   onDeleteTask,
+  onTaskUpdate, // Added this missing prop
 }) => {
   const api = useApiJson();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskText, setTaskText] = useState(task.name || task.content || "");
   const [taskUsers, setTaskUsers] = useState<IUser[]>(task.users || []);
-
+  
   // Ensure uniqueness by combining columnId and task id
   const uniqueDraggableId = `${columnId}-${task.id}-${index}`;
-
+  
   const handleTaskClick = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest(`.${styles.deleteTaskButton}`)) {
       return;
     }
     setIsModalOpen(true);
   };
-
+  
   const closeModal = () => {
     setIsModalOpen(false);
   };
-
+  
   const handleTaskUpdate = (updatedTask: { name: string; users: IUser[] }) => {
     const taskId = task.id.split("-")[1];
-
     api
       .patch(`tasks/${taskId}/assign-users`, { users: updatedTask.users })
       .then((res) => {
         console.log(res);
       });
-
     setTaskText(updatedTask.name);
     setTaskUsers(updatedTask.users || []);
+    
+    // Call the parent's onTaskUpdate with the updated task data
+    onTaskUpdate({
+      name: updatedTask.name,
+      users: updatedTask.users
+    });
   };
-
+  
   const getUserInitials = (email: string): string => {
     if (!email) return "??";
     return email.substring(0, 2).toUpperCase();
   };
-
+  
   return (
     <>
       <Draggable draggableId={uniqueDraggableId} index={index}>
