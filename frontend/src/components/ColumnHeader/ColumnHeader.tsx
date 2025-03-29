@@ -3,11 +3,13 @@ import { Draggable, Droppable } from '@hello-pangea/dnd';
 import styles from '../../pages/KanbanBoard/KanbanBoard.module.scss';
 import WipLimitEditor from '../../components/WipLimitEditor/WipLimitEditor';
 import ActionButton from '../../components/ActionButton/ActionButton';
+import { useApiJson } from "../../config/api";
 
 interface Column {
   id: string;
   title: string;
   wipLimit: number;
+  columnId?: number;
 }
 
 interface ColumnHeaderProps {
@@ -37,6 +39,24 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
   setNewColumnTitle,
   addColumn
 }) => {
+  const api = useApiJson();
+  
+  // Enhanced WIP limit handler that updates the database
+  const handleWipLimitSaveWithDb = (columnId: string, limit: number) => {
+    // Call the parent handler to update state
+    handleWipLimitSave(columnId, limit);
+    
+    // Update the database
+    const column = columns[columnId];
+    if (column && column.columnId) {
+      api.patch(`columns/edit-wip-limit/${column.columnId}`, { newLimit: limit })
+        .catch(error => {
+          console.error('Failed to update WIP limit in database:', error);
+          // Here you could add error handling or notifications
+        });
+    }
+  };
+
   return (
     <div className={styles.headerRow}>
       <div className={styles.rowLabel}>Wiersze / Kolumny</div>
@@ -56,6 +76,7 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
               if (!column) return null;
 
               const totalTasksInColumn = countTasksInColumn(columnId);
+              const isLimitReached = column.wipLimit > 0 && totalTasksInColumn >= column.wipLimit;
 
               return (
                 <Draggable
@@ -73,9 +94,7 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
                       <h3>{column.title}</h3>
                       <div className={styles.columnHeaderActions}>
                         <span className={`badge ${styles.taskCount} ${
-                          column.wipLimit > 0 && totalTasksInColumn >= column.wipLimit 
-                            ? styles.limitReached 
-                            : ""
+                          isLimitReached ? styles.limitReached : ""
                         }`}>
                           {totalTasksInColumn}
                           {column.wipLimit > 0 && `/${column.wipLimit}`}
@@ -85,15 +104,13 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
                           {isEditingWipLimitMap[column.id] ? (
                             <WipLimitEditor
                               currentLimit={column.wipLimit}
-                              onSave={(limit) => handleWipLimitSave(column.id, limit)}
+                              onSave={(limit) => handleWipLimitSaveWithDb(column.id, limit)}
                               onCancel={() => handleCancelEditingWipLimit(column.id)}
                             />
                           ) : (
                             <div
                               className={`${styles.wipLimitDisplay} ${
-                                column.wipLimit > 0 && totalTasksInColumn >= column.wipLimit 
-                                  ? styles.limitReached 
-                                  : ""
+                                isLimitReached ? styles.limitReached : ""
                               }`}
                               onClick={() => handleStartEditingWipLimit(column.id)}
                               title="Kliknij, aby edytować limit zadań"

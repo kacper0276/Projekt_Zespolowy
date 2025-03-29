@@ -457,7 +457,7 @@ function KanbanBoard() {
 
   // Create a compatible header data object that satisfies BoardHeader requirements
   const headerBoardData: { tableName: string } = {
-    tableName: boardData?.tableName || "Tablica Kanban"
+    tableName: boardData?.tableName || ""
   };
 
   // Create a modified setBoardData function that matches the expected signature

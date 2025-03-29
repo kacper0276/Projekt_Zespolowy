@@ -126,28 +126,37 @@ export function useKanbanBoard() {
   };
 
   // Delete a column
-  const deleteColumn = (
-    columnId: string,
-    columnFromDb: number | null = null
-  ) => {
+  const deleteColumn = async (columnId: string) => {
     if (["todo", "inprogress", "done"].includes(columnId)) {
       toast.error("Nie można usunąć domyślnej kolumny!");
       return;
     }
 
-    const updatedColumns = { ...columns };
-    delete updatedColumns[columnId];
+    // Get the column's database ID
+    const columnDbId = columns[columnId]?.columnId;
+    
+    if (!columnDbId) {
+      toast.error("Nie można usunąć kolumny - brak identyfikatora w bazie danych!");
+      return;
+    }
 
-    // TODO: Dopisać notyfikację ale dopiero po usunięciu z bazy (status 200)
-    // TODO: Napisać tak, jak na backendzie, że te taski przeskakują do kolumny poprzedniej (Na backendzie już tak jest)
-    api.delete(`columns/${columnFromDb}`);
-
-    setColumns(updatedColumns);
-    setColumnOrder((prev) => prev.filter((id) => id !== columnId));
-
-    toast.success(`Usunięto kolumnę  ${columns[columnId].title}`);
-
-    // Here you would also delete this column on the backend
+    try {
+      // TODO: Dopisać notyfikację ale dopiero po usunięciu z bazy (status 200)
+      // TODO: Napisać tak, jak na backendzie, że te taski przeskakują do kolumny poprzedniej (Na backendzie już tak jest)
+      await api.delete(`columns/${columnDbId}`);
+      
+      // After successful deletion from database, update the UI
+      const updatedColumns = { ...columns };
+      delete updatedColumns[columnId];
+      
+      setColumns(updatedColumns);
+      setColumnOrder((prev) => prev.filter((id) => id !== columnId));
+      
+      toast.success(`Usunięto kolumnę ${columns[columnId].title}`);
+    } catch (error) {
+      console.error("Error deleting column:", error);
+      toast.error("Nie udało się usunąć kolumny. Spróbuj ponownie później.");
+    }
   };
 
   // Check if a task can be added to a column based on WIP limit
