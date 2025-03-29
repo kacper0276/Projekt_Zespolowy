@@ -271,7 +271,7 @@ function KanbanBoard() {
     return count;
   };
 
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = async (result: DropResult) => {
     const { source, destination, type, draggableId } = result;
     if (!destination) return;
 
@@ -282,6 +282,15 @@ function KanbanBoard() {
       const [reorderedColumn] = newColumnOrder.splice(source.index, 1);
       newColumnOrder.splice(destination.index, 0, reorderedColumn);
       setColumnOrder(newColumnOrder);
+      const newColumnOrderWithNames = newColumnOrder.map((columnId) => {
+        const column = columns[columnId];
+        return column ? column.title : columnId;
+      });
+    
+      // Aktualizacja kolejności w bazie danych
+      await api.patch(`columns/edit-order/${params.id}`, {
+        columns: newColumnOrderWithNames,
+      });
       return;
     }
 
