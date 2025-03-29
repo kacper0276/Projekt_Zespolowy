@@ -36,7 +36,7 @@ function KanbanBoard() {
   const [newTaskTitleMap, setNewTaskTitleMap] = useState<{
     [key: string]: string;
   }>({});
-  // Dodajemy stan dla edycji limitów WIP
+  // Stan dla edycji limitów WIP
   const [isEditingWipLimitMap, setIsEditingWipLimitMap] = useState<{
     [columnId: string]: boolean;
   }>({});
@@ -59,7 +59,7 @@ function KanbanBoard() {
     setBoardData,
   } = useKanbanBoard();
 
-  // Create a grid structure for tasks
+  // Utworzenie struktury siatki dla zadań
   const [taskGrid, setTaskGrid] = useState<{
     [rowId: string]: { [colId: string]: any[] };
   }>(
@@ -88,7 +88,7 @@ function KanbanBoard() {
         );
         if (isMounted && res.data && res.data.data) {
           initializeBoard(res.data.data);
-          // After initializing board, distribute tasks to the first row
+          // Po inicjalizacji tablicy, rozdziel zadania do pierwszego wiersza
           const newTaskGrid = { ...taskGrid };
           if (!newTaskGrid["Default"]) {
             newTaskGrid["Default"] = {};
@@ -98,14 +98,14 @@ function KanbanBoard() {
             if (!newTaskGrid["Default"][colId]) {
               newTaskGrid["Default"][colId] = [];
             }
-            // Make a deep copy of tasks to avoid reference issues
+            // Głęboka kopia zadań, aby uniknąć problemów z referencjami
             newTaskGrid["Default"][colId] = columns[colId].tasks.map(task => ({...task}));
           });
           
           setTaskGrid(newTaskGrid);
         }
       } catch (error) {
-        console.error("Error fetching board data:", error);
+        console.error("Błąd podczas pobierania danych tablicy:", error);
       }
     };
 
@@ -116,11 +116,11 @@ function KanbanBoard() {
     };
   }, [params.id, initializeBoard]);
 
-  // Update task grid when columns change, but avoid resetting tasks that were moved
+  // Aktualizacja siatki zadań po zmianie kolumn, ale bez resetowania przesuniętych zadań
   useEffect(() => {
     const newTaskGrid = { ...taskGrid };
 
-    // Make sure all rows have entries for all columns
+    // Upewnij się, że wszystkie wiersze mają wpisy dla wszystkich kolumn
     rows.forEach((row) => {
       if (!newTaskGrid[row]) {
         newTaskGrid[row] = {};
@@ -133,19 +133,19 @@ function KanbanBoard() {
       });
     });
 
-    // Only initialize Default row with tasks if it's empty
+    // Tylko inicjalizuj wiersz Default zadaniami, jeśli jest pusty
     if (newTaskGrid["Default"]) {
       Object.keys(columns).forEach((colId) => {
-        // Only fill empty columns, don't reset existing ones
+        // Wypełnij tylko puste kolumny, nie resetuj istniejących
         if (!newTaskGrid["Default"][colId] || newTaskGrid["Default"][colId].length === 0) {
-          // Make a deep copy of tasks to avoid reference issues
+          // Głęboka kopia zadań
           newTaskGrid["Default"][colId] = columns[colId].tasks.map(task => ({...task}));
         }
       });
     }
 
     setTaskGrid(newTaskGrid);
-  }, [columnOrder]); // Only react to column order changes, not to all column changes
+  }, [columnOrder]); // Reaguj tylko na zmiany kolejności kolumn
 
 
   const handleStartAddingTask = (rowId: string, colId: string) => {
@@ -181,7 +181,7 @@ function KanbanBoard() {
     const taskTitle = newTaskTitleMap[`${rowId}-${colId}`] || "";
     if (taskTitle.trim()) {
       onAddTaskToCell(rowId, colId, taskTitle);
-      // Reset the input state
+      // Reset stanu inputa
       handleCancelAddingTask(rowId, colId);
     }
   };
@@ -195,11 +195,11 @@ function KanbanBoard() {
     const newRows = [...rows, newRowName.trim()];
     setRows(newRows);
 
-    // Add new row to taskGrid
+    // Dodaj nowy wiersz do taskGrid
     const newTaskGrid = { ...taskGrid };
     newTaskGrid[newRowName.trim()] = {};
 
-    // Initialize empty task arrays for all columns
+    // Inicjalizuj puste tablice zadań dla wszystkich kolumn
     Object.keys(columns).forEach((colId) => {
       newTaskGrid[newRowName.trim()][colId] = [];
     });
@@ -211,7 +211,7 @@ function KanbanBoard() {
   };
 
   const handleDeleteRow = (rowName: string) => {
-    // Don't delete the default row
+    // Nie usuwaj domyślnego wiersza
     if (rowName === "Default") {
       toast.error("Nie można usunąć domyślnego wiersza!");
       return;
@@ -220,10 +220,10 @@ function KanbanBoard() {
     const newRows = rows.filter((r) => r !== rowName);
     setRows(newRows);
 
-    // Remove row from taskGrid and move tasks to Default row
+    // Usuń wiersz z taskGrid i przenieś zadania do wiersza Default
     const newTaskGrid = { ...taskGrid };
 
-    // Before deleting, move any tasks to the Default row
+    // Przed usunięciem, przenieś zadania do wiersza Default
     if (newTaskGrid[rowName]) {
       Object.keys(newTaskGrid[rowName]).forEach((colId) => {
         newTaskGrid["Default"][colId] = [
@@ -239,7 +239,6 @@ function KanbanBoard() {
     toast.success("Wiersz został usunięty!");
   };
 
-  // Zaimplementowane funkcje do obsługi WIP limitów
   const handleStartEditingWipLimit = (columnId: string) => {
     setIsEditingWipLimitMap((prev) => ({
       ...prev,
@@ -260,7 +259,7 @@ function KanbanBoard() {
     toast.success(`Limit zadań dla kolumny został zaktualizowany na ${limit === 0 ? "brak limitu" : limit}!`);
   };
 
-  // Helper function to count tasks in a column across all rows
+  // Funkcja pomocnicza do liczenia zadań w kolumnie we wszystkich wierszach
   const countTasksInColumn = (columnId: string): number => {
     let count = 0;
     rows.forEach(rowId => {
@@ -275,7 +274,7 @@ function KanbanBoard() {
     const { source, destination, type, draggableId } = result;
     if (!destination) return;
   
-    // Handle column reordering
+    // Obsługa zmiany kolejności kolumn
     if (type === "COLUMN") {
       if (destination.index === source.index) return;
       const newColumnOrder = Array.from(columnOrder);
@@ -294,18 +293,18 @@ function KanbanBoard() {
       return;
     }
   
-    // Parse the droppable ID to get row and column
+    // Parsowanie ID elementu do upuszczenia, aby uzyskać wiersz i kolumnę
     const sourceRowId = source.droppableId.split("-")[0];
     const sourceColId = source.droppableId.split("-")[1];
     const destRowId = destination.droppableId.split("-")[0];
     const destColId = destination.droppableId.split("-")[1];
   
-    // Check if we're moving to a different column
+    // Sprawdź, czy przenosimy do innej kolumny
     if (sourceColId !== destColId) {
-      // Count current tasks in destination column
+      // Policz bieżące zadania w kolumnie docelowej
       const destColumnTaskCount = countTasksInColumn(destColId);
       
-      // Get destination column's WIP limit
+      // Pobierz limit WIP dla kolumny docelowej
       const destColumn = columns[destColId];
       if (destColumn && destColumn.wipLimit > 0 && destColumnTaskCount >= destColumn.wipLimit) {
         toast.error(`Nie można dodać więcej zadań do kolumny ${destColumn.title} - limit WIP osiągnięty!`);
@@ -313,21 +312,21 @@ function KanbanBoard() {
       }
     }
   
-    // Create a new task grid
+    // Utwórz nową siatkę zadań
     const newTaskGrid = { ...taskGrid };
   
-    // Moving task within the same cell
+    // Przenoszenie zadania w obrębie tej samej komórki
     if (sourceRowId === destRowId && sourceColId === destColId) {
       const tasks = Array.from(newTaskGrid[sourceRowId][sourceColId]);
       const [removed] = tasks.splice(source.index, 1);
       tasks.splice(destination.index, 0, removed);
       newTaskGrid[sourceRowId][sourceColId] = tasks;
     } else {
-      // Moving to a different cell
+      // Przenoszenie do innej komórki
       const sourceTasks = Array.from(newTaskGrid[sourceRowId][sourceColId]);
       const [removed] = sourceTasks.splice(source.index, 1);
   
-      // Ensure destination exists
+      // Upewnij się, że cel istnieje
       if (!newTaskGrid[destRowId]) {
         newTaskGrid[destRowId] = {};
       }
@@ -341,22 +340,21 @@ function KanbanBoard() {
       newTaskGrid[sourceRowId][sourceColId] = sourceTasks;
       newTaskGrid[destRowId][destColId] = destTasks;
   
-      // Only update position in database if column changed
+      // Aktualizuj pozycję w bazie danych tylko jeśli zmieniła się kolumna
       if (sourceColId !== destColId) {
         const taskIdParts = draggableId.split("-");
-        // Get the task ID portion (should be "task-{dbId}-{random}")
+        // Pobierz część identyfikatora zadania (powinno być "task-{dbId}-{random}")
         const taskId = taskIdParts.slice(1).join("-");
         
         updateTaskPosition(taskId, sourceColId, destColId);
   
-        // Update columns for the database
+        // Aktualizuj kolumny dla bazy danych
         const updatedColumns = { ...columns };
         
-        // Find the task in the source column
+        // Znajdź zadanie w kolumnie źródłowej
         let movedTask = removed; 
         
         if (movedTask) {
-          // Update tasks in each column - important for WIP limit calculations
           updatedColumns[sourceColId] = {
             ...updatedColumns[sourceColId],
             tasks: updatedColumns[sourceColId].tasks.filter(t => t.id !== movedTask.id),
@@ -376,17 +374,16 @@ function KanbanBoard() {
   };
 
   const onAddTaskToCell = (rowId: string, colId: string, taskTitle: string) => {
-    // Get current task count in the column to check WIP limit
+    // Sprawdź limit WIP przed dodaniem zadania
     const currentTaskCount = countTasksInColumn(colId);
     const column = columns[colId];
     
-    // Check if adding a task would exceed the WIP limit
     if (column && column.wipLimit > 0 && currentTaskCount >= column.wipLimit) {
       toast.error(`Nie można dodać więcej zadań do kolumny ${column.title} - limit WIP osiągnięty!`);
       return;
     }
 
-    // Only add task if title is not empty
+    // Dodaj zadanie tylko jeśli tytuł nie jest pusty
     if (!taskTitle.trim()) return;
 
     const newTaskId = `task-${Date.now()}`;
@@ -394,13 +391,13 @@ function KanbanBoard() {
       id: newTaskId,
       content: taskTitle,
       name: taskTitle,
-      users: [], // Dodajemy pustą tablicę użytkowników
+      users: [],
     };
 
-    // Add task to the column for database
+    // Dodaj zadanie do kolumny w bazie danych
     onAddTask(colId, taskTitle);
 
-    // Add task to the specific cell in the grid
+    // Dodaj zadanie do konkretnej komórki w siatce
     const newTaskGrid = { ...taskGrid };
     if (!newTaskGrid[rowId]) {
       newTaskGrid[rowId] = {};
@@ -414,7 +411,7 @@ function KanbanBoard() {
   };
 
   const onDeleteTaskFromCell = (rowId: string, colId: string, taskId: string) => {
-    // Remove task from the specific cell
+    // Usuń zadanie z konkretnej komórki
     const newTaskGrid = { ...taskGrid };
     if (newTaskGrid[rowId] && newTaskGrid[rowId][colId]) {
       newTaskGrid[rowId][colId] = newTaskGrid[rowId][colId].filter(
@@ -422,7 +419,7 @@ function KanbanBoard() {
       );
     }
 
-    // Remove task from the column for database
+    // Usuń zadanie z kolumny w bazie danych
     onDeleteTask(colId, taskId);
 
     setTaskGrid(newTaskGrid);
@@ -430,7 +427,6 @@ function KanbanBoard() {
 
   // Funkcja do aktualizacji danych zadania (nazwa i przypisani użytkownicy)
   const handleTaskUpdate = (rowId: string, colId: string, taskId: string, updatedData: { name: string; users: IUser[] }) => {
-    // Aktualizuj dane w taskGrid
     const newTaskGrid = { ...taskGrid };
     
     if (newTaskGrid[rowId] && newTaskGrid[rowId][colId]) {
@@ -455,29 +451,27 @@ function KanbanBoard() {
         toast.success("Zadanie zostało zaktualizowane!");
       })
       .catch((error) => {
-        console.error("Error updating task:", error);
+        console.error("Błąd podczas aktualizacji zadania:", error);
         toast.error("Nie udało się zaktualizować zadania.");
       });
   };
 
-  // Create a compatible header data object that satisfies BoardHeader requirements
+  // Utworzenie kompatybilnego obiektu danych nagłówka dla komponentu BoardHeader
   const headerBoardData: { tableName: string } = {
     tableName: boardData?.tableName || ""
   };
 
-  // Create a modified setBoardData function that matches the expected signature
+  // Utworzenie zmodyfikowanej funkcji setBoardData zgodnej z oczekiwaną sygnaturą
   const handleSetBoardData = (data: { tableName: string }) => {
-    // Update the original boardData with the new tableName
     if (boardData) {
       setBoardData({
         ...boardData,
         tableName: data.tableName
       });
     } else {
-      // If boardData is null, create a minimal valid object
       setBoardData({
         tableName: data.tableName,
-        columns: [] as IColumnEntity[], // This is the fix for the type error
+        columns: [] as IColumnEntity[], 
         statuses: [],
         backgroundImage: ""
       } as IKanban);
