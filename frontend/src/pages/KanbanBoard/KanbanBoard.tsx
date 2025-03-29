@@ -274,7 +274,7 @@ function KanbanBoard() {
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, type, draggableId } = result;
     if (!destination) return;
-
+  
     // Handle column reordering
     if (type === "COLUMN") {
       if (destination.index === source.index) return;
@@ -293,13 +293,13 @@ function KanbanBoard() {
       });
       return;
     }
-
+  
     // Parse the droppable ID to get row and column
     const sourceRowId = source.droppableId.split("-")[0];
     const sourceColId = source.droppableId.split("-")[1];
     const destRowId = destination.droppableId.split("-")[0];
     const destColId = destination.droppableId.split("-")[1];
-
+  
     // Check if we're moving to a different column
     if (sourceColId !== destColId) {
       // Count current tasks in destination column
@@ -312,10 +312,10 @@ function KanbanBoard() {
         return;
       }
     }
-
+  
     // Create a new task grid
     const newTaskGrid = { ...taskGrid };
-
+  
     // Moving task within the same cell
     if (sourceRowId === destRowId && sourceColId === destColId) {
       const tasks = Array.from(newTaskGrid[sourceRowId][sourceColId]);
@@ -326,7 +326,7 @@ function KanbanBoard() {
       // Moving to a different cell
       const sourceTasks = Array.from(newTaskGrid[sourceRowId][sourceColId]);
       const [removed] = sourceTasks.splice(source.index, 1);
-
+  
       // Ensure destination exists
       if (!newTaskGrid[destRowId]) {
         newTaskGrid[destRowId] = {};
@@ -334,36 +334,34 @@ function KanbanBoard() {
       if (!newTaskGrid[destRowId][destColId]) {
         newTaskGrid[destRowId][destColId] = [];
       }
-
+  
       const destTasks = Array.from(newTaskGrid[destRowId][destColId]);
       destTasks.splice(destination.index, 0, removed);
-
+  
       newTaskGrid[sourceRowId][sourceColId] = sourceTasks;
       newTaskGrid[destRowId][destColId] = destTasks;
-
+  
       // Only update position in database if column changed
       if (sourceColId !== destColId) {
+        // Extract the actual taskId from the draggableId format: "{columnId}-task-{dbId}-{random}-{index}"
         const taskIdParts = draggableId.split("-");
-        const actualTaskId = taskIdParts[1];
-        updateTaskPosition(`task-${actualTaskId}`, sourceColId, destColId);
-
+        // Get the task ID portion (should be "task-{dbId}-{random}")
+        const taskId = taskIdParts.slice(1).join("-");
+        
+        // Call updateTaskPosition with the correct task ID format
+        updateTaskPosition(taskId, sourceColId, destColId);
+  
         // Update columns for the database
         const updatedColumns = { ...columns };
         
         // Find the task in the source column
-        let movedTask = null;
-        for (const row of rows) {
-          if (taskGrid[row] && taskGrid[row][sourceColId]) {
-            movedTask = taskGrid[row][sourceColId].find(t => t.id === draggableId);
-            if (movedTask) break;
-          }
-        }
+        let movedTask = removed; // We already have the removed task from the source
         
         if (movedTask) {
           // Update tasks in each column - important for WIP limit calculations
           updatedColumns[sourceColId] = {
             ...updatedColumns[sourceColId],
-            tasks: updatedColumns[sourceColId].tasks.filter(t => t.id !== draggableId),
+            tasks: updatedColumns[sourceColId].tasks.filter(t => t.id !== movedTask.id),
           };
           
           updatedColumns[destColId] = {
@@ -375,7 +373,7 @@ function KanbanBoard() {
         }
       }
     }
-
+  
     setTaskGrid(newTaskGrid);
   };
 

@@ -274,26 +274,38 @@ export function useKanbanBoard() {
     return true;
   };
 
-  // Update task position when dragged to another column
+  // Update task position when dragged to another column - UPDATED FUNCTION
   const updateTaskPosition = async (
     taskId: string,
     sourceColumnId: string,
     destinationColumnId: string
   ) => {
-    const task = columns[sourceColumnId].tasks.find((t) => t.id === taskId);
-    const dbId = task?.dbId;
+    // Parse the task ID to get the database ID from the format "task-{dbId}-{random}"
+    const taskIdParts = taskId.split("-");
+    if (taskIdParts.length < 2) {
+      console.error("Invalid task ID format:", taskId);
+      return;
+    }
+    
+    // Extract the database ID (second part of the taskId)
+    const dbId = taskIdParts[1];
     const destColumn = columns[destinationColumnId];
 
-    if (dbId && destColumn.columnId) {
-      try {
-        // Update task's column in the database
-        await api.put(`tasks/${dbId}/update-column`, {
-          columnId: destColumn.columnId,
-        });
-      } catch (error) {
-        console.error("Error updating task position:", error);
-        toast.error("Nie udało się zaktualizować pozycji zadania.");
-      }
+    if (!dbId || !destColumn.columnId) {
+      console.error("Missing DB ID for task or column:", { taskId, dbId, destColumnId: destColumn.columnId });
+      return;
+    }
+
+    try {
+      // Update task's column in the database using the provided endpoint pattern
+      await api.patch<ApiResponse<ITask>>(`tasks/${dbId}/change-column`, { 
+        columnId: destColumn.columnId 
+      });
+      
+      toast.success(`Przeniesiono zadanie do kolumny ${destColumn.title}`);
+    } catch (error) {
+      console.error("Error updating task position:", error);
+      toast.error("Nie udało się zaktualizować pozycji zadania.");
     }
   };
 
