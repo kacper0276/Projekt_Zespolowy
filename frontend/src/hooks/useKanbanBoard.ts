@@ -277,7 +277,7 @@ export function useKanbanBoard() {
   // Update task position when dragged to another column - UPDATED FUNCTION
   const updateTaskPosition = async (
     taskId: string,
-    sourceColumnId: string,
+    _sourceColumnId: string,
     destinationColumnId: string
   ) => {
     // Parse the task ID to get the database ID from the format "task-{dbId}-{random}"
