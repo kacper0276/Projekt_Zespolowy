@@ -55,4 +55,17 @@ export class ToDoListsService {
 
     return this.toDoItemRepository.save(newItem);
   }
+
+  async getListsByTaskId(taskId: string) {
+    const toDoLists = await this.toDoListRepository.find({
+      where: { task: { id: +taskId } },
+      relations: ['task', 'items'],
+    });
+
+    if (!toDoLists || toDoLists.length === 0) {
+      throw new NotFoundException('No To-Do Lists found for the given Task ID');
+    }
+
+    return toDoLists;
+  }
 }

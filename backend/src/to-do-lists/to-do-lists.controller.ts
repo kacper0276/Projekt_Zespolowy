@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Res,
@@ -65,6 +67,35 @@ export class ToDoListsController {
       response.send(HttpStatus.INTERNAL_SERVER_ERROR).send({
         message: 'internal-server-error',
       });
+    }
+  }
+
+  @Get('task/:taskId')
+  async getListsByTaskId(
+    @Param('taskId') taskId: string,
+    @Res() response: Response,
+  ) {
+    try {
+      const lists = await this.toDoListsService.getListsByTaskId(taskId);
+
+      response.status(HttpStatus.OK).send({
+        message: 'todo-lists-found',
+        data: lists,
+      });
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        response.status(HttpStatus.BAD_REQUEST).send({
+          message: error.message,
+        });
+      } else if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
+          message: error.message,
+        });
+      } else {
+        response.send(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'internal-server-error',
+        });
+      }
     }
   }
 }
