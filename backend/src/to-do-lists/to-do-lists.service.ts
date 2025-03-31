@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ToDoList } from './entities/to-do-list.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from 'src/tasks/entities/task.entity';
 import { CreateToDoListDto } from './dto/create-to-do-list.dto';
+import { CreateToDoItemDto } from './dto/create-to-do-item.dto';
+import { ToDoItem } from './entities/to-do-item.entity';
 
 @Injectable()
 export class ToDoListsService {
@@ -12,6 +14,8 @@ export class ToDoListsService {
     private readonly toDoListRepository: Repository<ToDoList>,
     @InjectRepository(Task)
     private taskRepository: Repository<Task>,
+    @InjectRepository(ToDoItem)
+    private readonly toDoItemRepository: Repository<ToDoItem>,
   ) {}
 
   async create(
@@ -29,8 +33,26 @@ export class ToDoListsService {
       task: task ? task : taskDb,
     });
 
-    console.log(toDoList);
-
     return this.toDoListRepository.save(toDoList);
+  }
+
+  async addToDoItem(
+    listId: string,
+    createToDoItemDto: CreateToDoItemDto,
+  ): Promise<ToDoItem> {
+    const toDoList = await this.toDoListRepository.findOne({
+      where: { id: +listId },
+    });
+
+    if (!toDoList) {
+      throw new NotFoundException('To-Do List not found');
+    }
+
+    const newItem = this.toDoItemRepository.create({
+      ...createToDoItemDto,
+      toDoList,
+    });
+
+    return this.toDoItemRepository.save(newItem);
   }
 }

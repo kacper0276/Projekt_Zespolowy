@@ -10,6 +10,7 @@ import {
 import { ToDoListsService } from './to-do-lists.service';
 import { CreateToDoListDto } from './dto/create-to-do-list.dto';
 import { Response } from 'express';
+import { CreateToDoItemDto } from './dto/create-to-do-item.dto';
 
 @Controller('to-do-lists')
 export class ToDoListsController {
@@ -43,5 +44,27 @@ export class ToDoListsController {
       }
     }
     return this.toDoListsService.create(taskId, createToDoListDto);
+  }
+
+  @Post(':listId/items')
+  async addToDoItem(
+    @Param('listId') listId: string,
+    @Body() createToDoItemDto: CreateToDoItemDto,
+    @Res() response: Response,
+  ) {
+    try {
+      const newItem = await this.toDoListsService.addToDoItem(
+        listId,
+        createToDoItemDto,
+      );
+      response.status(HttpStatus.OK).send({
+        message: 'todo-item-added',
+        data: newItem,
+      });
+    } catch (error) {
+      response.send(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: 'internal-server-error',
+      });
+    }
   }
 }
