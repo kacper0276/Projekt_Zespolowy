@@ -39,7 +39,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api,
         id: params.id,
         tableName: newTableName.trim(),
       });
-
+      
       if (res.data && res.data.data) {
         setBoardData({
           ...boardData,
@@ -47,7 +47,6 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api,
         });
         toast.success("Nazwa tablicy została zaktualizowana!");
       }
-
       setIsEditingTitle(false);
     } catch (error) {
       console.error("Error updating table name:", error);
@@ -92,7 +91,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api,
         <div className={styles.boardTitle}>
           <h1>{boardData?.tableName || "Tablica Kanban"}</h1>
           <i
-            className="bi bi-pencil-square"
+            className="bi bi-pencil"
             onClick={handleEditTableName}
             title="Edytuj nazwę tablicy"
           ></i>

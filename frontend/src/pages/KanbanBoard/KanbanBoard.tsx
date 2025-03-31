@@ -522,6 +522,7 @@ const handleColumnDeleted = (deletedColumnId: string, prevColumnId: string) => {
         backgroundImage: `url(${boardData?.backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
+        backgroundAttachment: "fixed",
       }}
     >
 
