@@ -14,15 +14,23 @@ export class ToDoListsService {
     private taskRepository: Repository<Task>,
   ) {}
 
-  async create(createToDoListDto: CreateToDoListDto): Promise<ToDoList> {
+  async create(
+    taskId: string,
+    createToDoListDto: CreateToDoListDto,
+  ): Promise<ToDoList> {
     const { name, items, task } = createToDoListDto;
+    const taskDb = await this.taskRepository.findOne({
+      where: { id: +taskId },
+    });
 
     const toDoList = this.toDoListRepository.create({
       name,
       items,
-      task,
+      task: task ? task : taskDb,
     });
 
-    return await this.toDoListRepository.save(toDoList);
+    console.log(toDoList);
+
+    return this.toDoListRepository.save(toDoList);
   }
 }
