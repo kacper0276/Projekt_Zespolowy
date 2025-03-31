@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import Multiselect from "multiselect-react-dropdown";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import styles from "./TaskModal.module.scss";
+import ToDoList from "../ToDoList/ToDoList";
 
 interface TaskModalProps {
   taskId: string;
@@ -43,10 +44,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
       maxTasks: 0,
       kanban: undefined,
     },
-    toDoList: {
-      name: "",
-      tasks: [],
-    },
+    kanbans: [],
+    toDoLists: [],
   });
 
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
@@ -196,6 +195,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   }}
                 />
               </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Listy zadań:</label>
+              <ToDoList taskId={+taskId.split("-")[1]} />
             </div>
 
             <div className={styles.formActions}>
