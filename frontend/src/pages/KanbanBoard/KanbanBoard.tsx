@@ -516,7 +516,16 @@ const handleColumnDeleted = (deletedColumnId: string, prevColumnId: string) => {
   };
 
   return (
-    <div className={styles.kanbanBoard}>
+    <div
+      className={styles.kanbanBoard}
+      style={{
+        backgroundImage: `url(${boardData?.backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+
+
       <ToastContainer theme="dark" />
       <BoardHeader 
         boardData={headerBoardData}
@@ -604,6 +613,7 @@ const handleColumnDeleted = (deletedColumnId: string, prevColumnId: string) => {
       </DragDropContext>
     </div>
   );
+
 }
 
 export default KanbanBoard;

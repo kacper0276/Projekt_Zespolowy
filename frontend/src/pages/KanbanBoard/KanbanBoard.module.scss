@@ -2,12 +2,29 @@
 @use "../../styles/mixins" as *;
 @use "../../styles/variables" as *;
 
-// Keep existing styles from your code
+
 .kanbanBoard {
   background-color: $backgroundColor;
   min-height: 100vh;
   color: $textColor;
   padding: 20px;
+  position: relative; 
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); 
+    z-index: 1; 
+  }
+
+  & > * {
+    position: relative;
+    z-index: 2;
+  }
 }
 
 .boardHeader {
@@ -111,12 +128,12 @@
 .gridContainer {
   display: flex;
   flex-direction: column;
-  overflow: hidden; // Changed from auto to hidden
+  overflow: hidden;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  background-color: rgba(25, 27, 31, 0.6);
+  background-color: rgba(25, 27, 31, 0.9); 
   max-width: 100%;
-  position: relative; // Added position relative
+  position: relative;
 }
 
 .headerRow {
@@ -124,58 +141,59 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background-color: rgba(32, 34, 39, 0.95);
+  background-color: rgba(32, 34, 39, 0.98);
   border-bottom: 2px solid rgba(165, 8, 46, 0.3);
-  width: fit-content; // Ensures the header row extends to fit all columns
-  min-width: 100%; // Ensures it's at least as wide as the container
+  width: fit-content;
+  min-width: 100%;
 }
 
 .rowLabel {
   min-width: 150px;
-  width: 150px; // Fixed width to match across rows
+  width: 150px;
   padding: 15px;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: rgba(32, 34, 39, 0.8);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(32, 34, 39, 0.9); 
+  border-right: 1px solid rgba(255, 255, 255, 0.15); 
   position: sticky;
   left: 0;
   z-index: 5;
-  flex-shrink: 0; // Prevents shrinking
+  flex-shrink: 0;
 }
 
 .columnHeaders {
   display: flex;
   flex: 1;
-  gap: 2px;
+  gap: 8px;
   padding: 8px;
   overflow-x: auto;
-  width: fit-content; // Allows horizontal scrolling
+  width: fit-content;
 }
 
 .columnHeader {
   min-width: 250px;
-  width: 250px; // Fixed width to match grid cells
+  width: 250px;
   padding: 15px;
   text-align: center;
   background: linear-gradient(
     to bottom,
-    rgba(165, 8, 46, 0.2),
-    rgba(36, 37, 42, 0.6)
+    rgba(165, 8, 46, 0.3), 
+    rgba(36, 37, 42, 0.8) 
   );
   border-radius: 6px 6px 0 0;
   transition: background 0.2s ease;
   cursor: grab;
   margin: 0 4px;
-  flex-shrink: 0; // Prevents shrinking
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); 
   
   &:hover {
     background: linear-gradient(
       to bottom,
-      rgba(165, 8, 46, 0.3),
-      rgba(36, 37, 42, 0.7)
+      rgba(165, 8, 46, 0.4), 
+      rgba(36, 37, 42, 0.85) 
     );
   }
   
@@ -198,14 +216,14 @@
 }
 
 .taskCount {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.15); 
   color: #ccc;
   font-size: 0.75rem;
   padding: 2px 8px;
   border-radius: 10px;
   
   &.limitReached {
-    background-color: rgba(255, 77, 77, 0.2);
+    background-color: rgba(255, 77, 77, 0.3); 
     color: $dangerColor;
   }
 }
@@ -224,7 +242,7 @@
   
   &:hover {
     color: $dangerColor;
-    background-color: rgba(255, 77, 77, 0.1);
+    background-color: rgba(255, 77, 77, 0.2); 
   }
   
   i {
@@ -235,7 +253,7 @@
 .addColumnSection {
   padding: 8px;
   min-width: 260px;
-  flex-shrink: 0; // Prevents shrinking
+  flex-shrink: 0;
 }
 
 .columnCreation {
@@ -262,44 +280,46 @@
 .gridRows {
   display: flex;
   flex-direction: column;
-  overflow: auto; // Enables scrolling
-  max-height: calc(100vh - 250px); // Adjust based on your header height
+  overflow: auto;
+  max-height: calc(100vh - 250px);
 }
 
 .gridRow {
   display: flex;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  width: fit-content; // Allows horizontal scrolling
-  min-width: 100%; // Ensures it's at least as wide as the container
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
+  width: fit-content;
+  min-width: 100%;
   
   &:hover {
-    background-color: rgba(40, 42, 47, 0.4);
+    background-color: rgba(40, 42, 47, 0.5); 
   }
 }
 
 .rowCells {
   display: flex;
   flex: 1;
-  gap: 2px;
+  gap: 8px; 
   padding: 4px 8px;
-  overflow-x: visible; // Changed from auto to visible
+  overflow-x: visible;
 }
 
 .gridCell {
   min-width: 250px;
-  width: 250px; // Fixed width to match column headers
+  width: 250px;
   min-height: 100px;
   max-height: 400px;
   margin: 0 4px;
   display: flex;
   flex-direction: column;
-  background-color: rgba(36, 37, 42, 0.4);
+  background-color: rgba(36, 37, 42, 0.85); 
   border-radius: 4px;
   transition: background-color 0.2s ease;
-  flex-shrink: 0; // Prevents shrinking
+  flex-shrink: 0;
+  border: 1px solid rgba(60, 62, 67, 0.5); 
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); 
   
   &:hover {
-    background-color: rgba(36, 37, 42, 0.6);
+    background-color: rgba(36, 37, 42, 0.95); 
   }
 }
 
@@ -310,21 +330,21 @@
   min-height: 100px;
   
   &.draggingOver {
-    background-color: rgba(165, 8, 46, 0.1);
+    background-color: rgba(165, 8, 46, 0.15); 
     border-radius: 4px;
   }
   
   &.limitReached {
-    background-color: rgba(255, 77, 77, 0.05);
-    border: 1px dashed rgba(255, 77, 77, 0.3);
+    background-color: rgba(255, 77, 77, 0.1); 
+    border: 1px dashed rgba(255, 77, 77, 0.5); 
   }
 }
 
 .taskItem {
   background: linear-gradient(
     to right,
-    rgba(45, 47, 52, 0.95),
-    rgba(55, 57, 62, 0.95)
+    rgba(45, 47, 52, 0.98), 
+    rgba(55, 57, 62, 0.98) 
   );
   padding: 10px;
   margin-bottom: 8px;
@@ -335,14 +355,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border: 1px solid rgba(65, 67, 72, 0.8); 
   
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     background: linear-gradient(
       to right,
-      rgba(50, 52, 57, 0.95),
-      rgba(60, 62, 67, 0.95)
+      rgba(50, 52, 57, 0.98), 
+      rgba(60, 62, 67, 0.98) 
     );
   }
   
@@ -351,8 +372,8 @@
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
     background: linear-gradient(
       to right,
-      rgba(70, 72, 77, 0.95),
-      rgba(80, 82, 87, 0.95)
+      rgba(70, 72, 77, 0.98), 
+      rgba(80, 82, 87, 0.98) 
     );
   }
 }
@@ -376,15 +397,15 @@
   align-items: center;
   padding: 2px 6px;
   border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.08); 
   transition: all 0.2s ease;
   
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.15);
   }
   
   &.limitReached {
-    background-color: rgba(255, 77, 77, 0.1);
+    background-color: rgba(255, 77, 77, 0.2); 
     color: $dangerColor;
   }
 }
@@ -442,14 +463,14 @@
   
   &:hover {
     color: $dangerColor;
-    background-color: rgba(255, 77, 77, 0.1);
+    background-color: rgba(255, 77, 77, 0.2); 
   }
 }
 
 .addTaskButton {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7); 
   cursor: pointer;
   padding: 8px;
   margin-top: 4px;
@@ -463,8 +484,8 @@
   font-size: 0.85rem;
   
   &:hover {
-    background-color: rgba(165, 8, 46, 0.1);
-    color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(165, 8, 46, 0.2); 
+    color: rgba(255, 255, 255, 1); 
   }
 }
 
@@ -473,6 +494,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background-color: rgba(2, 166, 118, 0.15);
+  border-radius: 0 0 4px 4px;
 }
 
 .taskInput {
@@ -481,6 +504,8 @@
   color: $textColor;
   padding: 8px;
   border-radius: 4px;
+  width: 100%;
+  margin-bottom: 8px;
   
   &:focus {
     outline: none;
@@ -497,7 +522,7 @@
 .deleteTaskButton {
   background: none;
   border: none;
-  color: rgba(255, 77, 77, 0.5);
+  color: rgba(255, 77, 77, 0.6);
   cursor: pointer;
   padding: 3px;
   margin-left: 5px;
@@ -506,70 +531,17 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  opacity: 0.5;
+  opacity: 0.6; 
   
   &:hover {
     color: $dangerColor;
     opacity: 1;
-    background-color: rgba(255, 77, 77, 0.1);
+    background-color: rgba(255, 77, 77, 0.2);
   }
   
   i {
     font-size: 0.85rem;
   }
-}
-
-.addTaskButton {
-  background: none;
-  border: none;
-  color: $successColor;
-  opacity: 0.7;
-  width: 100%;
-  padding: 8px;
-  border-radius: 0 0 4px 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font-size: 0.85rem;
-  
-  &:hover {
-    opacity: 1;
-    background-color: rgba(2, 166, 118, 0.1);
-  }
-  
-  i {
-    font-size: 0.9rem;
-  }
-}
-
-.addTaskForm {
-  padding: 8px;
-  background-color: rgba(2, 166, 118, 0.1);
-  border-radius: 0 0 4px 4px;
-}
-
-.taskInput {
-  width: 100%;
-  background-color: $cardBackground;
-  border: 1px solid $successColor;
-  color: $textColor;
-  padding: 8px;
-  border-radius: 4px;
-  margin-bottom: 8px;
-  
-  &:focus {
-    outline: none;
-    border-color: $successColor;
-    box-shadow: 0 0 0 2px rgba(2, 166, 118, 0.2);
-  }
-}
-
-.addTaskActions {
-  display: flex;
-  gap: 8px;
 }
 
 // Row controls
@@ -590,9 +562,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: rgba(36, 37, 42, 0.6);
+  background-color: rgba(36, 37, 42, 0.8); 
   padding: 10px;
   border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
 }
 
 .rowInput {
@@ -629,7 +602,7 @@
   
   &:hover {
     color: $dangerColor;
-    background-color: rgba(255, 77, 77, 0.1);
+    background-color: rgba(255, 77, 77, 0.2); 
   }
   
   i {
