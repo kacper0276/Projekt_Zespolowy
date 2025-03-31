@@ -1,20 +1,14 @@
 import styles from "../styles/progressBar.module.scss";
-
 interface StrengthValue {
   upper: boolean;
   lower: boolean;
   numbers: boolean;
 }
 
-const strength: { [key: number]: string } = {
-  1: "słabe",
-  2: "średnie",
-  3: "mocne",
-};
-
 const getPasswordStrength = (
   password: string,
-  strengthValue: StrengthValue
+  strengthValue: StrengthValue,
+  t: (key: string) => string
 ): string => {
   strengthValue.upper = /[A-Z]/.test(password);
   strengthValue.lower = /[a-z]/.test(password);
@@ -28,33 +22,34 @@ const getPasswordStrength = (
     }
   }
 
-  return strength[strengthIndicator] ?? "";
+    return t(`strength.${strengthIndicator}`) ?? "";
 };
 
-const getStrength = (password: string): string => {
+const getStrength = (password: string, t: (key: string) => string): string => {
   const strengthValue: StrengthValue = {
     upper: false,
     numbers: false,
     lower: false,
   };
 
-  return getPasswordStrength(password, strengthValue);
+  return getPasswordStrength(password, strengthValue, t);
 };
 
 export const handleChange = (
   register: string,
   bars: React.RefObject<HTMLDivElement | null>,
-  strengthDiv: React.RefObject<HTMLDivElement | null>
+  strengthDiv: React.RefObject<HTMLDivElement | null>,
+  t: (key: string) => string
 ): void => {
   const password = register;
 
-  const strengthText = getStrength(password);
+  const strengthText = getStrength(password, t);
 
   if (bars && bars.current && strengthDiv.current) {
     bars.current.className = "";
 
     if (strengthText) {
-      strengthDiv.current.innerText = `${strengthText} hasło`;
+      strengthDiv.current.innerText = `${strengthText} ${t("password")}`;
       if (strengthText in styles) {
         bars.current.classList.add(styles[strengthText]);
       }

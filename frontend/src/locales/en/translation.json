@@ -32,7 +32,12 @@
   "password": "Password",
   "repeat-password": "Repeat password",
   "sign-up": "Sign up",
-
+  "strength": {
+    "0": "",
+    "1": "weak",
+    "2": "medium",
+    "3": "strong"
+  },
   "sign-in-page": "Sign in page",
   "signing-in": "Sign in",
 

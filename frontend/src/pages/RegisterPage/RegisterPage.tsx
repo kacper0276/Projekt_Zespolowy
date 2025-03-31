@@ -47,6 +47,7 @@ const RegisterPage: React.FC = () => {
       ...prevState,
       [name]: value ?? "",
     }));
+
   };
 
   const register = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -104,7 +105,7 @@ const RegisterPage: React.FC = () => {
               name="password"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 handleInputChange(e);
-                handleChange(e.target.value, bars, strengthDiv);
+                handleChange(e.target.value, bars, strengthDiv, t);
               }}
               required
             />

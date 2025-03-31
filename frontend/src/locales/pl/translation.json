@@ -33,7 +33,12 @@
   "password": "Hasło",
   "repeat-password": "Powtórz hasło",
   "sign-up": "Zarejestruj się",
-
+  "strength": {
+    "0": "",
+    "1": "słabe",
+    "2": "średnie",
+    "3": "mocne"
+  },
   "sign-in-page": "Strona logowania",
   "signing-in": "Logowanie",
 
