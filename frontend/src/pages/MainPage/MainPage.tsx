@@ -3,14 +3,14 @@ import styles from "./MainPage.module.scss";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import useWebsiteTitle from "../../hooks/useWebsiteTitle";
+import { useTranslation } from "react-i18next";
 
 const MainPage: React.FC = () => {
-  useWebsiteTitle("Strona główna");
-
+  const { t } = useTranslation();
+  useWebsiteTitle(t("main-page"));
   const navigate = useNavigate();
-
   const handleStartFree = () => {
-    navigate("/KanbanBoard");
+    navigate("/KanbanBoard"); 
   };
 
   return (
@@ -19,20 +19,20 @@ const MainPage: React.FC = () => {
         <section className={`row ${styles.heroSection}`}>
           <div className="col-12 col-md-6 text-center text-md-start">
             <h1 className={styles.heroTitle}>
-              Stwórz swoją idealną tablicę Kanban
+              {t("create-your-ideal-Kanban-board")}
             </h1>
             <p className={styles.heroSubtitle}>
-              Zarządzaj projektami, organizuj zadania i zwiększ produktywność
+              {t("manage-projects-organize-tasks-and-increase-productivity")}
             </p>
             <div className={styles.ctaButtons}>
               <button
                 className={`btn ${styles.primaryCta}`}
                 onClick={handleStartFree}
               >
-                Rozpocznij za darmo
+                {t("start-for-free")}
               </button>
               <button className={`btn ${styles.secondaryCta}`}>
-                Stwórz nową tablice
+                {t("create-a-new-board")}
               </button>
             </div>
           </div>
@@ -107,15 +107,15 @@ const MainPage: React.FC = () => {
 
         <section className={`row ${styles.featuresSection}`}>
           <div className="col-12 text-center">
-            <h2 className={styles.sectionTitle}>Nasze funkcje</h2>
+            <h2 className={styles.sectionTitle}>{t("our-features")}</h2>
           </div>
           <div className="col-md-4 text-center">
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>
                 <i className="bi bi-pencil"></i>
               </div>
-              <h3>Edytuj</h3>
-              <p>Dostosuj swoje tablice do swoich potrzeb</p>
+              <h3>{t("edit")}</h3>
+              <p>{t("customize-your-boards-to-your-needs")}</p>
             </div>
           </div>
           <div className="col-md-4 text-center">
@@ -123,8 +123,8 @@ const MainPage: React.FC = () => {
               <div className={styles.featureIcon}>
                 <i className="bi bi-people"></i>
               </div>
-              <h3>Współpraca</h3>
-              <p>Pracuj razem w czasie rzeczywistym</p>
+              <h3>{t("cooperation")}</h3>
+              <p>{t("work-together-in-real-time")}</p>
             </div>
           </div>
           <div className="col-md-4 text-center">
@@ -132,8 +132,8 @@ const MainPage: React.FC = () => {
               <div className={styles.featureIcon}>
                 <i className="bi bi-grid"></i>
               </div>
-              <h3>Integracje</h3>
-              <p>Połącz się z innymi narzędziami</p>
+              <h3>{t("integrations")}</h3>
+              <p>{t("connect-to-other-tools")}</p>
             </div>
           </div>
         </section>

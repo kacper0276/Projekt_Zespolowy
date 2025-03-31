@@ -9,9 +9,11 @@ import { useUser } from "../../context/UserContext";
 import localStorageService from "../../services/localStorage.service";
 import { toast } from "react-toastify";
 import webSocketService from "../../services/webSocket.service";
+import { useTranslation } from "react-i18next";
 
 const LoginPage: React.FC = () => {
-  useWebsiteTitle("Strona logowania");
+  const { t } = useTranslation();
+  useWebsiteTitle(t("sign-in-page"));
   const api = useApiJson();
   const userContext = useUser();
   const navigate = useNavigate();
@@ -65,11 +67,11 @@ const LoginPage: React.FC = () => {
   return (
     <div className={styles.mainContainer}>
       <div className={styles.formContainer}>
-        <h2>Logowanie</h2>
+        <h2>{t("signing-in")}</h2>
         <form onSubmit={login}>
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t("email")}
             name="email"
             required
             onChange={handleInputChange}
@@ -77,7 +79,7 @@ const LoginPage: React.FC = () => {
           <div className={styles.passwordContainer}>
             <input
               type={passwordVisible ? "text" : "password"}
-              placeholder="Hasło"
+              placeholder={t("password")}
               name="password"
               onChange={handleInputChange}
               required
@@ -90,7 +92,7 @@ const LoginPage: React.FC = () => {
               {passwordVisible ? "🙈" : "👁️"}
             </button>
           </div>
-          <button type="submit">Zaloguj się</button>
+          <button type="submit">{t("sign-in")}</button>
         </form>
       </div>
     </div>

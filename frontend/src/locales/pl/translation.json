@@ -1,1 +1,50 @@
-{}
+{
+  "main-page": "Strona główna",
+  "start-for-free": "Rozpocznij za darmo",
+  "create-a-new-board": "Stwórz nową tablice",
+  "create-your-ideal-Kanban-board": "Stwórz swoją idealną tablicę Kanban",
+  "manage-projects-organize-tasks-and-increase-productivity": "Zarządzaj projektami, organizuj zadania i zwiększ produktywność",
+  "our-features": "Nasze funkcje",
+  "edit": "Edytuj",
+  "customize-your-boards-to-your-needs": "Dostosuj swoje tablice do swoich potrzeb",
+  "cooperation": "Współpraca",
+  "work-together-in-real-time": "Pracuj razem w czasie rzeczywistym",
+  "integrations": "Integracje",
+  "connect-to-other-tools": "Połącz się z innymi narzędziami",
+
+  "professional-tool-for-managing-projects": "Profesjonalne narzędzie do zarządzania projektami",
+  "quick-links": "Szybkie linki",
+  "features": "Funkcje",
+  "pricing": "Cennik",
+  "contact": "Kontakt",
+  "copyright-disclaimer": "© 2025 KanbanPro. Wszelkie prawa zastrzeżone.",
+
+  "my-boards": "Moje tablice",
+  "profile": "Profil",
+  "sign-in": "Zaloguj się",
+  "register": "Rejestracja",
+
+  "register-page": "Strona rejestracji",
+  "passwords-do-not-match": "Hasła nie są takie same",
+  "email": "E-mail",
+  "login": "Login",
+  "first-name": "Imię",
+  "last-name": "Nazwisko",
+  "password": "Hasło",
+  "repeat-password": "Powtórz hasło",
+  "sign-up": "Zarejestruj się",
+
+  "sign-in-page": "Strona logowania",
+  "signing-in": "Logowanie",
+
+  "kanban-board": "Tablica Kanban",
+  "board-name-can-not-be-empty": "Nazwa tablicy nie może być pusta",
+  "board-name-has-been-updated": "Nazwa tablicy została zaktualizowana!",
+  "failed-to-update-board-name": "Nie udało się zaktualizować nazwy tablicy.",
+  "new-column-name": "Nazwa nowej kolumny",
+  "add-column": "Dodaj kolumnę",
+
+  "page-not-found": "Nie znaleziono strony",
+  "not-found": "404 - Nie znaleziono",
+  "sorry-the-page-you-are-looking-for-does-not-exist": "Przepraszamy, strona której szukasz nie istnieje."
+}

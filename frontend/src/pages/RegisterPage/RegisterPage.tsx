@@ -10,9 +10,11 @@ import { useApiJson } from "../../config/api";
 import { handleChange } from "../../helpers/ProgressBarRegister";
 import { ApiResponse } from "../../types/api.types";
 import { IUser } from "../../interfaces/IUser";
+import { useTranslation } from "react-i18next";
 
 const RegisterPage: React.FC = () => {
-  useWebsiteTitle("Strona rejestracji");
+  const { t } = useTranslation();
+  useWebsiteTitle(t("register-page"));
   const navigate = useNavigate();
   const api = useApiJson();
   const bars = useRef<HTMLDivElement>(null);
@@ -51,7 +53,7 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
 
     if (registerData.password !== registerData.repeatedPassword) {
-      toast.error("Hasła nie są takie same");
+      toast.error(t("passwords-do-not-match"));
       return;
     }
 
@@ -67,38 +69,38 @@ const RegisterPage: React.FC = () => {
   return (
     <div className={styles.mainContainer}>
       <div className={styles.formContainer}>
-        <h2>Rejestracja</h2>
+        <h2>{t("register")}</h2>
         <form onSubmit={register}>
           <input
             type="email"
-            placeholder="email"
+            placeholder={t("email")}
             name="email"
             required
             onChange={handleInputChange}
           />
           <input
             type="text"
-            placeholder="login"
+            placeholder={t("login")}
             name="login"
             required
             onChange={handleInputChange}
           />
           <input
             type="text"
-            placeholder="firstName"
+            placeholder={t("first-name")}
             name="firstName"
             onChange={handleInputChange}
           />
           <input
             type="text"
-            placeholder="lastName"
+            placeholder={t("last-name")}
             name="lastName"
             onChange={handleInputChange}
           />
           <div className={styles.passwordContainer}>
             <input
               type={passwordVisible ? "text" : "password"}
-              placeholder="Hasło"
+              placeholder={t("password")}
               name="password"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 handleInputChange(e);
@@ -117,7 +119,7 @@ const RegisterPage: React.FC = () => {
           <div className={styles.passwordContainer}>
             <input
               type={repeatedPasswordVisible ? "text" : "password"}
-              placeholder="Powtórz hasło"
+              placeholder={t("repeat-password")}
               name="repeatedPassword"
               onChange={handleInputChange}
               required
@@ -138,7 +140,7 @@ const RegisterPage: React.FC = () => {
             className={`${progressBarStyles.strength}`}
             ref={strengthDiv}
           ></div>
-          <button type="submit">Zarejestruj się</button>
+          <button type="submit">{t("sign-up")}</button>
         </form>
       </div>
     </div>

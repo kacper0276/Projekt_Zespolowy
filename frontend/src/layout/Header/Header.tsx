@@ -5,6 +5,7 @@ import { useUser } from "../../context/UserContext";
 import { IKanban } from "../../interfaces/IKanban";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
+import { useTranslation } from "react-i18next";
 
 const Header: React.FC = () => {
   const api = useApiJson();
@@ -12,6 +13,7 @@ const Header: React.FC = () => {
   const isAuthenticated = !!user;
   const [showBoardsModal, setShowBoardsModal] = useState(false);
   const [kanbanBoards, setKanbanBoards] = useState<IKanban[]>([]);
+  const { t } = useTranslation();
 
   const toggleBoardsModal = () => {
     setShowBoardsModal(!showBoardsModal);
@@ -51,12 +53,12 @@ const Header: React.FC = () => {
             <ul className={`navbar-nav ms-auto ${styles.navItems}`}>
               <li className="nav-item">
                 <a className={`nav-link ${styles.navLink}`} href="/features">
-                  Funkcje
+                  {t("features")}
                 </a>
               </li>
               <li className="nav-item">
                 <a className={`nav-link ${styles.navLink}`} href="/pricing">
-                  Cennik
+                  {t("pricing")}
                 </a>
               </li>
 
@@ -73,7 +75,7 @@ const Header: React.FC = () => {
                         cursor: "pointer",
                       }}
                     >
-                      Moje Tablice
+                      {t("my-boards")}
                     </button>
                   </li>
                   <li className="nav-item">
@@ -89,7 +91,7 @@ const Header: React.FC = () => {
                       className={`nav-link ${styles.navLink}`}
                       href={`/profile?email=${user.email}`}
                     >
-                      Profil
+                      {t("profile")}
                     </a>
                   </li>
                   <li className="nav-item">
@@ -107,7 +109,7 @@ const Header: React.FC = () => {
                 <>
                   <li className="nav-item">
                     <a className={`nav-link ${styles.navLink}`} href="/login">
-                      Zaloguj się
+                      {t("sign-in")}
                     </a>
                   </li>
                   <li className="nav-item">
@@ -115,7 +117,7 @@ const Header: React.FC = () => {
                       className={`nav-link ${styles.signupButton}`}
                       href="/signup"
                     >
-                      Rejestracja
+                      {t("register")}
                     </a>
                   </li>
                 </>

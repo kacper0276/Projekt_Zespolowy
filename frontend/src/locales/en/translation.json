@@ -1,1 +1,49 @@
-{}
+{
+  "main-page": "Main page",
+  "start-for-free": "Start for free",
+  "create-a-new-board": "Create a new board",
+  "create-your-ideal-Kanban-board": "Create your ideal Kanban board",
+  "manage-projects-organize-tasks-and-increase-productivity": "Manage projects, organize tasks and increase productivity",
+  "our-features": "Our features",
+  "edit": "Edit",
+  "customize-your-boards-to-your-needs": "Customize your boards to your needs",
+  "cooperation": "Cooperation",
+  "work-together-in-real-time": "Work together in real time",
+  "integrations": "Integrations",
+  "connect-to-other-tools": "Connect to other tools",
+
+  "professional-tool-for-managing-projects": "Professional tool for managing projects",
+  "quick-links": "Quick links",
+  "features": "Features",
+  "pricing": "Pricing",
+  "contact": "Contact",
+  "copyright-disclaimer": "© 2025 KanbanPro. All rights reserved.",
+  "my-boards": "My boards",
+  "profile": "Profile",
+  "sign-in": "Sign in",
+  "register": "Register",
+
+  "register-page": "Register page",
+  "passwords-do-not-match": "Passwords do not match",
+  "email": "Email",
+  "login": "Login",
+  "first-name": "First name",
+  "last-name": "Last name",
+  "password": "Password",
+  "repeat-password": "Repeat password",
+  "sign-up": "Sign up",
+
+  "sign-in-page": "Sign in page",
+  "signing-in": "Sign in",
+
+  "kanban-board": "Kanban board",
+  "board-name-can-not-be-empty": "Board name can not be empty.",
+  "board-name-has-been-updated": "Board name has been updated!",
+  "failed-to-update-board-name": "Failed to update board name.",
+  "new-column-name": "New column's name",
+  "add-column": "Add column",
+
+  "page-not-found": "Page not found",
+  "not-found": "404 - Not found",
+  "sorry-the-page-you-are-looking-for-does-not-exist": "Sorry, the page you are looking for does not exist."
+}

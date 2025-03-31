@@ -17,9 +17,11 @@ import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
 import { ITask } from "../../interfaces/ITask";
+import { useTranslation } from "react-i18next";
 
 function KanbanBoard() {
-  useWebsiteTitle("Kanban Board");
+  const { t } = useTranslation();
+  useWebsiteTitle(t("kanban-board"));
   const params = useParams();
   const api = useApiJson();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -80,7 +82,7 @@ function KanbanBoard() {
 
   const handleSaveTableName = async () => {
     if (!newTableName.trim()) {
-      toast.error("Nazwa tablicy nie może być pusta!");
+      toast.error(t("board-name-can-not-be-empty"));
       return;
     }
 
@@ -99,13 +101,13 @@ function KanbanBoard() {
           ...boardData!,
           tableName: newTableName.trim(),
         });
-        toast.success("Nazwa tablicy została zaktualizowana!");
+        toast.success(("board-name-has-been-updated"));
       }
 
       setIsEditingTitle(false);
     } catch (error) {
       console.error("Error updating table name:", error);
-      toast.error("Nie udało się zaktualizować nazwy tablicy.");
+      toast.error(t("failed-to-update-board-name"));
     }
   };
 
@@ -235,7 +237,7 @@ function KanbanBoard() {
           </div>
         ) : (
           <div className={styles.boardTitle}>
-            <h1>{boardData?.tableName || "Tablica Kanban"}</h1>
+            <h1>{boardData?.tableName || (t("kanban-board"))}</h1>
             <i
               className="bi bi-pencil-square"
               onClick={handleEditTableName}
@@ -298,7 +300,7 @@ function KanbanBoard() {
                       type="text"
                       value={newColumnTitle}
                       onChange={(e) => setNewColumnTitle(e.target.value)}
-                      placeholder="Nazwa nowej kolumny"
+                      placeholder={t("new-column-name")}
                       className={styles.columnInput}
                     />
                     <ActionButton
@@ -307,7 +309,7 @@ function KanbanBoard() {
                       fullWidth
                       disabled={!newColumnTitle.trim()}
                     >
-                      Dodaj kolumnę
+                      {t("add-column")}
                     </ActionButton>
                   </div>
                 </div>
