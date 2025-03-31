@@ -37,6 +37,18 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
   onDeleteTaskFromCell,
   handleTaskUpdate
 }) => {
+  const confirmDeleteRow = (rowId: string) => {
+    if (window.confirm(`Czy na pewno chcesz usunąć wiersz "${rowId}"? Ta operacja jest nieodwracalna.`)) {
+      handleDeleteRow(rowId);
+    }
+  };
+
+  const confirmDeleteTask = (rowId: string, columnId: string, taskId: string, taskName: string) => {
+    if (window.confirm(`Czy na pewno chcesz usunąć zadanie "${taskName}"? Ta operacja jest nieodwracalna.`)) {
+      onDeleteTaskFromCell(rowId, columnId, taskId);
+    }
+  };
+
   return (
     <div className={styles.gridRows}>
       {rows.map((rowId) => (
@@ -45,7 +57,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
             {rowId}
             {rowId !== "Default" && (
               <button
-                onClick={() => handleDeleteRow(rowId)}
+                onClick={() => confirmDeleteRow(rowId)}
                 className={styles.deleteRowButton}
                 title="Usuń wiersz"
               >
@@ -92,7 +104,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                             task={task}
                             index={index}
                             columnId={columnId}
-                            onDeleteTask={() => onDeleteTaskFromCell(rowId, columnId, task.id)}
+                            onDeleteTask={() => confirmDeleteTask(rowId, columnId, task.id, task.name)}
                             onTaskUpdate={(updatedData) => handleTaskUpdate(rowId, columnId, task.id, updatedData)}
                           />
                         ))}

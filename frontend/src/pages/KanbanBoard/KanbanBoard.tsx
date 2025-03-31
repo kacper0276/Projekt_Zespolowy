@@ -148,16 +148,12 @@ function KanbanBoard() {
   }, [columnOrder]); // Reaguj tylko na zmiany kolejności kolumn
 
 // Function to update taskGrid when a column is deleted
-// Function to update taskGrid when a column is deleted
 const handleColumnDeleted = (deletedColumnId: string, prevColumnId: string) => {
   const newTaskGrid = { ...taskGrid };
   
-  // For each row in the grid
   rows.forEach(rowId => {
     if (newTaskGrid[rowId]) {
-      // If the deleted column exists in this row
       if (newTaskGrid[rowId][deletedColumnId]) {
-        // Get tasks from the deleted column
         const tasksToMove = [...newTaskGrid[rowId][deletedColumnId]];
         
         // Ensure the previous column exists in this row
@@ -227,25 +223,31 @@ const handleColumnDeleted = (deletedColumnId: string, prevColumnId: string) => {
       toast.error("Nazwa wiersza nie może być pusta!");
       return;
     }
-
+    
+    // Sprawdź, czy wiersz o takiej nazwie już istnieje
+    if (rows.includes(newRowName.trim())) {
+      if (!window.confirm(`Wiersz o nazwie "${newRowName.trim()}" już istnieje. Czy na pewno chcesz utworzyć duplikat?`)) {
+        return;
+      }
+    }
+  
     const newRows = [...rows, newRowName.trim()];
     setRows(newRows);
-
+  
     // Dodaj nowy wiersz do taskGrid
     const newTaskGrid = { ...taskGrid };
     newTaskGrid[newRowName.trim()] = {};
-
+  
     // Inicjalizuj puste tablice zadań dla wszystkich kolumn
     Object.keys(columns).forEach((colId) => {
       newTaskGrid[newRowName.trim()][colId] = [];
     });
-
+  
     setTaskGrid(newTaskGrid);
     setNewRowName("");
     setIsAddingRow(false);
     toast.success("Wiersz został dodany!");
   };
-
   const handleDeleteRow = (rowName: string) => {
     // Nie usuwaj domyślnego wiersza
     if (rowName === "Default") {
