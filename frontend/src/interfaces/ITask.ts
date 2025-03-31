@@ -1,5 +1,6 @@
 import { IBaseEntity } from "./IBaseEntity";
 import { IColumnEntity } from "./IColumnEntity";
+import { IKanban } from "./IKanban";
 import { IToDoList } from "./IToDoList";
 import { IUser } from "./IUser";
 
@@ -12,5 +13,6 @@ export interface ITask extends IBaseEntity {
   order: number;
   users: IUser[];
   column: IColumnEntity;
-  toDoList: IToDoList;
+  toDoLists: IToDoList[];
+  kanbans: IKanban[];
 }
