@@ -136,7 +136,6 @@ function KanbanBoard() {
     // Tylko inicjalizuj wiersz Default zadaniami, jeśli jest pusty
     if (newTaskGrid["Default"]) {
       Object.keys(columns).forEach((colId) => {
-        // Wypełnij tylko puste kolumny, nie resetuj istniejących
         if (!newTaskGrid["Default"][colId] || newTaskGrid["Default"][colId].length === 0) {
           // Głęboka kopia zadań
           newTaskGrid["Default"][colId] = columns[colId].tasks.map(task => ({...task}));
@@ -145,7 +144,7 @@ function KanbanBoard() {
     }
 
     setTaskGrid(newTaskGrid);
-  }, [columnOrder]); // Reaguj tylko na zmiany kolejności kolumn
+  }, [columnOrder]); 
 
 // Function to update taskGrid when a column is deleted
 const handleColumnDeleted = (deletedColumnId: string, prevColumnId: string) => {
