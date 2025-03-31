@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IToDoItem } from "../../interfaces/IToDoItem";
 import { IToDoList } from "../../interfaces/IToDoList";
 import { useApiJson } from "../../config/api";
@@ -59,6 +59,21 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
       alert("Nie udało się dodać zadania.");
     }
   };
+
+  useEffect(() => {
+    api
+      .get<ApiResponse<IToDoList[]>>(`to-do-lists/task/${taskId}`)
+      .then((response) => {
+        console.log(response.data);
+        const lists = response.data.data ?? [];
+        if (lists.length > 0) {
+          setToDoList(lists[0]);
+          setItems(lists[0].items ?? []);
+        } else {
+          setToDoList(null);
+        }
+      });
+  }, []);
 
   return (
     <div>
