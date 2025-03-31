@@ -147,6 +147,42 @@ function KanbanBoard() {
     setTaskGrid(newTaskGrid);
   }, [columnOrder]); // Reaguj tylko na zmiany kolejności kolumn
 
+// Function to update taskGrid when a column is deleted
+// Function to update taskGrid when a column is deleted
+const handleColumnDeleted = (deletedColumnId: string, prevColumnId: string) => {
+  const newTaskGrid = { ...taskGrid };
+  
+  // For each row in the grid
+  rows.forEach(rowId => {
+    if (newTaskGrid[rowId]) {
+      // If the deleted column exists in this row
+      if (newTaskGrid[rowId][deletedColumnId]) {
+        // Get tasks from the deleted column
+        const tasksToMove = [...newTaskGrid[rowId][deletedColumnId]];
+        
+        // Ensure the previous column exists in this row
+        if (!newTaskGrid[rowId][prevColumnId]) {
+          newTaskGrid[rowId][prevColumnId] = [];
+        }
+        
+        // Move tasks to the previous column
+        // Tworzenie nowej tablicy z unikalnymi zadaniami
+        const existingTaskIds = new Set(newTaskGrid[rowId][prevColumnId].map(task => task.id));
+        const uniqueTasksToAdd = tasksToMove.filter(task => !existingTaskIds.has(task.id));
+        
+        newTaskGrid[rowId][prevColumnId] = [
+          ...newTaskGrid[rowId][prevColumnId],
+          ...uniqueTasksToAdd
+        ];
+        
+        // Delete the column from this row
+        delete newTaskGrid[rowId][deletedColumnId];
+      }
+    }
+  });
+  
+  setTaskGrid(newTaskGrid);
+};
 
   const handleStartAddingTask = (rowId: string, colId: string) => {
     setIsAddingTaskMap((prev) => ({
@@ -528,19 +564,24 @@ function KanbanBoard() {
 
       <DragDropContext onDragEnd={onDragEnd}>
         <div className={styles.gridContainer}>
-          <ColumnHeader 
-            columns={columns}
-            columnOrder={columnOrder}
-            countTasksInColumn={countTasksInColumn}
-            isEditingWipLimitMap={isEditingWipLimitMap}
-            handleWipLimitSave={handleWipLimitSave}
-            handleStartEditingWipLimit={handleStartEditingWipLimit}
-            handleCancelEditingWipLimit={handleCancelEditingWipLimit}
-            deleteColumn={deleteColumn}
-            newColumnTitle={newColumnTitle}
-            setNewColumnTitle={setNewColumnTitle}
-            addColumn={addColumn}
-          />
+        <ColumnHeader 
+          columns={columns}
+          columnOrder={columnOrder}
+          countTasksInColumn={countTasksInColumn}
+          isEditingWipLimitMap={isEditingWipLimitMap}
+          handleWipLimitSave={handleWipLimitSave}
+          handleStartEditingWipLimit={handleStartEditingWipLimit}
+          handleCancelEditingWipLimit={handleCancelEditingWipLimit}
+          deleteColumn={async (columnId) => {
+            const result = await deleteColumn(columnId);
+            if (result) {
+              handleColumnDeleted(result.deletedColumnId, result.prevColumnId);
+            }
+          }}
+          newColumnTitle={newColumnTitle}
+          setNewColumnTitle={setNewColumnTitle}
+          addColumn={addColumn}
+        />
           
           <KanbanGrid 
             rows={rows}

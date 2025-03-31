@@ -125,41 +125,64 @@ export function useKanbanBoard() {
     toast.success(`Dodano kolumnę ${newColumnTitle}`);
   };
 
-  // Delete a column
-  const deleteColumn = async (columnId: string) => {
-    if (["todo", "inprogress", "done"].includes(columnId)) {
-      toast.error("Nie można usunąć domyślnej kolumny!");
-      return;
-    }
+// Delete a column
+// Delete a column
+const deleteColumn = async (columnId: string) => {
+  if (["todo", "inprogress", "done"].includes(columnId)) {
+    toast.error("Nie można usunąć domyślnej kolumny!");
+    return null;
+  }
 
-    // Get the column's database ID
-    const columnDbId = columns[columnId]?.columnId;
+  // Get the column's database ID
+  const columnDbId = columns[columnId]?.columnId;
+  
+  if (!columnDbId) {
+    toast.error("Nie można usunąć kolumny - brak identyfikatora w bazie danych!");
+    return null;
+  }
+
+  try {
+    const columnIndex = columnOrder.indexOf(columnId);
     
-    if (!columnDbId) {
-      toast.error("Nie można usunąć kolumny - brak identyfikatora w bazie danych!");
-      return;
-    }
+    const prevColumnIndex = Math.max(0, columnIndex - 1);
+    const prevColumnId = columnOrder[prevColumnIndex];
+    
+    // Get the tasks from the column being deleted
+    const tasksToMove = [...columns[columnId].tasks];
+    
+    await api.delete(`columns/${columnDbId}`);
+    const updatedColumns = { ...columns };
+    
+    // Dodaj unikalne ID do przenoszonych zadań, aby uniknąć duplikacji
+    const uniqueTaskIds = new Set(updatedColumns[prevColumnId].tasks.map(task => task.id));
+    const uniqueTasksToMove = tasksToMove.filter(task => !uniqueTaskIds.has(task.id));
 
-    try {
-      // TODO: Dopisać notyfikację ale dopiero po usunięciu z bazy (status 200)
-      // TODO: Napisać tak, jak na backendzie, że te taski przeskakują do kolumny poprzedniej (Na backendzie już tak jest)
-      await api.delete(`columns/${columnDbId}`);
-      
-      // After successful deletion from database, update the UI
-      const updatedColumns = { ...columns };
-      delete updatedColumns[columnId];
-      
-      setColumns(updatedColumns);
-      setColumnOrder((prev) => prev.filter((id) => id !== columnId));
-      
-      toast.success(`Usunięto kolumnę ${columns[columnId].title}`);
-    } catch (error) {
-      console.error("Error deleting column:", error);
-      toast.error("Nie udało się usunąć kolumny. Spróbuj ponownie później.");
+    if (uniqueTasksToMove.length > 0) {
+      updatedColumns[prevColumnId] = {
+        ...updatedColumns[prevColumnId],
+        tasks: [...updatedColumns[prevColumnId].tasks, ...uniqueTasksToMove]
+      };
     }
-  };
+    
+    delete updatedColumns[columnId];
+    
+    setColumns(updatedColumns);
+    setColumnOrder((prev) => prev.filter((id) => id !== columnId));
+    
+    toast.success(`Usunięto kolumnę ${columns[columnId].title}. Zadania zostały przeniesione do kolumny ${columns[prevColumnId].title}.`);
+    
+    return {
+      deletedColumnId: columnId,
+      prevColumnId: prevColumnId,
+      tasksToMove: uniqueTasksToMove 
+    };
+  } catch (error) {
+    console.error("Error deleting column:", error);
+    toast.error("Nie udało się usunąć kolumny. Spróbuj ponownie później.");
+    return null;
+  }
+};
 
-  // Check if a task can be added to a column based on WIP limit
   const canAddTaskToColumn = (columnId: string) => {
     const column = columns[columnId];
     if (!column) return false;

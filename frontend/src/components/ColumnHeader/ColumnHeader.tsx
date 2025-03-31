@@ -20,7 +20,7 @@ interface ColumnHeaderProps {
   handleWipLimitSave: (columnId: string, limit: number) => void;
   handleStartEditingWipLimit: (columnId: string) => void;
   handleCancelEditingWipLimit: (columnId: string) => void;
-  deleteColumn: (columnId: string) => void;
+  deleteColumn: (columnId: string) => Promise<any>;
   newColumnTitle: string;
   setNewColumnTitle: (title: string) => void;
   addColumn: () => void;
@@ -43,7 +43,6 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
   
   // Enhanced WIP limit handler that updates the database
   const handleWipLimitSaveWithDb = (columnId: string, limit: number) => {
-    // Call the parent handler to update state
     handleWipLimitSave(columnId, limit);
     
     // Update the database
@@ -52,8 +51,14 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
       api.patch(`columns/edit-wip-limit/${column.columnId}`, { newLimit: limit })
         .catch(error => {
           console.error('Failed to update WIP limit in database:', error);
-          // Here you could add error handling or notifications
         });
+    }
+  };
+
+  // Handle column delete with confirmation
+  const handleDeleteColumn = async (columnId: string) => {
+    if (window.confirm(`Czy na pewno chcesz usunąć kolumnę ${columns[columnId].title}? Wszystkie zadania zostaną przeniesione do poprzedniej kolumny.`)) {
+      await deleteColumn(columnId);
     }
   };
 
@@ -123,7 +128,7 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
                         
                         {!["todo", "inprogress", "done"].includes(column.id) && (
                           <button
-                            onClick={() => deleteColumn(column.id)}
+                            onClick={() => handleDeleteColumn(column.id)}
                             className={styles.deleteColumnButton}
                             title="Usuń kolumnę"
                           >
