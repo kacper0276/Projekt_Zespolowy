@@ -125,32 +125,64 @@ export function useKanbanBoard() {
     toast.success(`Dodano kolumnę ${newColumnTitle}`);
   };
 
-  // Delete a column
-  const deleteColumn = (
-    columnId: string,
-    columnFromDb: number | null = null
-  ) => {
-    if (["todo", "inprogress", "done"].includes(columnId)) {
-      toast.error("Nie można usunąć domyślnej kolumny!");
-      return;
-    }
+// Delete a column
+// Delete a column
+const deleteColumn = async (columnId: string) => {
+  if (["todo", "inprogress", "done"].includes(columnId)) {
+    toast.error("Nie można usunąć domyślnej kolumny!");
+    return null;
+  }
 
+  // Get the column's database ID
+  const columnDbId = columns[columnId]?.columnId;
+  
+  if (!columnDbId) {
+    toast.error("Nie można usunąć kolumny - brak identyfikatora w bazie danych!");
+    return null;
+  }
+
+  try {
+    const columnIndex = columnOrder.indexOf(columnId);
+    
+    const prevColumnIndex = Math.max(0, columnIndex - 1);
+    const prevColumnId = columnOrder[prevColumnIndex];
+    
+    // Get the tasks from the column being deleted
+    const tasksToMove = [...columns[columnId].tasks];
+    
+    await api.delete(`columns/${columnDbId}`);
     const updatedColumns = { ...columns };
+    
+    // Dodaj unikalne ID do przenoszonych zadań, aby uniknąć duplikacji
+    const uniqueTaskIds = new Set(updatedColumns[prevColumnId].tasks.map(task => task.id));
+    const uniqueTasksToMove = tasksToMove.filter(task => !uniqueTaskIds.has(task.id));
+
+    if (uniqueTasksToMove.length > 0) {
+      updatedColumns[prevColumnId] = {
+        ...updatedColumns[prevColumnId],
+        tasks: [...updatedColumns[prevColumnId].tasks, ...uniqueTasksToMove]
+      };
+    }
+    
     delete updatedColumns[columnId];
-
-    // TODO: Dopisać notyfikację ale dopiero po usunięciu z bazy (status 200)
-    // TODO: Napisać tak, jak na backendzie, że te taski przeskakują do kolumny poprzedniej (Na backendzie już tak jest)
-    api.delete(`columns/${columnFromDb}`);
-
+    
     setColumns(updatedColumns);
     setColumnOrder((prev) => prev.filter((id) => id !== columnId));
+    
+    toast.success(`Usunięto kolumnę ${columns[columnId].title}. Zadania zostały przeniesione do kolumny ${columns[prevColumnId].title}.`);
+    
+    return {
+      deletedColumnId: columnId,
+      prevColumnId: prevColumnId,
+      tasksToMove: uniqueTasksToMove 
+    };
+  } catch (error) {
+    console.error("Error deleting column:", error);
+    toast.error("Nie udało się usunąć kolumny. Spróbuj ponownie później.");
+    return null;
+  }
+};
 
-    toast.success(`Usunięto kolumnę  ${columns[columnId].title}`);
-
-    // Here you would also delete this column on the backend
-  };
-
-  // Check if a task can be added to a column based on WIP limit
   const canAddTaskToColumn = (columnId: string) => {
     const column = columns[columnId];
     if (!column) return false;
@@ -193,7 +225,7 @@ export function useKanbanBoard() {
         const newTask = {
           id: `task-${response.data.data.id}-${Math.random()
             .toString(36)
-            .substr(2, 9)}`,
+            .substr(2, 9)}`,  
           content: taskName,
           name: taskName,
           description: "",
@@ -202,7 +234,7 @@ export function useKanbanBoard() {
           deadline: new Date(),
           users: [],
           dbId: response.data.data.id,
-        };
+        };  
 
         setColumns((prev) => ({
           ...prev,
@@ -268,23 +300,35 @@ export function useKanbanBoard() {
   // Update task position when dragged to another column
   const updateTaskPosition = async (
     taskId: string,
-    sourceColumnId: string,
+    _sourceColumnId: string,
     destinationColumnId: string
   ) => {
-    const task = columns[sourceColumnId].tasks.find((t) => t.id === taskId);
-    const dbId = task?.dbId;
+    // Parse the task ID to get the database ID from the format "task-{dbId}-{random}"
+    const taskIdParts = taskId.split("-");
+    if (taskIdParts.length < 2) {
+      console.error("Invalid task ID format:", taskId);
+      return;
+    }
+    
+    // Extract the database ID (second part of the taskId)
+    const dbId = taskIdParts[1];
     const destColumn = columns[destinationColumnId];
 
-    if (dbId && destColumn.columnId) {
-      try {
-        // Update task's column in the database
-        await api.put(`tasks/${dbId}/update-column`, {
-          columnId: destColumn.columnId,
-        });
-      } catch (error) {
-        console.error("Error updating task position:", error);
-        toast.error("Nie udało się zaktualizować pozycji zadania.");
-      }
+    if (!dbId || !destColumn.columnId) {
+      console.error("Missing DB ID for task or column:", { taskId, dbId, destColumnId: destColumn.columnId });
+      return;
+    }
+
+    try {
+      // Update task's column in the database using the provided endpoint pattern
+      await api.patch<ApiResponse<ITask>>(`tasks/${dbId}/change-column`, { 
+        columnId: destColumn.columnId 
+      });
+      
+      toast.success(`Przeniesiono zadanie do kolumny ${destColumn.title}`);
+    } catch (error) {
+      console.error("Error updating task position:", error);
+      toast.error("Nie udało się zaktualizować pozycji zadania.");
     }
   };
 

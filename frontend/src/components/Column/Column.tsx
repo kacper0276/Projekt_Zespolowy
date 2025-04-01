@@ -140,6 +140,10 @@ const Column: React.FC<ColumnProps> = ({
                 index={index}
                 columnId={col.id}
                 onDeleteTask={() => onDeleteTask(col.id, task.id)}
+                onTaskUpdate={(updatedTask) => {
+                  // Add logic to handle task updates here
+                  console.log("Task updated:", updatedTask);
+                }}
               />
             ))}
             {provided.placeholder}
