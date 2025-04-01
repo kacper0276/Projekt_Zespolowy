@@ -4,6 +4,7 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { Task } from '../../tasks/entities/task.entity';
 import { ColumnEntity } from '../../columns/entities/column.entity';
 import { Status } from '../../status/entities/status.entity';
+import { Row } from 'src/rows/entities/row.entity';
 
 @Entity('kanbans')
 export class Kanban extends BaseEntity {
@@ -23,6 +24,9 @@ export class Kanban extends BaseEntity {
 
   @OneToMany(() => ColumnEntity, (column) => column.kanban)
   columns: ColumnEntity[];
+
+  @OneToMany(() => Row, (row) => row.kanban)
+  rows: Row[];
 
   @OneToMany(() => Status, (status) => status.kanban)
   statuses: Status[];

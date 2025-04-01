@@ -22,6 +22,8 @@ import { Message } from './messages/entities/message.entity';
 import { Conversation } from './conversations/entities/conversation.entity';
 import { ToDoItem } from './to-do-lists/entities/to-do-item.entity';
 import { TeamsModule } from './teams/teams.module';
+import { RowsModule } from './rows/rows.module';
+import { Row } from './rows/entities/row.entity';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { TeamsModule } from './teams/teams.module';
         Message,
         Conversation,
         ToDoItem,
+        Row,
       ],
       synchronize: true,
       migrations: ['../migrations/**/*.ts'],
@@ -58,6 +61,7 @@ import { TeamsModule } from './teams/teams.module';
     ConversationsModule,
     MessagesModule,
     TeamsModule,
+    RowsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
