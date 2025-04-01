@@ -15,7 +15,6 @@ import KanbanGrid from "../../components/KanbanGrid/KanbanGrid";
 import { IColumnEntity } from "../../interfaces/IColumnEntity";
 import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
-import { ITask } from "../../interfaces/ITask";
 
 function KanbanBoard() {
   useWebsiteTitle("Kanban Board");
