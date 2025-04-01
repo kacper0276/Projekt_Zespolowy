@@ -13,7 +13,6 @@ import BoardHeader from "../../components/BoardHeader/BoardHeader";
 import ColumnHeader from "../../components/ColumnHeader/ColumnHeader";
 import KanbanGrid from "../../components/KanbanGrid/KanbanGrid";
 import { IColumnEntity } from "../../interfaces/IColumnEntity";
-import { IKanban } from "../../interfaces/IKanban";
 import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
 import { ITask } from "../../interfaces/ITask";
