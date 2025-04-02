@@ -552,6 +552,7 @@ function KanbanBoard() {
         columns: [] as IColumnEntity[],
         statuses: [],
         backgroundImage: "",
+        rows: [],
       } as IKanban);
     }
   };
@@ -566,7 +567,6 @@ function KanbanBoard() {
         backgroundAttachment: "fixed",
       }}
     >
-      <ToastContainer theme="dark" />
       <BoardHeader
         boardData={headerBoardData}
         setBoardData={handleSetBoardData}
