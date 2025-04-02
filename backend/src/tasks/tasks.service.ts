@@ -14,6 +14,7 @@ import { EditTaskDescriptionDto } from './dto/edit-task-description.dto';
 import { ChangeColumnDto } from './dto/change-column.dto';
 import { ChangeTasksOrderDto } from './dto/change-tasks-order.dto';
 import { Row } from 'src/rows/entities/row.entity';
+import { ChangeTaskRowColumnDto } from './dto/change-task-row-column.dto';
 
 @Injectable()
 export class TasksService {
@@ -43,10 +44,10 @@ export class TasksService {
         where: { id: data.columnId },
         relations: ['tasks'],
       });
-      // const row = await this.rowRepository.findOne({
-      //   where: { id: data.rowId },
-      //   relations: ['tasks'],
-      // });
+      const row = await this.rowRepository.findOne({
+        where: { id: data.rowId },
+        relations: ['tasks'],
+      });
 
       if (!kanban) {
         throw new NotFoundException('Tablica Kanban nie została znaleziona');
@@ -58,7 +59,7 @@ export class TasksService {
       task.status = data.status;
       task.priority = data.priority;
       task.column = column;
-      // task.row = row;
+      task.row = row;
 
       const savedTask = await this.taskRepository.save(task);
 
@@ -119,6 +120,26 @@ export class TasksService {
       where: { id: data.columnId },
     });
 
+    task.column = column;
+
+    return await this.taskRepository.save(task);
+  }
+
+  async changeTaskRowColumn(taskId: string, data: ChangeTaskRowColumnDto) {
+    const task = await this.taskRepository.findOne({
+      where: { id: +taskId },
+      relations: ['row', 'column'],
+    });
+
+    const row = await this.rowRepository.findOne({
+      where: { id: data.rowId },
+    });
+
+    const column = await this.columnRepository.findOne({
+      where: { id: data.columnId },
+    });
+
+    task.row = row;
     task.column = column;
 
     return await this.taskRepository.save(task);

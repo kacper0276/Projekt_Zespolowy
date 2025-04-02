@@ -17,6 +17,7 @@ import { AssignUserToTaskDto } from './dto/assign-user-to-task.dto';
 import { EditTaskDescriptionDto } from './dto/edit-task-description.dto';
 import { ChangeColumnDto } from './dto/change-column.dto';
 import { ChangeTasksOrderDto } from './dto/change-tasks-order.dto';
+import { ChangeTaskRowColumnDto } from './dto/change-task-row-column.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -119,6 +120,32 @@ export class TasksController {
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
         message: 'internal-server-error',
       });
+    }
+  }
+
+  @Patch(':taskId/change-row-column')
+  async changeTaskRowColumn(
+    @Param('taskId') taskId: string,
+    @Body() data: ChangeTaskRowColumnDto,
+    @Res() response: Response,
+  ) {
+    try {
+      const res = await this.tasksService.changeTaskRowColumn(taskId, data);
+
+      response.status(HttpStatus.OK).send({
+        message: 'changed-task-row-column',
+        data: res,
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'internal-server-error',
+        });
+      }
     }
   }
 
