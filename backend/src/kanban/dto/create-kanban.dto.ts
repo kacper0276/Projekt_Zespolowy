@@ -8,6 +8,7 @@ import {
 import { ColumnEntity } from '../../columns/entities/column.entity';
 import { Status } from 'src/status/entities/status.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Row } from 'src/rows/entities/row.entity';
 
 export class CreateKanbanDto {
   @IsString()
@@ -25,6 +26,11 @@ export class CreateKanbanDto {
   @IsOptional()
   @ValidateNested({ each: true })
   columns: ColumnEntity[];
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  rows: Row[];
 
   @IsArray()
   @IsOptional()

@@ -31,7 +31,7 @@ export class ColumnsController {
         createColumnDto,
       );
       response.status(HttpStatus.CREATED).send({
-        message: 'Column added to kanban successfully',
+        message: 'column-added-to-kanban-successfully',
         data: res,
       });
     } catch (_error) {
@@ -52,7 +52,7 @@ export class ColumnsController {
 
       response
         .status(HttpStatus.OK)
-        .send({ message: 'Column order updated successfully' });
+        .send({ message: 'column-order-updated-successfully' });
     } catch (error) {
       if (error instanceof NotFoundException) {
         response.status(HttpStatus.NOT_FOUND).send({
@@ -77,7 +77,7 @@ export class ColumnsController {
 
       response
         .status(HttpStatus.OK)
-        .send({ message: 'WIP limit updated successfully' });
+        .send({ message: 'wip-limit-updated-successfully' });
     } catch (error) {
       if (error instanceof NotFoundException) {
         response.status(HttpStatus.NOT_FOUND).send({

@@ -91,8 +91,6 @@ export class ColumnsService {
       relations: ['tasks'],
     });
 
-    console.log(column);
-
     if (!column) {
       throw new NotFoundException('Column not found');
     }

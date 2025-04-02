@@ -8,6 +8,7 @@ import { Status } from 'src/status/entities/status.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 import { CreateKanbanDto } from './dto/create-kanban.dto';
 import { ChangeTableNameDto } from './dto/change-table-name.dto';
+import { Row } from 'src/rows/entities/row.entity';
 
 @Injectable()
 export class KanbanService {
@@ -22,6 +23,8 @@ export class KanbanService {
     private readonly taskRepository: Repository<Task>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Row)
+    private readonly rowRepository: Repository<Row>,
   ) {}
 
   async assignUser(kanbanId: number, userId: number) {
@@ -84,6 +87,17 @@ export class KanbanService {
 
     await this.columnRepository.save([...defaultColumns, ...customColumns]);
 
+    const defaultRows = ['Default', 'High Priority', 'Low Priority'].map(
+      (name, index) =>
+        this.rowRepository.create({ name, order: index - 3, kanban }),
+    );
+
+    const customRows = createKanbanDto.rows.map((row) =>
+      this.rowRepository.create({ ...row, kanban }),
+    );
+
+    await this.rowRepository.save([...defaultRows, ...customRows]);
+
     return kanban;
   }
 
@@ -122,6 +136,10 @@ export class KanbanService {
           'columns.tasks',
           'tasks.users',
           'columns.tasks.users',
+          'rows',
+          'rows.tasks',
+          'rows.tasks.column',
+          'rows.tasks.users',
         ],
       });
 
