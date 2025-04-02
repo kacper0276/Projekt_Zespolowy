@@ -1,11 +1,12 @@
-import React from 'react';
-import { Droppable } from '@hello-pangea/dnd';
-import styles from '../../pages/KanbanBoard/KanbanBoard.module.scss';
-import TaskItem from '../../components/TaskItem/TaskItem';
-import ActionButton from '../../components/ActionButton/ActionButton';
+import React from "react";
+import { Droppable } from "@hello-pangea/dnd";
+import styles from "../../pages/KanbanBoard/KanbanBoard.module.scss";
+import TaskItem from "../../components/TaskItem/TaskItem";
+import ActionButton from "../../components/ActionButton/ActionButton";
 
 interface KanbanGridProps {
-  rows: string[];
+  rows: Record<string, { wipLimit: number }>;
+  rowOrder: string[];
   columnOrder: string[];
   columns: Record<string, { wipLimit: number }>;
   taskGrid: Record<string, Record<string, any[]>>;
@@ -14,15 +15,29 @@ interface KanbanGridProps {
   countTasksInColumn: (columnId: string) => number;
   handleDeleteRow: (rowId: string) => void;
   handleStartAddingTask: (rowId: string, columnId: string) => void;
-  handleTaskTitleChange: (rowId: string, columnId: string, title: string) => void;
+  handleTaskTitleChange: (
+    rowId: string,
+    columnId: string,
+    title: string
+  ) => void;
   handleAddTaskSubmit: (rowId: string, columnId: string) => void;
   handleCancelAddingTask: (rowId: string, columnId: string) => void;
-  onDeleteTaskFromCell: (rowId: string, columnId: string, taskId: string) => void;
-  handleTaskUpdate: (rowId: string, columnId: string, taskId: string, updatedData: any) => void;
+  onDeleteTaskFromCell: (
+    rowId: string,
+    columnId: string,
+    taskId: string
+  ) => void;
+  handleTaskUpdate: (
+    rowId: string,
+    columnId: string,
+    taskId: string,
+    updatedData: any
+  ) => void;
 }
 
 const KanbanGrid: React.FC<KanbanGridProps> = ({
   rows,
+  rowOrder,
   columnOrder,
   columns,
   taskGrid,
@@ -35,23 +50,36 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
   handleAddTaskSubmit,
   handleCancelAddingTask,
   onDeleteTaskFromCell,
-  handleTaskUpdate
+  handleTaskUpdate,
 }) => {
   const confirmDeleteRow = (rowId: string) => {
-    if (window.confirm(`Czy na pewno chcesz usunąć wiersz "${rowId}"? Ta operacja jest nieodwracalna.`)) {
+    if (
+      window.confirm(
+        `Czy na pewno chcesz usunąć wiersz "${rowId}"? Ta operacja jest nieodwracalna.`
+      )
+    ) {
       handleDeleteRow(rowId);
     }
   };
 
-  const confirmDeleteTask = (rowId: string, columnId: string, taskId: string, taskName: string) => {
-    if (window.confirm(`Czy na pewno chcesz usunąć zadanie "${taskName}"? Ta operacja jest nieodwracalna.`)) {
+  const confirmDeleteTask = (
+    rowId: string,
+    columnId: string,
+    taskId: string,
+    taskName: string
+  ) => {
+    if (
+      window.confirm(
+        `Czy na pewno chcesz usunąć zadanie "${taskName}"? Ta operacja jest nieodwracalna.`
+      )
+    ) {
       onDeleteTaskFromCell(rowId, columnId, taskId);
     }
   };
 
   return (
     <div className={styles.gridRows}>
-      {rows.map((rowId) => (
+      {Object.keys(rows).map((rowId) => (
         <div key={rowId} className={styles.gridRow}>
           <div className={styles.rowLabel}>
             {rowId}
@@ -79,9 +107,13 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                 taskGrid[rowId][columnId] = [];
               }
 
-              const isAddingTaskToThisCell = !!isAddingTaskMap[`${rowId}-${columnId}`];
-              const newTaskTitleForCell = newTaskTitleMap[`${rowId}-${columnId}`] || "";
-              const columnHasSpace = column.wipLimit === 0 || countTasksInColumn(columnId) < column.wipLimit;
+              const isAddingTaskToThisCell =
+                !!isAddingTaskMap[`${rowId}-${columnId}`];
+              const newTaskTitleForCell =
+                newTaskTitleMap[`${rowId}-${columnId}`] || "";
+              const columnHasSpace =
+                column.wipLimit === 0 ||
+                countTasksInColumn(columnId) < column.wipLimit;
 
               return (
                 <div key={`${rowId}-${columnId}`} className={styles.gridCell}>
@@ -93,8 +125,9 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                         className={`${styles.cellContent} ${
                           snapshot.isDraggingOver ? styles.draggingOver : ""
                         } ${
-                          column.wipLimit > 0 && countTasksInColumn(columnId) >= column.wipLimit 
-                            ? styles.limitReached 
+                          column.wipLimit > 0 &&
+                          countTasksInColumn(columnId) >= column.wipLimit
+                            ? styles.limitReached
                             : ""
                         }`}
                       >
@@ -104,8 +137,22 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                             task={task}
                             index={index}
                             columnId={columnId}
-                            onDeleteTask={() => confirmDeleteTask(rowId, columnId, task.id, task.name)}
-                            onTaskUpdate={(updatedData) => handleTaskUpdate(rowId, columnId, task.id, updatedData)}
+                            onDeleteTask={() =>
+                              confirmDeleteTask(
+                                rowId,
+                                columnId,
+                                task.id,
+                                task.name
+                              )
+                            }
+                            onTaskUpdate={(updatedData) =>
+                              handleTaskUpdate(
+                                rowId,
+                                columnId,
+                                task.id,
+                                updatedData
+                              )
+                            }
                           />
                         ))}
                         {provided.placeholder}
@@ -118,7 +165,9 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                       <input
                         type="text"
                         value={newTaskTitleForCell}
-                        onChange={(e) => handleTaskTitleChange(rowId, columnId, e.target.value)}
+                        onChange={(e) =>
+                          handleTaskTitleChange(rowId, columnId, e.target.value)
+                        }
                         placeholder="Nazwa zadania"
                         className={styles.taskInput}
                         autoFocus
@@ -132,7 +181,9 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                           Dodaj
                         </ActionButton>
                         <ActionButton
-                          onClick={() => handleCancelAddingTask(rowId, columnId)}
+                          onClick={() =>
+                            handleCancelAddingTask(rowId, columnId)
+                          }
                           variant="default"
                         >
                           Anuluj

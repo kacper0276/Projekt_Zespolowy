@@ -111,6 +111,8 @@ export function useKanbanBoard() {
       initialRowOrder.push(rowId);
     });
 
+    console.log(initialRows);
+
     setRows(initialRows);
     setRowOrder(initialRowOrder);
   }, []);

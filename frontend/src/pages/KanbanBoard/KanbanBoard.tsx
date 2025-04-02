@@ -1,6 +1,6 @@
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import styles from "./KanbanBoard.module.scss";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 import { useKanbanBoard } from "../../hooks/useKanbanBoard";
@@ -20,11 +20,11 @@ function KanbanBoard() {
   useWebsiteTitle("Kanban Board");
   const params = useParams<{ id: string }>();
   const api = useApiJson();
-  const [rows, setRows] = useState<string[]>([
-    "Default",
-    "High Priority",
-    "Low Priority",
-  ]);
+  // const [rows, setRows] = useState<string[]>([
+  //   "Default",
+  //   "High Priority",
+  //   "Low Priority",
+  // ]);
   const [newRowName, setNewRowName] = useState("");
   const [isAddingRow, setIsAddingRow] = useState(false);
   const [isAddingTaskMap, setIsAddingTaskMap] = useState<{
@@ -48,8 +48,8 @@ function KanbanBoard() {
     updateColumnWipLimit,
     addColumn,
     deleteColumn,
-    // rows,
-    // setRows,
+    rows,
+    setRows,
     rowOrder,
     setRowOrder,
     onAddTask,
@@ -63,21 +63,7 @@ function KanbanBoard() {
   // Utworzenie struktury siatki dla zadań
   const [taskGrid, setTaskGrid] = useState<{
     [rowId: string]: { [colId: string]: any[] };
-  }>(
-    rows.reduce(
-      (acc, row) => ({
-        ...acc,
-        [row]: Object.keys(columns).reduce(
-          (colAcc, colId) => ({
-            ...colAcc,
-            [colId]: [],
-          }),
-          {}
-        ),
-      }),
-      {}
-    )
-  );
+  }>({});
 
   useEffect(() => {
     let isMounted = true;
@@ -90,19 +76,17 @@ function KanbanBoard() {
         if (isMounted && res.data && res.data.data) {
           initializeBoard(res.data.data);
           // Po inicjalizacji tablicy, rozdziel zadania do pierwszego wiersza
-          const newTaskGrid = { ...taskGrid };
-          if (!newTaskGrid["Default"]) {
-            newTaskGrid["Default"] = {};
-          }
+          const newTaskGrid: {
+            [rowId: string]: { [colId: string]: any[] };
+          } = {};
 
-          Object.keys(columns).forEach((colId) => {
-            if (!newTaskGrid["Default"][colId]) {
-              newTaskGrid["Default"][colId] = [];
-            }
-            // Głęboka kopia zadań, aby uniknąć problemów z referencjami
-            newTaskGrid["Default"][colId] = columns[colId].tasks.map(
-              (task) => ({ ...task })
-            );
+          rowOrder.forEach((rowId) => {
+            newTaskGrid[rowId] = {};
+            columnOrder.forEach((colId) => {
+              newTaskGrid[rowId][colId] =
+                rows[rowId]?.tasks.filter((task) => task.columnId === colId) ||
+                [];
+            });
           });
 
           setTaskGrid(newTaskGrid);
@@ -121,34 +105,46 @@ function KanbanBoard() {
 
   // Aktualizacja siatki zadań po zmianie kolumn, ale bez resetowania przesuniętych zadań
   useEffect(() => {
-    const newTaskGrid = { ...taskGrid };
+    const newTaskGrid: {
+      [rowId: string]: { [colId: string]: any[] };
+    } = { ...taskGrid };
 
     // Upewnij się, że wszystkie wiersze mają wpisy dla wszystkich kolumn
-    rows.forEach((row) => {
-      if (!newTaskGrid[row]) {
-        newTaskGrid[row] = {};
+    Object.keys(rows).forEach((rowId) => {
+      if (!newTaskGrid[rowId]) {
+        newTaskGrid[rowId] = {};
       }
 
       Object.keys(columns).forEach((colId) => {
-        if (!newTaskGrid[row][colId]) {
-          newTaskGrid[row][colId] = [];
+        if (!newTaskGrid[rowId][colId]) {
+          newTaskGrid[rowId][colId] = [];
         }
       });
     });
 
-    // Tylko inicjalizuj wiersz Default zadaniami, jeśli jest pusty
-    if (newTaskGrid["Default"]) {
-      Object.keys(columns).forEach((colId) => {
-        if (
-          !newTaskGrid["Default"][colId] ||
-          newTaskGrid["Default"][colId].length === 0
-        ) {
-          // Głęboka kopia zadań
-          newTaskGrid["Default"][colId] = columns[colId].tasks.map((task) => ({
-            ...task,
-          }));
-        }
-      });
+    // Tylko inicjalizuj wiersz "Default" zadaniami, jeśli jest pusty
+    const defaultRow = Object.values(rows).find(
+      (row) => row.title.toLowerCase() === "default"
+    );
+
+    if (defaultRow) {
+      const defaultRowId = defaultRow.id;
+
+      if (newTaskGrid[defaultRowId]) {
+        Object.keys(columns).forEach((colId) => {
+          if (
+            !newTaskGrid[defaultRowId][colId] ||
+            newTaskGrid[defaultRowId][colId].length === 0
+          ) {
+            // Głęboka kopia zadań
+            newTaskGrid[defaultRowId][colId] = columns[colId].tasks.map(
+              (task) => ({
+                ...task,
+              })
+            );
+          }
+        });
+      }
     }
 
     setTaskGrid(newTaskGrid);
@@ -161,33 +157,31 @@ function KanbanBoard() {
   ) => {
     const newTaskGrid = { ...taskGrid };
 
-    rows.forEach((rowId) => {
-      if (newTaskGrid[rowId]) {
-        if (newTaskGrid[rowId][deletedColumnId]) {
-          const tasksToMove = [...newTaskGrid[rowId][deletedColumnId]];
+    // Iteracja po wierszach
+    Object.keys(rows).forEach((rowId) => {
+      if (newTaskGrid[rowId] && newTaskGrid[rowId][deletedColumnId]) {
+        const tasksToMove = [...newTaskGrid[rowId][deletedColumnId]];
 
-          // Ensure the previous column exists in this row
-          if (!newTaskGrid[rowId][prevColumnId]) {
-            newTaskGrid[rowId][prevColumnId] = [];
-          }
-
-          // Move tasks to the previous column
-          // Tworzenie nowej tablicy z unikalnymi zadaniami
-          const existingTaskIds = new Set(
-            newTaskGrid[rowId][prevColumnId].map((task) => task.id)
-          );
-          const uniqueTasksToAdd = tasksToMove.filter(
-            (task) => !existingTaskIds.has(task.id)
-          );
-
-          newTaskGrid[rowId][prevColumnId] = [
-            ...newTaskGrid[rowId][prevColumnId],
-            ...uniqueTasksToAdd,
-          ];
-
-          // Delete the column from this row
-          delete newTaskGrid[rowId][deletedColumnId];
+        // Upewnij się, że kolumna docelowa istnieje w tym wierszu
+        if (!newTaskGrid[rowId][prevColumnId]) {
+          newTaskGrid[rowId][prevColumnId] = [];
         }
+
+        // Przenieś zadania do kolumny docelowej, unikając duplikatów
+        const existingTaskIds = new Set(
+          newTaskGrid[rowId][prevColumnId].map((task) => task.id)
+        );
+        const uniqueTasksToAdd = tasksToMove.filter(
+          (task) => !existingTaskIds.has(task.id)
+        );
+
+        newTaskGrid[rowId][prevColumnId] = [
+          ...newTaskGrid[rowId][prevColumnId],
+          ...uniqueTasksToAdd,
+        ];
+
+        // Usuń usuniętą kolumnę z tego wiersza
+        delete newTaskGrid[rowId][deletedColumnId];
       }
     });
 
@@ -239,7 +233,11 @@ function KanbanBoard() {
     }
 
     // Sprawdź, czy wiersz o takiej nazwie już istnieje
-    if (rows.includes(newRowName.trim())) {
+    const rowExists = Object.values(rows).some(
+      (row) => row.title.toLowerCase() === newRowName.trim().toLowerCase()
+    );
+
+    if (rowExists) {
       if (
         !window.confirm(
           `Wiersz o nazwie "${newRowName.trim()}" już istnieje. Czy na pewno chcesz utworzyć duplikat?`
@@ -249,7 +247,19 @@ function KanbanBoard() {
       }
     }
 
-    const newRows = [...rows, newRowName.trim()];
+    const newRowId = `row-${Date.now()}`;
+    const newRow = {
+      id: newRowId,
+      title: newRowName.trim(),
+      tasks: [],
+      wipLimit: 0,
+    };
+
+    const newRows = {
+      ...rows,
+      [newRowId]: newRow,
+    };
+
     setRows(newRows);
 
     // Dodaj nowy wiersz do taskGrid
@@ -273,7 +283,12 @@ function KanbanBoard() {
       return;
     }
 
-    const newRows = rows.filter((r) => r !== rowName);
+    const newRows = Object.keys(rows)
+      .filter((rowId) => rowId !== rowName)
+      .reduce((acc: Record<string, (typeof rows)[string]>, rowId) => {
+        acc[rowId] = rows[rowId];
+        return acc;
+      }, {} as Record<string, (typeof rows)[string]>);
     setRows(newRows);
 
     // Usuń wiersz z taskGrid i przenieś zadania do wiersza Default
@@ -322,11 +337,12 @@ function KanbanBoard() {
   // Funkcja pomocnicza do liczenia zadań w kolumnie we wszystkich wierszach
   const countTasksInColumn = (columnId: string): number => {
     let count = 0;
-    rows.forEach((rowId) => {
+    Object.keys(rows).forEach((rowId) => {
       if (taskGrid[rowId] && taskGrid[rowId][columnId]) {
         count += taskGrid[rowId][columnId].length;
       }
     });
+
     return count;
   };
 
@@ -642,6 +658,7 @@ function KanbanBoard() {
 
           <KanbanGrid
             rows={rows}
+            rowOrder={rowOrder}
             columnOrder={columnOrder}
             columns={columns}
             taskGrid={taskGrid}
