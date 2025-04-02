@@ -52,8 +52,6 @@ export class KanbanController {
     @Res() response: Response,
   ) {
     try {
-      console.log(createKanbanDto);
-
       let base64Image = null;
       if (file) {
         const filePath = `../frontend/public/kanbanBackgroundImg/${file.filename}`;
@@ -66,8 +64,6 @@ export class KanbanController {
         createKanbanDto.backgroundImage = '';
 
       const res = await this.kanbanService.createKanban(createKanbanDto);
-
-      console.log(res);
 
       response.status(HttpStatus.CREATED).send({
         message: 'kanban-board-created',
