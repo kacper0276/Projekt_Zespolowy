@@ -13,6 +13,7 @@ import { User } from 'src/users/entities/user.entity';
 import { EditTaskDescriptionDto } from './dto/edit-task-description.dto';
 import { ChangeColumnDto } from './dto/change-column.dto';
 import { ChangeTasksOrderDto } from './dto/change-tasks-order.dto';
+import { Row } from 'src/rows/entities/row.entity';
 
 @Injectable()
 export class TasksService {
@@ -22,6 +23,8 @@ export class TasksService {
     private readonly kanbanRepository: Repository<Kanban>,
     @InjectRepository(ColumnEntity)
     private readonly columnRepository: Repository<ColumnEntity>,
+    @InjectRepository(Row)
+    private readonly rowRepository: Repository<Row>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
@@ -40,6 +43,10 @@ export class TasksService {
         where: { id: data.columnId },
         relations: ['tasks'],
       });
+      // const row = await this.rowRepository.findOne({
+      //   where: { id: data.rowId },
+      //   relations: ['tasks'],
+      // });
 
       if (!kanban) {
         throw new NotFoundException('Tablica Kanban nie została znaleziona');
@@ -51,6 +58,7 @@ export class TasksService {
       task.status = data.status;
       task.priority = data.priority;
       task.column = column;
+      // task.row = row;
 
       const savedTask = await this.taskRepository.save(task);
 
