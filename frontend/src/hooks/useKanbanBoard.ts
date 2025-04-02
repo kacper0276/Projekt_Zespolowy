@@ -4,266 +4,51 @@ import { IKanban } from "../interfaces/IKanban";
 import { useApiJson } from "../config/api";
 import { ApiResponse } from "../types/api.types";
 import { ITask } from "../interfaces/ITask";
-import { IColumnEntity } from "../interfaces/IColumnEntity";
-
-interface ColumnState {
-  [key: string]: {
-    id: string;
-    title: string;
-    tasks: any[];
-    wipLimit: number;
-    columnId?: number; // Store the actual database ID
-  };
-}
-
-interface RowState {
-  [key: string]: {
-    id: string;
-    title: string;
-    tasks: any[];
-    wipLimit: number;
-    rowId?: number; // Store the actual database ID
-  };
-}
+import { useColumn } from "./useColumn";
+import { useRow } from "./useRow";
 
 export function useKanbanBoard() {
-  const [columns, setColumns] = useState<ColumnState>({});
-  const [columnOrder, setColumnOrder] = useState<string[]>([]);
-  const [rows, setRows] = useState<RowState>({});
-  const [rowOrder, setRowOrder] = useState<string[]>([]);
-  const [newColumnTitle, setNewColumnTitle] = useState("");
   const [boardData, setBoardData] = useState<IKanban | null>(null);
   const api = useApiJson();
+  
+  const {
+    columns,
+    setColumns,
+    columnOrder,
+    setColumnOrder,
+    newColumnTitle,
+    setNewColumnTitle,
+    initializeColumns,
+    updateColumnWipLimit,
+    addColumn,
+    updateColumnOrder,
+    deleteColumn,
+    canAddTaskToColumn,
+    checkWipLimitForMove,
+  } = useColumn();
+  
+  const {
+    rows,
+    setRows,
+    rowOrder,
+    setRowOrder,
+    newRowTitle,
+    setNewRowTitle,
+    initializeRows,
+    addRow,
+    updateRowOrder,
+    updateRowWipLimit,
+    deleteRow,
+    canAddTaskToRow,
+    checkRowWipLimitForMove,
+  } = useRow();
 
   // Initialize board from API data
   const initializeBoard = useCallback((kanbanData: IKanban) => {
     setBoardData(kanbanData);
-
-    const initialColumns: ColumnState = {};
-    const initialColumnOrder: string[] = [];
-
-    // Sort columns by order
-    const sortedColumns = [...kanbanData.columns].sort(
-      (a, b) => a.order - b.order
-    );
-
-    sortedColumns.forEach((column) => {
-      const columnId = column.name.toLowerCase().replace(/\s+/g, "");
-
-      initialColumns[columnId] = {
-        id: columnId,
-        title: column.name,
-        tasks: (column.tasks || [])
-          .sort((a, b) => a.order - b.order)
-          .map((task) => ({
-            id: `task-${task.id || Date.now()}-${Math.random()
-              .toString(36)
-              .substr(2, 9)}`,
-            content: task.name,
-            name: task.name,
-            description: task.description,
-            status: task.status,
-            priority: task.priority,
-            deadline: task.deadline,
-            users: task.users || [],
-            dbId: task.id,
-          })),
-        wipLimit: column.maxTasks || 0,
-        columnId: column.id,
-      };
-
-      initialColumnOrder.push(columnId);
-    });
-
-    setColumns(initialColumns);
-    setColumnOrder(initialColumnOrder);
-
-    const initialRows: RowState = {};
-    const initialRowOrder: string[] = [];
-
-    const sortedRows = [...kanbanData.rows].sort((a, b) => a.order - b.order);
-
-    sortedRows.forEach((row) => {
-      const rowId = row.name.toLowerCase().replace(/\s+/g, "");
-
-      initialRows[rowId] = {
-        id: rowId,
-        title: row.name,
-        tasks: (row.tasks || [])
-          .sort((a, b) => a.order - b.order)
-          .map((task) => ({
-            id: `task-${task.id || Date.now()}-${Math.random()
-              .toString(36)
-              .substr(2, 9)}`,
-            content: task.name,
-            name: task.name,
-            description: task.description,
-            status: task.status,
-            priority: task.priority,
-            deadline: task.deadline,
-            users: task.users || [],
-            dbId: task.id,
-          })),
-        wipLimit: row.maxTasks || 0,
-        rowId: row.id,
-      };
-
-      initialRowOrder.push(rowId);
-    });
-
-    setRows(initialRows);
-    setRowOrder(initialRowOrder);
-  }, []);
-
-  // Update WIP limit for a column
-  const updateColumnWipLimit = (columnId: string, limit: number) => {
-    if (limit < 0) {
-      toast.error("Limit zadań nie może być ujemny!");
-      return;
-    }
-
-    setColumns((prev) => ({
-      ...prev,
-      [columnId]: {
-        ...prev[columnId],
-        wipLimit: limit,
-      },
-    }));
-
-    // Here you would also update this on the backend
-    toast.success(
-      `Zmieniono limit zadań dla kolumny ${columns[columnId].title}`
-    );
-  };
-
-  const updateRowWipLimit = (rowId: string, limit: number) => {
-    if (limit < 0) {
-      toast.error("Limit zadań nie może być ujemny!");
-      return;
-    }
-
-    setRows((prev) => ({
-      ...prev,
-      [rowId]: {
-        ...prev[rowId],
-        wipLimit: limit,
-      },
-    }));
-
-    // Here you would also update this on the backend
-    toast.success(`Zmieniono limit zadań dla kolumny ${rows[rowId].title}`);
-  };
-
-  // Add a new column
-  const addColumn = async () => {
-    if (!newColumnTitle.trim()) return;
-
-    const newColumnResponse = await api.post<ApiResponse<IColumnEntity>>(
-      `columns/${boardData?.id}`,
-      {
-        name: newColumnTitle,
-      }
-    );
-
-    const columnId = newColumnTitle.toLowerCase().replace(/\s+/g, "");
-
-    if (columns[columnId]) {
-      toast.error("Kolumna o tej nazwie już istnieje!");
-      return;
-    }
-
-    const newColumn = {
-      id: newColumnTitle,
-      title: newColumnTitle,
-      tasks: [],
-      wipLimit: 0,
-      columnId: newColumnResponse.data.data?.id,
-    };
-
-    setColumns((prev) => ({
-      ...prev,
-      [columnId]: newColumn,
-    }));
-
-    setColumnOrder((prev) => [...prev, columnId]);
-    setNewColumnTitle("");
-
-    toast.success(`Dodano kolumnę ${newColumnTitle}`);
-  };
-
-  // Delete a column
-  const deleteColumn = async (columnId: string) => {
-    if (["todo", "inprogress", "done"].includes(columnId)) {
-      toast.error("Nie można usunąć domyślnej kolumny!");
-      return null;
-    }
-
-    // Get the column's database ID
-    const columnDbId = columns[columnId]?.columnId;
-
-    if (!columnDbId) {
-      toast.error(
-        "Nie można usunąć kolumny - brak identyfikatora w bazie danych!"
-      );
-      return null;
-    }
-
-    try {
-      const columnIndex = columnOrder.indexOf(columnId);
-
-      const prevColumnIndex = Math.max(0, columnIndex - 1);
-      const prevColumnId = columnOrder[prevColumnIndex];
-
-      // Get the tasks from the column being deleted
-      const tasksToMove = [...columns[columnId].tasks];
-
-      await api.delete(`columns/${columnDbId}`);
-      const updatedColumns = { ...columns };
-
-      // Dodaj unikalne ID do przenoszonych zadań, aby uniknąć duplikacji
-      const uniqueTaskIds = new Set(
-        updatedColumns[prevColumnId].tasks.map((task) => task.id)
-      );
-      const uniqueTasksToMove = tasksToMove.filter(
-        (task) => !uniqueTaskIds.has(task.id)
-      );
-
-      if (uniqueTasksToMove.length > 0) {
-        updatedColumns[prevColumnId] = {
-          ...updatedColumns[prevColumnId],
-          tasks: [...updatedColumns[prevColumnId].tasks, ...uniqueTasksToMove],
-        };
-      }
-
-      delete updatedColumns[columnId];
-
-      setColumns(updatedColumns);
-      setColumnOrder((prev) => prev.filter((id) => id !== columnId));
-
-      toast.success(
-        `Usunięto kolumnę ${columns[columnId].title}. Zadania zostały przeniesione do kolumny ${columns[prevColumnId].title}.`
-      );
-
-      return {
-        deletedColumnId: columnId,
-        prevColumnId: prevColumnId,
-        tasksToMove: uniqueTasksToMove,
-      };
-    } catch (error) {
-      console.error("Error deleting column:", error);
-      toast.error("Nie udało się usunąć kolumny. Spróbuj ponownie później.");
-      return null;
-    }
-  };
-
-  const canAddTaskToColumn = (columnId: string) => {
-    const column = columns[columnId];
-    if (!column) return false;
-
-    if (column.wipLimit === 0) return true;
-
-    return column.tasks.length < column.wipLimit;
-  };
+    initializeColumns(kanbanData.columns);
+    initializeRows(kanbanData.rows);
+  }, [initializeColumns, initializeRows]);
 
   // Add a task to a column
   const onAddTask = async (columnId: string, taskName: string) => {
@@ -352,24 +137,6 @@ export function useKanbanBoard() {
     }
   };
 
-  // Check if moving a task would violate WIP limits
-  const checkWipLimitForMove = (
-    sourceColumnId: string,
-    destinationColumnId: string
-  ) => {
-    if (sourceColumnId === destinationColumnId) return true;
-
-    const destColumn = columns[destinationColumnId];
-    if (destColumn.wipLimit === 0) return true;
-
-    if (destColumn.tasks.length >= destColumn.wipLimit) {
-      toast.error(`Kolumna ${destColumn.title} osiągnęła limit zadań!`);
-      return false;
-    }
-
-    return true;
-  };
-
   // Update task position when dragged to another column
   const updateTaskPosition = async (
     taskId: string,
@@ -418,16 +185,26 @@ export function useKanbanBoard() {
     setNewColumnTitle,
     updateColumnWipLimit,
     addColumn,
+    updateColumnOrder,
     deleteColumn,
     canAddTaskToColumn,
+    checkWipLimitForMove,
+    
     rows,
     setRows,
     rowOrder,
     setRowOrder,
+    newRowTitle,
+    setNewRowTitle,
+    addRow,
+    updateRowOrder,
     updateRowWipLimit,
+    deleteRow,
+    canAddTaskToRow,
+    checkRowWipLimitForMove,
+    
     onAddTask,
     onDeleteTask,
-    checkWipLimitForMove,
     updateTaskPosition,
     initializeBoard,
     boardData,
