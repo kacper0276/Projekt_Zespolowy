@@ -11,10 +11,13 @@ import { IStatus } from "../../interfaces/IStatus";
 import { IColumnEntity } from "../../interfaces/IColumnEntity";
 // Import Bootstrap Icons
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { IRow } from "../../interfaces/IRow";
+import { useNavigate } from "react-router-dom";
 
 const BoardsNew: React.FC = () => {
   useWebsiteTitle("Create new Board");
   const api = useApiJson();
+  const navigate = useNavigate();
   const [kanbanData, setKanbanData] = useState<IKanban>({
     tableName: "",
     users: [],
@@ -22,6 +25,7 @@ const BoardsNew: React.FC = () => {
     columns: [],
     statuses: [],
     backgroundImage: null,
+    rows: [],
   });
   const [users, setUsers] = useState<IUser[]>([]);
   const [statusInput, setStatusInput] = useState<IStatus>({
@@ -29,6 +33,12 @@ const BoardsNew: React.FC = () => {
     color: "#3394dc",
   });
   const [columnInput, setColumnInput] = useState<IColumnEntity>({
+    name: "",
+    order: 0,
+    maxTasks: 0,
+    tasks: [],
+  });
+  const [rowInput, setRowInput] = useState<IRow>({
     name: "",
     order: 0,
     maxTasks: 0,
@@ -95,6 +105,16 @@ const BoardsNew: React.FC = () => {
     }
   };
 
+  const handleAddRow = () => {
+    if (rowInput.name.trim()) {
+      setKanbanData((prevState) => ({
+        ...prevState,
+        rows: [...prevState.rows, rowInput],
+      }));
+      setRowInput({ name: "", order: 0, maxTasks: 0, tasks: [] });
+    }
+  };
+
   const handleRemoveColumn = (index: number) => {
     setKanbanData((prevState) => ({
       ...prevState,
@@ -124,9 +144,16 @@ const BoardsNew: React.FC = () => {
       .post<ApiResponse<IKanban>>("kanban", kanbanData)
       .then((res) => {
         console.log(res);
+        if (res.status === 201) {
+          toast.success("Tablica została utworzona!");
+          navigate(`/boards/${res.data.data?.id}`);
+        } else {
+          toast.error(res.data.message);
+        }
       })
       .catch((_err) => {
-        console.log("Błąd");
+        toast.error("Nie udało się utworzyć tablicy.");
+        console.log(_err);
       })
       .finally(() => {
         setIsLoading(false);
@@ -255,6 +282,63 @@ const BoardsNew: React.FC = () => {
                   {column.name}{" "}
                   <span className="">
                     (Kolejność: {column.order}, Max zadań: {column.maxTasks})
+                  </span>
+                </div>
+                <button type="button" onClick={() => handleRemoveColumn(index)}>
+                  <i className="bi bi-x-lg"></i>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p>
+          <i className="bi bi-columns-gap"></i>
+          Dodaj własne rzędy
+        </p>
+        <div className={styles.inputGroup}>
+          <input
+            type="text"
+            placeholder="Nazwa rzędu"
+            value={rowInput.name}
+            onChange={(e) => setRowInput({ ...rowInput, name: e.target.value })}
+          />
+          <input
+            type="number"
+            placeholder="Kolejność"
+            value={rowInput.order || ""}
+            onChange={(e) =>
+              setRowInput({
+                ...rowInput,
+                order: parseInt(e.target.value) || 0,
+              })
+            }
+          />
+          <input
+            type="number"
+            placeholder="Max. zadań"
+            value={rowInput.maxTasks || ""}
+            onChange={(e) =>
+              setRowInput({
+                ...rowInput,
+                maxTasks: parseInt(e.target.value) || 0,
+              })
+            }
+          />
+          <button type="button" onClick={handleAddRow}>
+            <i className="bi bi-plus-lg"></i>
+          </button>
+        </div>
+
+        <div className={styles.listContainer}>
+          <ul>
+            {kanbanData.rows.map((row, index) => (
+              <li key={index}>
+                <div>
+                  <i className="bi bi-layout-three-columns mx-2"></i>
+                  {row.name}{" "}
+                  <span className="">
+                    (Kolejność: {row.order}, Max zadań: {row.maxTasks})
                   </span>
                 </div>
                 <button type="button" onClick={() => handleRemoveColumn(index)}>
