@@ -74,21 +74,29 @@ function KanbanBoard() {
           initializeBoard(res.data.data);
 
           const newTaskGrid: {
-            [rowId: string]: { [colId: string]: any[] };
+            [rowName: string]: { [colName: string]: any[] };
           } = {};
 
-          const initializedRowIds = Object.keys(rows);
+          if (res.data.data.tasks) {
+            res.data.data.tasks.forEach((task: any) => {
+              const rowName = task.row?.name.replace(/\s+/g, "").toLowerCase();
+              const colName = task.column?.name
+                .replace(/\s+/g, "")
+                .toLowerCase();
 
-          initializedRowIds.forEach((rowId) => {
-            newTaskGrid[rowId] = {};
-            columnOrder.forEach((colId) => {
-              newTaskGrid[rowId][colId] =
-                rows[rowId]?.tasks.filter((task) => task.columnId === colId) ||
-                [];
+              if (!newTaskGrid[rowName]) {
+                newTaskGrid[rowName] = {};
+              }
+
+              if (!newTaskGrid[rowName][colName]) {
+                newTaskGrid[rowName][colName] = [];
+              }
+
+              newTaskGrid[rowName][colName].push(task);
             });
-          });
 
-          setTaskGrid(newTaskGrid);
+            setTaskGrid(newTaskGrid);
+          }
         }
       } catch (error) {
         console.error("Błąd podczas pobierania danych tablicy:", error);
@@ -146,7 +154,7 @@ function KanbanBoard() {
       }
     }
 
-    setTaskGrid(newTaskGrid);
+    // setTaskGrid(newTaskGrid);
   }, [columnOrder]);
 
   // Funkcja aktualizująca taskGrid po usunięciu kolumny

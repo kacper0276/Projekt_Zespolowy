@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Droppable } from "@hello-pangea/dnd";
 import styles from "../../pages/KanbanBoard/KanbanBoard.module.scss";
 import TaskItem from "../../components/TaskItem/TaskItem";
@@ -6,12 +6,15 @@ import ActionButton from "../../components/ActionButton/ActionButton";
 import RowHeader from "../../components/RowHeader/RowHeader";
 
 interface KanbanGridProps {
-  rows: Record<string, { 
-    wipLimit: number, 
-    rowId?: number, 
-    name?: string,
-    title: string  
-  }>;
+  rows: Record<
+    string,
+    {
+      wipLimit: number;
+      rowId?: number;
+      name?: string;
+      title: string;
+    }
+  >;
   rowOrder: string[];
   columnOrder: string[];
   columns: Record<string, { wipLimit: number }>;
@@ -88,9 +91,15 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
               rowTitle={row.title}
               wipLimit={row.wipLimit}
               handleDeleteRow={handleDeleteRow}
-              isDefaultRow={rowId === "Default" || row.title.toLowerCase() === "default"}
-              onWipLimitUpdate={(newWipLimit) => handleRowWipLimitUpdate(rowId, newWipLimit)}
-              currentTaskCount={Object.values(taskGrid[rowId] || {}).flat().length}
+              isDefaultRow={
+                rowId === "Default" || row.title.toLowerCase() === "default"
+              }
+              onWipLimitUpdate={(newWipLimit) =>
+                handleRowWipLimitUpdate(rowId, newWipLimit)
+              }
+              currentTaskCount={
+                Object.values(taskGrid[rowId] || {}).flat().length
+              }
               rowDbId={row.rowId}
             />
 
@@ -114,10 +123,11 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                 const columnHasSpace =
                   column.wipLimit === 0 ||
                   countTasksInColumn(columnId) < column.wipLimit;
-                const rowHasSpace = 
-                  row.wipLimit === 0 || 
-                  (taskGrid[rowId] && Object.values(taskGrid[rowId])
-                    .flat().length < row.wipLimit);
+                const rowHasSpace =
+                  row.wipLimit === 0 ||
+                  (taskGrid[rowId] &&
+                    Object.values(taskGrid[rowId]).flat().length <
+                      row.wipLimit);
                 const canAddTask = columnHasSpace && rowHasSpace;
 
                 return (
@@ -136,7 +146,8 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                               : ""
                           } ${
                             row.wipLimit > 0 &&
-                            Object.values(taskGrid[rowId]).flat().length >= row.wipLimit
+                            Object.values(taskGrid[rowId]).flat().length >=
+                              row.wipLimit
                               ? styles.rowLimitReached
                               : ""
                           }`}
@@ -176,7 +187,11 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                           type="text"
                           value={newTaskTitleForCell}
                           onChange={(e) =>
-                            handleTaskTitleChange(rowId, columnId, e.target.value)
+                            handleTaskTitleChange(
+                              rowId,
+                              columnId,
+                              e.target.value
+                            )
                           }
                           placeholder="Nazwa zadania"
                           className={styles.taskInput}

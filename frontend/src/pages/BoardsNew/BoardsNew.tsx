@@ -143,7 +143,6 @@ const BoardsNew: React.FC = () => {
     api
       .post<ApiResponse<IKanban>>("kanban", kanbanData)
       .then((res) => {
-        console.log(res);
         if (res.status === 201) {
           toast.success("Tablica została utworzona!");
           navigate(`/boards/${res.data.data?.id}`);

@@ -10,7 +10,7 @@ import { useRow } from "./useRow";
 export function useKanbanBoard() {
   const [boardData, setBoardData] = useState<IKanban | null>(null);
   const api = useApiJson();
-  
+
   const {
     columns,
     setColumns,
@@ -26,7 +26,7 @@ export function useKanbanBoard() {
     canAddTaskToColumn,
     checkWipLimitForMove,
   } = useColumn();
-  
+
   const {
     rows,
     setRows,
@@ -44,19 +44,26 @@ export function useKanbanBoard() {
   } = useRow();
 
   // Inicjalizacja tablicy Kanban z danych API
-  const initializeBoard = useCallback((kanbanData: IKanban) => {
-    setBoardData(kanbanData);
-    initializeColumns(kanbanData.columns);
-    initializeRows(kanbanData.rows);
-  }, [initializeColumns, initializeRows]);
+  const initializeBoard = useCallback(
+    (kanbanData: IKanban) => {
+      setBoardData(kanbanData);
+      initializeColumns(kanbanData.columns);
+      initializeRows(kanbanData.rows);
+    },
+    [initializeColumns, initializeRows]
+  );
 
   // Dodawanie zadania do kolumny i wiersza
-  const onAddTask = async (columnId: string, rowId: string, taskName: string) => {
+  const onAddTask = async (
+    columnId: string,
+    rowId: string,
+    taskName: string
+  ) => {
     if (!canAddTaskToColumn(columnId)) {
       toast.error(`Kolumna ${columns[columnId].title} osiągnęła limit zadań!`);
       return;
     }
-    
+
     if (!canAddTaskToRow(rowId)) {
       toast.error(`Wiersz ${rows[rowId].title} osiągnął limit zadań!`);
       return;
@@ -70,11 +77,11 @@ export function useKanbanBoard() {
         name: taskName,
         description: "",
         status: column.title,
-        priority: "normal", 
+        priority: "normal",
         deadline: new Date(),
         users: [],
         columnId: column.columnId,
-        rowId: row.rowId, 
+        rowId: row.rowId,
         kanbanId: boardData?.id,
       };
 
@@ -96,7 +103,7 @@ export function useKanbanBoard() {
           deadline: new Date(),
           users: [],
           dbId: response.data.data.id,
-          rowId: row.rowId, 
+          rowId: row.rowId,
           columnId: column.columnId,
         };
 
@@ -151,34 +158,39 @@ export function useKanbanBoard() {
     destinationColumnId: string,
     _sourceRowId: string,
     destinationRowId: string
-  ) => {  
+  ) => {
     const taskIdParts = taskId.split("-");
     if (taskIdParts.length < 2) {
       console.error("Nieprawidłowy format ID zadania:", taskId);
       return;
     }
 
-    const dbId = taskIdParts[1];
+    const dbId = taskIdParts[0];
     const destColumn = columns[destinationColumnId];
     const destRow = rows[destinationRowId];
 
     if (!dbId || !destColumn.columnId || !destRow.rowId) {
-      console.error("Brakuje ID w bazie danych dla zadania, kolumny lub wiersza:", {
-        taskId,
-        dbId,
-        destColumnId: destColumn.columnId,
-        destRowId: destRow.rowId
-      });
+      console.error(
+        "Brakuje ID w bazie danych dla zadania, kolumny lub wiersza:",
+        {
+          taskId,
+          dbId,
+          destColumnId: destColumn.columnId,
+          destRowId: destRow.rowId,
+        }
+      );
       return;
     }
 
     try {
       await api.patch<ApiResponse<ITask>>(`tasks/${dbId}/change-row-column`, {
         columnId: destColumn.columnId,
-        rowId: destRow.rowId
+        rowId: destRow.rowId,
       });
 
-      toast.success(`Przeniesiono zadanie do ${destColumn.title} w wierszu ${destRow.title}`);
+      toast.success(
+        `Przeniesiono zadanie do ${destColumn.title} w wierszu ${destRow.title}`
+      );
     } catch (error) {
       console.error("Błąd podczas aktualizacji pozycji zadania:", error);
       toast.error("Nie udało się zaktualizować pozycji zadania.");
