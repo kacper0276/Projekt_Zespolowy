@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from '../../pages/KanbanBoard/KanbanBoard.module.scss';
 import WipLimitEditor from '../WipLimitEditor/WipLimitEditor';
+import { useApiJson } from "../../config/api";
 
 interface RowHeaderProps {
   rowId: string;
@@ -9,6 +10,8 @@ interface RowHeaderProps {
   handleDeleteRow: (rowId: string) => void;
   isDefaultRow: boolean;
   onWipLimitUpdate: (newWipLimit: number) => void;
+  currentTaskCount?: number; 
+  rowDbId?: number;  
 }
 
 const RowHeader: React.FC<RowHeaderProps> = ({
@@ -17,14 +20,37 @@ const RowHeader: React.FC<RowHeaderProps> = ({
   wipLimit,
   handleDeleteRow,
   isDefaultRow,
-  onWipLimitUpdate
+  onWipLimitUpdate,
+  currentTaskCount = 0,
+  rowDbId
 }) => {
   const [isEditingWipLimit, setIsEditingWipLimit] = useState(false);
+  const api = useApiJson();
+ 
+  const isLimitReached = wipLimit > 0 && currentTaskCount >= wipLimit;
  
   const handleWipLimitSave = (newWipLimit: number) => {
     setIsEditingWipLimit(false);
-    
-    // Call the parent function to update WIP limit in database
+   
+    if (rowDbId) {
+      const updateData = { newLimit: newWipLimit }; // Changed from maxTasks to newLimit
+      console.log(`Updating WIP limit for row ID ${rowDbId}:`, {
+        endpoint: `rows/edit-wip-limit/${rowDbId}`,
+        data: updateData,
+        previousLimit: wipLimit,
+        newLimit: newWipLimit
+      });
+     
+      api.patch(`rows/edit-wip-limit/${rowDbId}`, updateData)
+        .then(response => {
+          console.log('WIP limit update response:', response);
+        })
+        .catch(error => {
+          console.error('Failed to update WIP limit in database:', error);
+        });
+    }
+   
+    // Call the parent function to update WIP limit in state
     if (onWipLimitUpdate) {
       onWipLimitUpdate(newWipLimit);
     }
@@ -41,12 +67,19 @@ const RowHeader: React.FC<RowHeaderProps> = ({
       handleDeleteRow(rowId);
     }
   };
-
+ 
   return (
     <div className={styles.rowHeader}>
       <div className={styles.rowTitle}>{rowTitle}</div>
      
       <div className={styles.rowHeaderActions}>
+        <span className={`badge ${styles.taskCount} ${
+          isLimitReached ? styles.limitReached : ""
+        }`}>
+          {currentTaskCount}
+          {wipLimit > 0 && `/${wipLimit}`}
+        </span>
+       
         {isEditingWipLimit ? (
           <WipLimitEditor
             currentLimit={wipLimit}
@@ -55,7 +88,9 @@ const RowHeader: React.FC<RowHeaderProps> = ({
           />
         ) : (
           <div
-            className={styles.wipLimitDisplay}
+            className={`${styles.wipLimitDisplay} ${
+              isLimitReached ? styles.limitReached : ""
+            }`}
             onClick={() => setIsEditingWipLimit(true)}
             title="Kliknij, aby edytować limit zadań"
           >

@@ -41,14 +41,20 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
 }) => {
   const api = useApiJson();
   
-  // Enhanced WIP limit handler that updates the database
   const handleWipLimitSaveWithDb = (columnId: string, limit: number) => {
+    console.log(`WIP limit update - Column: ${columnId}, Old limit: ${columns[columnId]?.wipLimit}, New limit: ${limit}`);
+    
     handleWipLimitSave(columnId, limit);
     
     // Update the database
     const column = columns[columnId];
     if (column && column.columnId) {
+      console.log(`Sending PATCH request to update WIP limit in DB - columnId: ${column.columnId}, newLimit: ${limit}`);
+      
       api.patch(`columns/edit-wip-limit/${column.columnId}`, { newLimit: limit })
+        .then(response => {
+          console.log('WIP limit update successful:', response);
+        })
         .catch(error => {
           console.error('Failed to update WIP limit in database:', error);
         });

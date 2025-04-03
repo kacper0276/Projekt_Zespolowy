@@ -75,7 +75,7 @@ const onAddTask = async (columnId: string, rowId: string, taskName: string) => {
       deadline: new Date(),
       users: [],
       columnId: column.columnId,
-      rowId: row.rowId, // Add the row ID to the request
+      rowId: row.rowId, 
       kanbanId: boardData?.id,
     };
 

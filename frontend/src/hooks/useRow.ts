@@ -136,7 +136,7 @@ export function useRow() {
 
     try {
       await api.patch(`rows/edit-wip-limit/${row.rowId}`, {
-        maxTasks: limit,
+        newLimit: limit, // Changed from maxTasks to newLimit
       });
 
       setRows((prev) => ({

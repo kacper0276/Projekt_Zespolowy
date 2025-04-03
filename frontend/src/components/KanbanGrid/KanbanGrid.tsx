@@ -85,6 +85,8 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
               handleDeleteRow={handleDeleteRow}
               isDefaultRow={rowId === "Default"}
               onWipLimitUpdate={(newWipLimit) => handleRowWipLimitUpdate(rowId, newWipLimit)}
+              currentTaskCount={Object.values(taskGrid[rowId] || {}).flat().length}
+              rowDbId={row.rowId}
             />
 
             <div className={styles.rowCells}>
