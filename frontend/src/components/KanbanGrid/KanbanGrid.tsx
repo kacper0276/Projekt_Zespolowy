@@ -6,7 +6,12 @@ import ActionButton from "../../components/ActionButton/ActionButton";
 import RowHeader from "../../components/RowHeader/RowHeader";
 
 interface KanbanGridProps {
-  rows: Record<string, { wipLimit: number, rowId?: number }>;
+  rows: Record<string, { 
+    wipLimit: number, 
+    rowId?: number, 
+    name?: string,
+    title: string  
+  }>;
   rowOrder: string[];
   columnOrder: string[];
   columns: Record<string, { wipLimit: number }>;
@@ -80,10 +85,10 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
           <div key={rowId} className={styles.gridRow}>
             <RowHeader
               rowId={rowId}
-              rowTitle={rowId}
+              rowTitle={row.title}
               wipLimit={row.wipLimit}
               handleDeleteRow={handleDeleteRow}
-              isDefaultRow={rowId === "Default"}
+              isDefaultRow={rowId === "Default" || row.title.toLowerCase() === "default"}
               onWipLimitUpdate={(newWipLimit) => handleRowWipLimitUpdate(rowId, newWipLimit)}
               currentTaskCount={Object.values(taskGrid[rowId] || {}).flat().length}
               rowDbId={row.rowId}

@@ -20,11 +20,6 @@ function KanbanBoard() {
   useWebsiteTitle("Kanban Board");
   const params = useParams<{ id: string }>();
   const api = useApiJson();
-  // const [rows, setRows] = useState<string[]>([
-  //   "Default",
-  //   "High Priority",
-  //   "Low Priority",
-  // ]);
   const [newRowName, setNewRowName] = useState("");
   const [isAddingRow, setIsAddingRow] = useState(false);
   const [isAddingTaskMap, setIsAddingTaskMap] = useState<{
@@ -33,6 +28,7 @@ function KanbanBoard() {
   const [newTaskTitleMap, setNewTaskTitleMap] = useState<{
     [key: string]: string;
   }>({});
+  
   // Stan dla edycji limitów WIP
   const [isEditingWipLimitMap, setIsEditingWipLimitMap] = useState<{
     [columnId: string]: boolean;
@@ -61,14 +57,14 @@ function KanbanBoard() {
     updateRowWipLimit,  
   } = useKanbanBoard();
 
-  // Utworzenie struktury siatki dla zadań
+  // Struktura siatki dla zadań
   const [taskGrid, setTaskGrid] = useState<{
     [rowId: string]: { [colId: string]: any[] };
   }>({});
 
   useEffect(() => {
     let isMounted = true;
-
+  
     const fetchBoard = async () => {
       try {
         const res = await api.get<ApiResponse<IKanban>>(
@@ -76,12 +72,14 @@ function KanbanBoard() {
         );
         if (isMounted && res.data && res.data.data) {
           initializeBoard(res.data.data);
-          // Po inicjalizacji tablicy, rozdziel zadania do pierwszego wiersza
+          
           const newTaskGrid: {
             [rowId: string]: { [colId: string]: any[] };
           } = {};
-
-          rowOrder.forEach((rowId) => {
+  
+          const initializedRowIds = Object.keys(rows);
+          
+          initializedRowIds.forEach((rowId) => {
             newTaskGrid[rowId] = {};
             columnOrder.forEach((colId) => {
               newTaskGrid[rowId][colId] =
@@ -89,28 +87,28 @@ function KanbanBoard() {
                 [];
             });
           });
-
+  
           setTaskGrid(newTaskGrid);
         }
       } catch (error) {
         console.error("Błąd podczas pobierania danych tablicy:", error);
+        toast.error("Nie udało się załadować tablicy. Spróbuj ponownie później.");
       }
     };
-
+  
     fetchBoard();
-
+  
     return () => {
       isMounted = false;
     };
   }, [params.id, initializeBoard]);
 
-  // Aktualizacja siatki zadań po zmianie kolumn, ale bez resetowania przesuniętych zadań
+  // Aktualizacja siatki zadań po zmianie kolumn
   useEffect(() => {
     const newTaskGrid: {
       [rowId: string]: { [colId: string]: any[] };
     } = { ...taskGrid };
 
-    // Upewnij się, że wszystkie wiersze mają wpisy dla wszystkich kolumn
     Object.keys(rows).forEach((rowId) => {
       if (!newTaskGrid[rowId]) {
         newTaskGrid[rowId] = {};
@@ -123,7 +121,6 @@ function KanbanBoard() {
       });
     });
 
-    // Tylko inicjalizuj wiersz "Default" zadaniami, jeśli jest pusty
     const defaultRow = Object.values(rows).find(
       (row) => row.title.toLowerCase() === "default"
     );
@@ -137,7 +134,6 @@ function KanbanBoard() {
             !newTaskGrid[defaultRowId][colId] ||
             newTaskGrid[defaultRowId][colId].length === 0
           ) {
-            // Głęboka kopia zadań
             newTaskGrid[defaultRowId][colId] = columns[colId].tasks.map(
               (task) => ({
                 ...task,
@@ -151,24 +147,21 @@ function KanbanBoard() {
     setTaskGrid(newTaskGrid);
   }, [columnOrder]);
 
-  // Function to update taskGrid when a column is deleted
+  // Funkcja aktualizująca taskGrid po usunięciu kolumny
   const handleColumnDeleted = (
     deletedColumnId: string,
     prevColumnId: string
   ) => {
     const newTaskGrid = { ...taskGrid };
 
-    // Iteracja po wierszach
     Object.keys(rows).forEach((rowId) => {
       if (newTaskGrid[rowId] && newTaskGrid[rowId][deletedColumnId]) {
         const tasksToMove = [...newTaskGrid[rowId][deletedColumnId]];
 
-        // Upewnij się, że kolumna docelowa istnieje w tym wierszu
         if (!newTaskGrid[rowId][prevColumnId]) {
           newTaskGrid[rowId][prevColumnId] = [];
         }
 
-        // Przenieś zadania do kolumny docelowej, unikając duplikatów
         const existingTaskIds = new Set(
           newTaskGrid[rowId][prevColumnId].map((task) => task.id)
         );
@@ -181,7 +174,6 @@ function KanbanBoard() {
           ...uniqueTasksToAdd,
         ];
 
-        // Usuń usuniętą kolumnę z tego wiersza
         delete newTaskGrid[rowId][deletedColumnId];
       }
     });
@@ -222,22 +214,20 @@ function KanbanBoard() {
     const taskTitle = newTaskTitleMap[`${rowId}-${colId}`] || "";
     if (taskTitle.trim()) {
       onAddTaskToCell(rowId, colId, taskTitle);
-      // Reset stanu inputa
       handleCancelAddingTask(rowId, colId);
     }
   };
 
-  const handleAddRow = () => {
+  const handleAddRow = async () => {
     if (!newRowName.trim()) {
       toast.error("Nazwa wiersza nie może być pusta!");
       return;
     }
-
-    // Sprawdź, czy wiersz o takiej nazwie już istnieje
+  
     const rowExists = Object.values(rows).some(
       (row) => row.title.toLowerCase() === newRowName.trim().toLowerCase()
     );
-
+  
     if (rowExists) {
       if (
         !window.confirm(
@@ -247,69 +237,110 @@ function KanbanBoard() {
         return;
       }
     }
-
-    const newRowId = `row-${Date.now()}`;
-    const newRow = {
-      id: newRowId,
-      title: newRowName.trim(),
-      tasks: [],
-      wipLimit: 0,
-    };
-
-    const newRows = {
-      ...rows,
-      [newRowId]: newRow,
-    };
-
-    setRows(newRows);
-
-    // Dodaj nowy wiersz do taskGrid
-    const newTaskGrid = { ...taskGrid };
-    newTaskGrid[newRowName.trim()] = {};
-
-    // Inicjalizuj puste tablice zadań dla wszystkich kolumn
-    Object.keys(columns).forEach((colId) => {
-      newTaskGrid[newRowName.trim()][colId] = [];
-    });
-
-    setTaskGrid(newTaskGrid);
-    setNewRowName("");
-    setIsAddingRow(false);
-    toast.success("Wiersz został dodany!");
-  };
-  const handleDeleteRow = (rowName: string) => {
-    // Nie usuwaj domyślnego wiersza
-    if (rowName === "Default") {
-      toast.error("Nie można usunąć domyślnego wiersza!");
-      return;
+  
+    try {
+      const rowId = `row-${Date.now()}`;
+      
+      // Tworzenie wiersza w bazie danych
+      const res = await api.post(`rows/${params.id}`, {
+        name: newRowName.trim(),
+        maxTasks: 0,  // Domyślnie brak limitu
+        order: rowOrder.length // Dodaj na końcu
+      });
+      
+      if (res.data && res.data.data) {
+        const dbRowId = res.data.data.id;
+        
+        // Dodaj wiersz do stanu lokalnego
+        const newRow = {
+          id: rowId,
+          title: newRowName.trim(),
+          tasks: [],
+          wipLimit: 0,
+          rowId: dbRowId // Przechowaj ID z bazy danych
+        };
+        
+        setRows(prev => ({
+          ...prev,
+          [rowId]: newRow
+        }));
+        
+        setRowOrder(prev => [...prev, rowId]);
+        
+        const newTaskGrid = { ...taskGrid };
+        newTaskGrid[rowId] = {};
+        
+        Object.keys(columns).forEach((colId) => {
+          newTaskGrid[rowId][colId] = [];
+        });
+        
+        setTaskGrid(newTaskGrid);
+        setNewRowName("");
+        setIsAddingRow(false);
+        toast.success("Wiersz został dodany!");
+      }
+    } catch (error) {
+      console.error("Błąd podczas dodawania wiersza:", error);
+      toast.error("Nie udało się dodać wiersza. Spróbuj ponownie później.");
     }
+  };
 
+const handleDeleteRow = async (rowId: string) => {
+  if (rowId === "Default" || rows[rowId].title === "Default") {
+    toast.error("Nie można usunąć domyślnego wiersza!");
+    return;
+  }
+
+  const rowDbId = rows[rowId]?.rowId;
+  
+  if (!rowDbId) {
+    toast.error("Nie można usunąć wiersza - brak identyfikatora w bazie danych!");
+    return;
+  }
+
+  try {
+    await api.delete(`rows/${rowDbId}`);
+    
     const newRows = Object.keys(rows)
-      .filter((rowId) => rowId !== rowName)
-      .reduce((acc: Record<string, (typeof rows)[string]>, rowId) => {
-        acc[rowId] = rows[rowId];
+      .filter((id) => id !== rowId)
+      .reduce((acc: Record<string, (typeof rows)[string]>, id) => {
+        acc[id] = rows[id];
         return acc;
       }, {} as Record<string, (typeof rows)[string]>);
+      
     setRows(newRows);
+    setRowOrder(prev => prev.filter(id => id !== rowId));
 
-    // Usuń wiersz z taskGrid i przenieś zadania do wiersza Default
     const newTaskGrid = { ...taskGrid };
-
-    // Przed usunięciem, przenieś zadania do wiersza Default
-    if (newTaskGrid[rowName]) {
-      Object.keys(newTaskGrid[rowName]).forEach((colId) => {
-        newTaskGrid["Default"][colId] = [
-          ...newTaskGrid["Default"][colId],
-          ...newTaskGrid[rowName][colId],
+    
+    // Znajdź ID wiersza domyślnego
+    const defaultRowId = Object.keys(rows).find(
+      id => rows[id].title.toLowerCase() === "default"
+    );
+    
+    // Przed usunięciem przenieś zadania do wiersza domyślnego
+    if (defaultRowId && newTaskGrid[rowId]) {
+      Object.keys(newTaskGrid[rowId]).forEach((colId) => {
+        if (!newTaskGrid[defaultRowId][colId]) {
+          newTaskGrid[defaultRowId][colId] = [];
+        }
+        
+        newTaskGrid[defaultRowId][colId] = [
+          ...newTaskGrid[defaultRowId][colId],
+          ...newTaskGrid[rowId][colId],
         ];
       });
     }
 
-    delete newTaskGrid[rowName];
+    delete newTaskGrid[rowId];
     setTaskGrid(newTaskGrid);
 
     toast.success("Wiersz został usunięty!");
-  };
+  } catch (error) {
+    console.error("Błąd podczas usuwania wiersza:", error);
+    toast.error("Nie udało się usunąć wiersza. Spróbuj ponownie później.");
+  }
+};
 
   const handleStartEditingWipLimit = (columnId: string) => {
     setIsEditingWipLimitMap((prev) => ({
@@ -335,7 +366,7 @@ function KanbanBoard() {
     );
   };
 
-  // Funkcja pomocnicza do liczenia zadań w kolumnie we wszystkich wierszach
+  // Funkcja licząca zadania w kolumnie we wszystkich wierszach
   const countTasksInColumn = (columnId: string): number => {
     let count = 0;
     Object.keys(rows).forEach((rowId) => {
@@ -370,18 +401,15 @@ function KanbanBoard() {
       return;
     }
 
-    // Parsowanie ID elementu do upuszczenia, aby uzyskać wiersz i kolumnę
+    // Parsowanie ID elementu do upuszczenia
     const sourceRowId = source.droppableId.split("-")[0];
     const sourceColId = source.droppableId.split("-")[1];
     const destRowId = destination.droppableId.split("-")[0];
     const destColId = destination.droppableId.split("-")[1];
 
-    // Sprawdź, czy przenosimy do innej kolumny
+    // Sprawdzenie limitów WIP przy przenoszeniu do innej kolumny
     if (sourceColId !== destColId) {
-      // Policz bieżące zadania w kolumnie docelowej
       const destColumnTaskCount = countTasksInColumn(destColId);
-
-      // Pobierz limit WIP dla kolumny docelowej
       const destColumn = columns[destColId];
       if (
         destColumn &&
@@ -395,10 +423,9 @@ function KanbanBoard() {
       }
     }
 
-    // Utwórz nową siatkę zadań
     const newTaskGrid = { ...taskGrid };
 
-    // Przenoszenie zadania w obrębie tej samej komórki
+    // Przenoszenie zadania w tej samej komórce
     if (sourceRowId === destRowId && sourceColId === destColId) {
       const tasks = Array.from(newTaskGrid[sourceRowId][sourceColId]);
       const [removed] = tasks.splice(source.index, 1);
@@ -409,7 +436,6 @@ function KanbanBoard() {
       const sourceTasks = Array.from(newTaskGrid[sourceRowId][sourceColId]);
       const [removed] = sourceTasks.splice(source.index, 1);
 
-      // Upewnij się, że cel istnieje
       if (!newTaskGrid[destRowId]) {
         newTaskGrid[destRowId] = {};
       }
@@ -423,18 +449,14 @@ function KanbanBoard() {
       newTaskGrid[sourceRowId][sourceColId] = sourceTasks;
       newTaskGrid[destRowId][destColId] = destTasks;
 
-      // Aktualizuj pozycję w bazie danych tylko jeśli zmieniła się kolumna
+      // Aktualizacja pozycji w bazie danych przy zmianie kolumny
       if (sourceColId !== destColId) {
         const taskIdParts = draggableId.split("-");
-        // Pobierz część identyfikatora zadania (powinno być "task-{dbId}-{random}")
         const taskId = taskIdParts.slice(1).join("-");
 
         updateTaskPosition(taskId, sourceColId, destColId);
 
-        // Aktualizuj kolumny dla bazy danych
         const updatedColumns = { ...columns };
-
-        // Znajdź zadanie w kolumnie źródłowej
         let movedTask = removed;
 
         if (movedTask) {
@@ -459,7 +481,7 @@ function KanbanBoard() {
   };
 
   const onAddTaskToCell = (rowId: string, colId: string, taskTitle: string) => {
-    // Sprawdź limit WIP przed dodaniem zadania
+    // Sprawdzenie limitu WIP przed dodaniem zadania
     const currentTaskCount = countTasksInColumn(colId);
     const column = columns[colId];
 
@@ -470,7 +492,6 @@ function KanbanBoard() {
       return;
     }
 
-    // Dodaj zadanie tylko jeśli tytuł nie jest pusty
     if (!taskTitle.trim()) return;
 
     const newTaskId = `task-${Date.now()}`;
@@ -481,10 +502,10 @@ function KanbanBoard() {
       users: [],
     };
 
-    // Dodaj zadanie do kolumny w bazie danych
+    // Dodanie zadania do bazy danych
     onAddTask(rowId, colId, taskTitle);
 
-    // Dodaj zadanie do konkretnej komórki w siatce
+    // Dodanie zadania do lokalnej siatki
     const newTaskGrid = { ...taskGrid };
     if (!newTaskGrid[rowId]) {
       newTaskGrid[rowId] = {};
@@ -502,7 +523,6 @@ function KanbanBoard() {
     colId: string,
     taskId: string
   ) => {
-    // Usuń zadanie z konkretnej komórki
     const newTaskGrid = { ...taskGrid };
     if (newTaskGrid[rowId] && newTaskGrid[rowId][colId]) {
       newTaskGrid[rowId][colId] = newTaskGrid[rowId][colId].filter(
@@ -510,13 +530,11 @@ function KanbanBoard() {
       );
     }
 
-    // Usuń zadanie z kolumny w bazie danych
     onDeleteTask(colId, taskId);
-
     setTaskGrid(newTaskGrid);
   };
 
-  // Funkcja do aktualizacji danych zadania (nazwa i przypisani użytkownicy)
+  // Aktualizacja danych zadania (nazwa i przypisani użytkownicy)
   const handleTaskUpdate = (
     rowId: string,
     colId: string,
@@ -555,12 +573,11 @@ function KanbanBoard() {
       });
   };
 
-  // Utworzenie kompatybilnego obiektu danych nagłówka dla komponentu BoardHeader
+  // Przygotowanie danych dla nagłówka tablicy
   const headerBoardData: { tableName: string } = {
     tableName: boardData?.tableName || "",
   };
 
-  // Utworzenie zmodyfikowanej funkcji setBoardData zgodnej z oczekiwaną sygnaturą
   const handleSetBoardData = (data: { tableName: string }) => {
     if (boardData) {
       setBoardData({

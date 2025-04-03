@@ -59,31 +59,40 @@ export function useRow() {
     setRowOrder(initialRowOrder);
   }, []);
 
-  // Add a new row
-  const addRow = async (kanbanId?: number) => {
-    if (!newRowTitle.trim() || !kanbanId) return;
 
-    const rowId = newRowTitle.toLowerCase().replace(/\s+/g, "");
 
-    if (rows[rowId]) {
-      toast.error("Rząd o tej nazwie już istnieje!");
-      return;
-    }
+const addRow = async (kanbanId?: number) => {
+  if (!newRowTitle.trim() || !kanbanId) return null;
 
-    try {
-      const newRowResponse = await api.post<ApiResponse<IRow>>(
-        `rows/${kanbanId}`,
-        {
-          name: newRowTitle,
-        }
-      );
+  const rowId = `row-${Date.now()}`;
 
+  // Check if row with same name exists
+  const rowExists = Object.values(rows).some(
+    row => row.title.toLowerCase() === newRowTitle.trim().toLowerCase()
+  );
+
+  if (rowExists) {
+    toast.error("Rząd o tej nazwie już istnieje!");
+    return null;
+  }
+
+  try {
+    const newRowResponse = await api.post<ApiResponse<IRow>>(
+      `rows/${kanbanId}`,
+      {
+        name: newRowTitle,
+        maxTasks: 0, // Default to no limit
+        order: rowOrder.length // Append to the end
+      }
+    );
+
+    if (newRowResponse.data && newRowResponse.data.data) {
       const newRow = {
         id: rowId,
         title: newRowTitle,
         tasks: [],
         wipLimit: 0,
-        rowId: newRowResponse.data.data?.id,
+        rowId: newRowResponse.data.data.id, // Store DB ID
       };
 
       setRows((prev) => ({
@@ -95,11 +104,15 @@ export function useRow() {
       setNewRowTitle("");
 
       toast.success(`Dodano rząd ${newRowTitle}`);
-    } catch (error) {
-      console.error("Error creating row:", error);
-      toast.error("Nie udało się dodać rzędu. Spróbuj ponownie później.");
+      return rowId; // Return the newly created row ID for further processing
     }
-  };
+  } catch (error) {
+    console.error("Error creating row:", error);
+    toast.error("Nie udało się dodać rzędu. Spróbuj ponownie później.");
+  }
+  
+  return null;
+};
 
   // Update row order
   const updateRowOrder = async (kanbanId: number, newOrder: string[]) => {
