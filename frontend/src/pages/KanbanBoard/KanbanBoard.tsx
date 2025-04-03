@@ -138,7 +138,7 @@ function KanbanBoard() {
     if (defaultRow) {
       const defaultRowId = defaultRow.id;
 
-      if (newTaskGrid[defaultRowId]) {
+      if (newTaskGrid[defaultRowId] && false) {
         Object.keys(columns).forEach((colId) => {
           if (
             !newTaskGrid[defaultRowId][colId] ||
@@ -521,7 +521,9 @@ function KanbanBoard() {
       }
     }
 
-    setTaskGrid(newTaskGrid);
+    console.log("DUPA");
+
+    // setTaskGrid(newTaskGrid);
   };
 
   const onAddTaskToCell = (rowId: string, colId: string, taskTitle: string) => {
