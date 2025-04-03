@@ -43,92 +43,92 @@ export function useKanbanBoard() {
     checkRowWipLimitForMove,
   } = useRow();
 
-  // Initialize board from API data
+  // Inicjalizacja tablicy Kanban z danych API
   const initializeBoard = useCallback((kanbanData: IKanban) => {
     setBoardData(kanbanData);
     initializeColumns(kanbanData.columns);
     initializeRows(kanbanData.rows);
   }, [initializeColumns, initializeRows]);
 
- // Add a task to a column and row
-const onAddTask = async (columnId: string, rowId: string, taskName: string) => {
-  if (!canAddTaskToColumn(columnId)) {
-    toast.error(`Kolumna ${columns[columnId].title} osiągnęła limit zadań!`);
-    return;
-  }
-  
-  if (!canAddTaskToRow(rowId)) {
-    toast.error(`Wiersz ${rows[rowId].title} osiągnęła limit zadań!`);
-    return;
-  }
+  // Dodawanie zadania do kolumny i wiersza
+  const onAddTask = async (columnId: string, rowId: string, taskName: string) => {
+    if (!canAddTaskToColumn(columnId)) {
+      toast.error(`Kolumna ${columns[columnId].title} osiągnęła limit zadań!`);
+      return;
+    }
+    
+    if (!canAddTaskToRow(rowId)) {
+      toast.error(`Wiersz ${rows[rowId].title} osiągnął limit zadań!`);
+      return;
+    }
 
-  const column = columns[columnId];
-  const row = rows[rowId];
+    const column = columns[columnId];
+    const row = rows[rowId];
 
-  try {
-    // Create task request payload
-    const taskData = {
-      name: taskName,
-      description: "",
-      status: column.title,
-      priority: "normal",
-      deadline: new Date(),
-      users: [],
-      columnId: column.columnId,
-      rowId: row.rowId, 
-      kanbanId: boardData?.id,
-    };
-
-    // Send request to create task in the database
-    const response = await api.post<ApiResponse<ITask>>(
-      "tasks/create-new",
-      taskData
-    );
-
-    // If successful, add to UI with the database ID
-    if (response.data && response.data.data) {
-      const newTask = {
-        id: `task-${response.data.data.id}-${Math.random()
-          .toString(36)
-          .substr(2, 9)}`,
-        content: taskName,
+    try {
+      const taskData = {
         name: taskName,
         description: "",
         status: column.title,
-        priority: row.title,
+        priority: "normal", 
         deadline: new Date(),
         users: [],
-        dbId: response.data.data.id,
-        rowId: row.rowId, // Store the row ID in the task
+        columnId: column.columnId,
+        rowId: row.rowId, 
+        kanbanId: boardData?.id,
       };
 
-      setColumns((prev) => ({
-        ...prev,
-        [columnId]: {
-          ...prev[columnId],
-          tasks: [...prev[columnId].tasks, newTask],
-        },
-      }));
+      const response = await api.post<ApiResponse<ITask>>(
+        "tasks/create-new",
+        taskData
+      );
 
-      toast.success(`Dodano zadanie do kolumny ${columns[columnId].title}`);
+      if (response.data && response.data.data) {
+        const newTask = {
+          id: `task-${response.data.data.id}-${Math.random()
+            .toString(36)
+            .substr(2, 9)}`,
+          content: taskName,
+          name: taskName,
+          description: "",
+          status: column.title,
+          priority: row.title,
+          deadline: new Date(),
+          users: [],
+          dbId: response.data.data.id,
+          rowId: row.rowId, 
+          columnId: column.columnId,
+        };
+
+        setColumns((prev) => ({
+          ...prev,
+          [columnId]: {
+            ...prev[columnId],
+            tasks: [...prev[columnId].tasks, newTask],
+          },
+        }));
+
+        toast.success(`Dodano zadanie do kolumny ${columns[columnId].title}`);
+        return newTask;
+      }
+      return null;
+    } catch (error) {
+      console.error("Błąd podczas tworzenia zadania:", error);
+      toast.error("Nie udało się dodać zadania. Spróbuj ponownie później.");
+      return null;
     }
-  } catch (error) {
-    console.error("Error creating task:", error);
-    toast.error("Nie udało się dodać zadania. Spróbuj ponownie później.");
-  }
-};
-  // Delete a task
+  };
+
+  // Usuwanie zadania
   const onDeleteTask = async (columnId: string, taskId: string) => {
     const task = columns[columnId].tasks.find((t) => t.id === taskId);
     const dbId = task?.dbId;
 
     try {
       if (dbId) {
-        // Delete from the database
         await api.delete(`tasks/${dbId}`);
       }
 
-      // Remove from UI
       setColumns((prev) => ({
         ...prev,
         [columnId]: {
@@ -139,46 +139,48 @@ const onAddTask = async (columnId: string, rowId: string, taskName: string) => {
 
       toast.success("Usunięto zadanie");
     } catch (error) {
-      console.error("Error deleting task:", error);
+      console.error("Błąd podczas usuwania zadania:", error);
       toast.error("Nie udało się usunąć zadania. Spróbuj ponownie później.");
     }
   };
 
-  // Update task position when dragged to another column
+  // Aktualizacja pozycji zadania
   const updateTaskPosition = async (
     taskId: string,
     _sourceColumnId: string,
-    destinationColumnId: string
-  ) => {
-    // Parse the task ID to get the database ID from the format "task-{dbId}-{random}"
+    destinationColumnId: string,
+    _sourceRowId: string,
+    destinationRowId: string
+  ) => {  
     const taskIdParts = taskId.split("-");
     if (taskIdParts.length < 2) {
-      console.error("Invalid task ID format:", taskId);
+      console.error("Nieprawidłowy format ID zadania:", taskId);
       return;
     }
 
-    // Extract the database ID (second part of the taskId)
     const dbId = taskIdParts[1];
     const destColumn = columns[destinationColumnId];
+    const destRow = rows[destinationRowId];
 
-    if (!dbId || !destColumn.columnId) {
-      console.error("Missing DB ID for task or column:", {
+    if (!dbId || !destColumn.columnId || !destRow.rowId) {
+      console.error("Brakuje ID w bazie danych dla zadania, kolumny lub wiersza:", {
         taskId,
         dbId,
         destColumnId: destColumn.columnId,
+        destRowId: destRow.rowId
       });
       return;
     }
 
     try {
-      // Update task's column in the database using the provided endpoint pattern
-      await api.patch<ApiResponse<ITask>>(`tasks/${dbId}/change-column`, {
+      await api.patch<ApiResponse<ITask>>(`tasks/${dbId}/change-row-column`, {
         columnId: destColumn.columnId,
+        rowId: destRow.rowId
       });
 
-      toast.success(`Przeniesiono zadanie do kolumny ${destColumn.title}`);
+      toast.success(`Przeniesiono zadanie do ${destColumn.title} w wierszu ${destRow.title}`);
     } catch (error) {
-      console.error("Error updating task position:", error);
+      console.error("Błąd podczas aktualizacji pozycji zadania:", error);
       toast.error("Nie udało się zaktualizować pozycji zadania.");
     }
   };
@@ -196,7 +198,6 @@ const onAddTask = async (columnId: string, rowId: string, taskName: string) => {
     deleteColumn,
     canAddTaskToColumn,
     checkWipLimitForMove,
-    
     rows,
     setRows,
     rowOrder,
@@ -209,7 +210,6 @@ const onAddTask = async (columnId: string, rowId: string, taskName: string) => {
     deleteRow,
     canAddTaskToRow,
     checkRowWipLimitForMove,
-    
     onAddTask,
     onDeleteTask,
     updateTaskPosition,

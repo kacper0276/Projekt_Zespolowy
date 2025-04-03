@@ -28,7 +28,7 @@ function KanbanBoard() {
   const [newTaskTitleMap, setNewTaskTitleMap] = useState<{
     [key: string]: string;
   }>({});
-  
+
   // Stan dla edycji limitów WIP
   const [isEditingWipLimitMap, setIsEditingWipLimitMap] = useState<{
     [columnId: string]: boolean;
@@ -54,7 +54,7 @@ function KanbanBoard() {
     initializeBoard,
     boardData,
     setBoardData,
-    updateRowWipLimit,  
+    updateRowWipLimit,
   } = useKanbanBoard();
 
   // Struktura siatki dla zadań
@@ -64,7 +64,7 @@ function KanbanBoard() {
 
   useEffect(() => {
     let isMounted = true;
-  
+
     const fetchBoard = async () => {
       try {
         const res = await api.get<ApiResponse<IKanban>>(
@@ -72,13 +72,13 @@ function KanbanBoard() {
         );
         if (isMounted && res.data && res.data.data) {
           initializeBoard(res.data.data);
-          
+
           const newTaskGrid: {
             [rowId: string]: { [colId: string]: any[] };
           } = {};
-  
+
           const initializedRowIds = Object.keys(rows);
-          
+
           initializedRowIds.forEach((rowId) => {
             newTaskGrid[rowId] = {};
             columnOrder.forEach((colId) => {
@@ -87,17 +87,19 @@ function KanbanBoard() {
                 [];
             });
           });
-  
+
           setTaskGrid(newTaskGrid);
         }
       } catch (error) {
         console.error("Błąd podczas pobierania danych tablicy:", error);
-        toast.error("Nie udało się załadować tablicy. Spróbuj ponownie później.");
+        toast.error(
+          "Nie udało się załadować tablicy. Spróbuj ponownie później."
+        );
       }
     };
-  
+
     fetchBoard();
-  
+
     return () => {
       isMounted = false;
     };
@@ -223,11 +225,11 @@ function KanbanBoard() {
       toast.error("Nazwa wiersza nie może być pusta!");
       return;
     }
-  
+
     const rowExists = Object.values(rows).some(
       (row) => row.title.toLowerCase() === newRowName.trim().toLowerCase()
     );
-  
+
     if (rowExists) {
       if (
         !window.confirm(
@@ -237,43 +239,43 @@ function KanbanBoard() {
         return;
       }
     }
-  
+
     try {
       const rowId = `row-${Date.now()}`;
-      
+
       // Tworzenie wiersza w bazie danych
       const res = await api.post(`rows/${params.id}`, {
         name: newRowName.trim(),
-        maxTasks: 0,  // Domyślnie brak limitu
-        order: rowOrder.length // Dodaj na końcu
+        maxTasks: 0, // Domyślnie brak limitu
+        order: rowOrder.length, // Dodaj na końcu
       });
-      
+
       if (res.data && res.data.data) {
         const dbRowId = res.data.data.id;
-        
+
         // Dodaj wiersz do stanu lokalnego
         const newRow = {
           id: rowId,
           title: newRowName.trim(),
           tasks: [],
           wipLimit: 0,
-          rowId: dbRowId // Przechowaj ID z bazy danych
+          rowId: dbRowId, // Przechowaj ID z bazy danych
         };
-        
-        setRows(prev => ({
+
+        setRows((prev) => ({
           ...prev,
-          [rowId]: newRow
+          [rowId]: newRow,
         }));
-        
-        setRowOrder(prev => [...prev, rowId]);
-        
+
+        setRowOrder((prev) => [...prev, rowId]);
+
         const newTaskGrid = { ...taskGrid };
         newTaskGrid[rowId] = {};
-        
+
         Object.keys(columns).forEach((colId) => {
           newTaskGrid[rowId][colId] = [];
         });
-        
+
         setTaskGrid(newTaskGrid);
         setNewRowName("");
         setIsAddingRow(false);
@@ -285,62 +287,64 @@ function KanbanBoard() {
     }
   };
 
-const handleDeleteRow = async (rowId: string) => {
-  if (rowId === "Default" || rows[rowId].title === "Default") {
-    toast.error("Nie można usunąć domyślnego wiersza!");
-    return;
-  }
-
-  const rowDbId = rows[rowId]?.rowId;
-  
-  if (!rowDbId) {
-    toast.error("Nie można usunąć wiersza - brak identyfikatora w bazie danych!");
-    return;
-  }
-
-  try {
-    await api.delete(`rows/${rowDbId}`);
-    
-    const newRows = Object.keys(rows)
-      .filter((id) => id !== rowId)
-      .reduce((acc: Record<string, (typeof rows)[string]>, id) => {
-        acc[id] = rows[id];
-        return acc;
-      }, {} as Record<string, (typeof rows)[string]>);
-      
-    setRows(newRows);
-    setRowOrder(prev => prev.filter(id => id !== rowId));
-
-    const newTaskGrid = { ...taskGrid };
-    
-    // Znajdź ID wiersza domyślnego
-    const defaultRowId = Object.keys(rows).find(
-      id => rows[id].title.toLowerCase() === "default"
-    );
-    
-    // Przed usunięciem przenieś zadania do wiersza domyślnego
-    if (defaultRowId && newTaskGrid[rowId]) {
-      Object.keys(newTaskGrid[rowId]).forEach((colId) => {
-        if (!newTaskGrid[defaultRowId][colId]) {
-          newTaskGrid[defaultRowId][colId] = [];
-        }
-        
-        newTaskGrid[defaultRowId][colId] = [
-          ...newTaskGrid[defaultRowId][colId],
-          ...newTaskGrid[rowId][colId],
-        ];
-      });
+  const handleDeleteRow = async (rowId: string) => {
+    if (rowId === "Default" || rows[rowId].title === "Default") {
+      toast.error("Nie można usunąć domyślnego wiersza!");
+      return;
     }
 
-    delete newTaskGrid[rowId];
-    setTaskGrid(newTaskGrid);
+    const rowDbId = rows[rowId]?.rowId;
 
-    toast.success("Wiersz został usunięty!");
-  } catch (error) {
-    console.error("Błąd podczas usuwania wiersza:", error);
-    toast.error("Nie udało się usunąć wiersza. Spróbuj ponownie później.");
-  }
-};
+    if (!rowDbId) {
+      toast.error(
+        "Nie można usunąć wiersza - brak identyfikatora w bazie danych!"
+      );
+      return;
+    }
+
+    try {
+      await api.delete(`rows/${rowDbId}`);
+
+      const newRows = Object.keys(rows)
+        .filter((id) => id !== rowId)
+        .reduce((acc: Record<string, (typeof rows)[string]>, id) => {
+          acc[id] = rows[id];
+          return acc;
+        }, {} as Record<string, (typeof rows)[string]>);
+
+      setRows(newRows);
+      setRowOrder((prev) => prev.filter((id) => id !== rowId));
+
+      const newTaskGrid = { ...taskGrid };
+
+      // Znajdź ID wiersza domyślnego
+      const defaultRowId = Object.keys(rows).find(
+        (id) => rows[id].title.toLowerCase() === "default"
+      );
+
+      // Przed usunięciem przenieś zadania do wiersza domyślnego
+      if (defaultRowId && newTaskGrid[rowId]) {
+        Object.keys(newTaskGrid[rowId]).forEach((colId) => {
+          if (!newTaskGrid[defaultRowId][colId]) {
+            newTaskGrid[defaultRowId][colId] = [];
+          }
+
+          newTaskGrid[defaultRowId][colId] = [
+            ...newTaskGrid[defaultRowId][colId],
+            ...newTaskGrid[rowId][colId],
+          ];
+        });
+      }
+
+      delete newTaskGrid[rowId];
+      setTaskGrid(newTaskGrid);
+
+      toast.success("Wiersz został usunięty!");
+    } catch (error) {
+      console.error("Błąd podczas usuwania wiersza:", error);
+      toast.error("Nie udało się usunąć wiersza. Spróbuj ponownie później.");
+    }
+  };
 
   const handleStartEditingWipLimit = (columnId: string) => {
     setIsEditingWipLimitMap((prev) => ({
@@ -407,7 +411,7 @@ const handleDeleteRow = async (rowId: string) => {
     const destRowId = destination.droppableId.split("-")[0];
     const destColId = destination.droppableId.split("-")[1];
 
-    // Sprawdzenie limitów WIP przy przenoszeniu do innej kolumny
+    // Sprawdzenie limitów WIP przy przenoszeniu do innej kolumny lub wiersza
     if (sourceColId !== destColId) {
       const destColumnTaskCount = countTasksInColumn(destColId);
       const destColumn = columns[destColId];
@@ -420,6 +424,21 @@ const handleDeleteRow = async (rowId: string) => {
           `Nie można dodać więcej zadań do kolumny ${destColumn.title} - limit WIP osiągnięty!`
         );
         return;
+      }
+    }
+
+    // Sprawdzenie limitu WIP dla wiersza docelowego
+    if (sourceRowId !== destRowId) {
+      const row = rows[destRowId];
+      if (row && row.wipLimit > 0) {
+        const tasksInDestRow = Object.values(taskGrid[destRowId] || {}).flat()
+          .length;
+        if (tasksInDestRow >= row.wipLimit) {
+          toast.error(
+            `Nie można dodać więcej zadań do wiersza ${row.title} - limit WIP osiągnięty!`
+          );
+          return;
+        }
       }
     }
 
@@ -449,30 +468,47 @@ const handleDeleteRow = async (rowId: string) => {
       newTaskGrid[sourceRowId][sourceColId] = sourceTasks;
       newTaskGrid[destRowId][destColId] = destTasks;
 
-      // Aktualizacja pozycji w bazie danych przy zmianie kolumny
-      if (sourceColId !== destColId) {
+      // Aktualizacja pozycji w bazie danych przy zmianie kolumny lub wiersza
+      if (sourceColId !== destColId || sourceRowId !== destRowId) {
         const taskIdParts = draggableId.split("-");
         const taskId = taskIdParts.slice(1).join("-");
 
-        updateTaskPosition(taskId, sourceColId, destColId);
+        // Wywołanie zaktualizowanej funkcji z informacjami o wierszu
+        updateTaskPosition(
+          taskId,
+          sourceColId,
+          destColId,
+          sourceRowId,
+          destRowId
+        );
 
+        // Aktualizacja lokalnych stanów
         const updatedColumns = { ...columns };
         let movedTask = removed;
 
         if (movedTask) {
-          updatedColumns[sourceColId] = {
-            ...updatedColumns[sourceColId],
-            tasks: updatedColumns[sourceColId].tasks.filter(
-              (t) => t.id !== movedTask.id
-            ),
+          // Aktualizacja informacji o zadaniu - nowy rowId
+          movedTask = {
+            ...movedTask,
+            rowId: rows[destRowId].rowId, // Ustawienie nowego rowId
           };
 
-          updatedColumns[destColId] = {
-            ...updatedColumns[destColId],
-            tasks: [...updatedColumns[destColId].tasks, movedTask],
-          };
+          // Tylko jeśli zmieniamy kolumnę, aktualizujemy stan kolumn
+          if (sourceColId !== destColId) {
+            updatedColumns[sourceColId] = {
+              ...updatedColumns[sourceColId],
+              tasks: updatedColumns[sourceColId].tasks.filter(
+                (t) => t.id !== movedTask.id
+              ),
+            };
 
-          setColumns(updatedColumns);
+            updatedColumns[destColId] = {
+              ...updatedColumns[destColId],
+              tasks: [...updatedColumns[destColId].tasks, movedTask],
+            };
+
+            setColumns(updatedColumns);
+          }
         }
       }
     }
@@ -675,7 +711,7 @@ const handleDeleteRow = async (rowId: string) => {
             }}
             newColumnTitle={newColumnTitle}
             setNewColumnTitle={setNewColumnTitle}
-            addColumn={addColumn}
+            addColumn={() => addColumn(Number(params.id))}
           />
 
           <KanbanGrid
@@ -694,7 +730,7 @@ const handleDeleteRow = async (rowId: string) => {
             handleCancelAddingTask={handleCancelAddingTask}
             onDeleteTaskFromCell={onDeleteTaskFromCell}
             handleTaskUpdate={handleTaskUpdate}
-            handleRowWipLimitUpdate={handleRowWipLimitUpdate} 
+            handleRowWipLimitUpdate={handleRowWipLimitUpdate}
           />
         </div>
       </DragDropContext>
