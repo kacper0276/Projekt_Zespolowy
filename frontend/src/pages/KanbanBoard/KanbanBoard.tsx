@@ -58,6 +58,7 @@ function KanbanBoard() {
     initializeBoard,
     boardData,
     setBoardData,
+    updateRowWipLimit,  
   } = useKanbanBoard();
 
   // Utworzenie struktury siatki dla zadań
@@ -481,7 +482,7 @@ function KanbanBoard() {
     };
 
     // Dodaj zadanie do kolumny w bazie danych
-    onAddTask(colId, taskTitle);
+    onAddTask(rowId, colId, taskTitle);
 
     // Dodaj zadanie do konkretnej komórki w siatce
     const newTaskGrid = { ...taskGrid };
@@ -575,6 +576,10 @@ function KanbanBoard() {
         rows: [],
       } as IKanban);
     }
+  };
+
+  const handleRowWipLimitUpdate = (rowId: string, newWipLimit: number) => {
+    updateRowWipLimit(rowId, newWipLimit);
   };
 
   return (
@@ -672,6 +677,7 @@ function KanbanBoard() {
             handleCancelAddingTask={handleCancelAddingTask}
             onDeleteTaskFromCell={onDeleteTaskFromCell}
             handleTaskUpdate={handleTaskUpdate}
+            handleRowWipLimitUpdate={handleRowWipLimitUpdate} 
           />
         </div>
       </DragDropContext>

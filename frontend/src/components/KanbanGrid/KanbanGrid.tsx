@@ -3,9 +3,10 @@ import { Droppable } from "@hello-pangea/dnd";
 import styles from "../../pages/KanbanBoard/KanbanBoard.module.scss";
 import TaskItem from "../../components/TaskItem/TaskItem";
 import ActionButton from "../../components/ActionButton/ActionButton";
+import RowHeader from "../../components/RowHeader/RowHeader";
 
 interface KanbanGridProps {
-  rows: Record<string, { wipLimit: number }>;
+  rows: Record<string, { wipLimit: number, rowId?: number }>;
   rowOrder: string[];
   columnOrder: string[];
   columns: Record<string, { wipLimit: number }>;
@@ -33,6 +34,7 @@ interface KanbanGridProps {
     taskId: string,
     updatedData: any
   ) => void;
+  handleRowWipLimitUpdate: (rowId: string, newWipLimit: number) => void;
 }
 
 const KanbanGrid: React.FC<KanbanGridProps> = ({
@@ -51,17 +53,8 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
   handleCancelAddingTask,
   onDeleteTaskFromCell,
   handleTaskUpdate,
+  handleRowWipLimitUpdate,
 }) => {
-  const confirmDeleteRow = (rowId: string) => {
-    if (
-      window.confirm(
-        `Czy na pewno chcesz usunąć wiersz "${rowId}"? Ta operacja jest nieodwracalna.`
-      )
-    ) {
-      handleDeleteRow(rowId);
-    }
-  };
-
   const confirmDeleteTask = (
     rowId: string,
     columnId: string,
@@ -79,133 +72,144 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
 
   return (
     <div className={styles.gridRows}>
-      {Object.keys(rows).map((rowId) => (
-        <div key={rowId} className={styles.gridRow}>
-          <div className={styles.rowLabel}>
-            {rowId}
-            {rowId !== "Default" && (
-              <button
-                onClick={() => confirmDeleteRow(rowId)}
-                className={styles.deleteRowButton}
-                title="Usuń wiersz"
-              >
-                <i className="bi bi-x-circle"></i>
-              </button>
-            )}
-          </div>
+      {rowOrder.map((rowId) => {
+        const row = rows[rowId];
+        if (!row) return null;
 
-          <div className={styles.rowCells}>
-            {columnOrder.map((columnId) => {
-              const column = columns[columnId];
-              if (!column) return null;
+        return (
+          <div key={rowId} className={styles.gridRow}>
+            <RowHeader
+              rowId={rowId}
+              rowTitle={rowId}
+              wipLimit={row.wipLimit}
+              handleDeleteRow={handleDeleteRow}
+              isDefaultRow={rowId === "Default"}
+              onWipLimitUpdate={(newWipLimit) => handleRowWipLimitUpdate(rowId, newWipLimit)}
+            />
 
-              // Ensure the cell exists in the taskGrid
-              if (!taskGrid[rowId]) {
-                taskGrid[rowId] = {};
-              }
-              if (!taskGrid[rowId][columnId]) {
-                taskGrid[rowId][columnId] = [];
-              }
+            <div className={styles.rowCells}>
+              {columnOrder.map((columnId) => {
+                const column = columns[columnId];
+                if (!column) return null;
 
-              const isAddingTaskToThisCell =
-                !!isAddingTaskMap[`${rowId}-${columnId}`];
-              const newTaskTitleForCell =
-                newTaskTitleMap[`${rowId}-${columnId}`] || "";
-              const columnHasSpace =
-                column.wipLimit === 0 ||
-                countTasksInColumn(columnId) < column.wipLimit;
+                // Ensure the cell exists in the taskGrid
+                if (!taskGrid[rowId]) {
+                  taskGrid[rowId] = {};
+                }
+                if (!taskGrid[rowId][columnId]) {
+                  taskGrid[rowId][columnId] = [];
+                }
 
-              return (
-                <div key={`${rowId}-${columnId}`} className={styles.gridCell}>
-                  <Droppable droppableId={`${rowId}-${columnId}`}>
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className={`${styles.cellContent} ${
-                          snapshot.isDraggingOver ? styles.draggingOver : ""
-                        } ${
-                          column.wipLimit > 0 &&
-                          countTasksInColumn(columnId) >= column.wipLimit
-                            ? styles.limitReached
-                            : ""
-                        }`}
-                      >
-                        {taskGrid[rowId][columnId].map((task, index) => (
-                          <TaskItem
-                            key={task.id}
-                            task={task}
-                            index={index}
-                            columnId={columnId}
-                            onDeleteTask={() =>
-                              confirmDeleteTask(
-                                rowId,
-                                columnId,
-                                task.id,
-                                task.name
-                              )
-                            }
-                            onTaskUpdate={(updatedData) =>
-                              handleTaskUpdate(
-                                rowId,
-                                columnId,
-                                task.id,
-                                updatedData
-                              )
-                            }
-                          />
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
+                const isAddingTaskToThisCell =
+                  !!isAddingTaskMap[`${rowId}-${columnId}`];
+                const newTaskTitleForCell =
+                  newTaskTitleMap[`${rowId}-${columnId}`] || "";
+                const columnHasSpace =
+                  column.wipLimit === 0 ||
+                  countTasksInColumn(columnId) < column.wipLimit;
+                const rowHasSpace = 
+                  row.wipLimit === 0 || 
+                  (taskGrid[rowId] && Object.values(taskGrid[rowId])
+                    .flat().length < row.wipLimit);
+                const canAddTask = columnHasSpace && rowHasSpace;
 
-                  {isAddingTaskToThisCell ? (
-                    <div className={styles.addTaskForm}>
-                      <input
-                        type="text"
-                        value={newTaskTitleForCell}
-                        onChange={(e) =>
-                          handleTaskTitleChange(rowId, columnId, e.target.value)
-                        }
-                        placeholder="Nazwa zadania"
-                        className={styles.taskInput}
-                        autoFocus
-                      />
-                      <div className={styles.addTaskActions}>
-                        <ActionButton
-                          onClick={() => handleAddTaskSubmit(rowId, columnId)}
-                          variant="success"
-                          disabled={!newTaskTitleForCell.trim()}
+                return (
+                  <div key={`${rowId}-${columnId}`} className={styles.gridCell}>
+                    <Droppable droppableId={`${rowId}-${columnId}`}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className={`${styles.cellContent} ${
+                            snapshot.isDraggingOver ? styles.draggingOver : ""
+                          } ${
+                            column.wipLimit > 0 &&
+                            countTasksInColumn(columnId) >= column.wipLimit
+                              ? styles.limitReached
+                              : ""
+                          } ${
+                            row.wipLimit > 0 &&
+                            Object.values(taskGrid[rowId]).flat().length >= row.wipLimit
+                              ? styles.rowLimitReached
+                              : ""
+                          }`}
                         >
-                          Dodaj
-                        </ActionButton>
-                        <ActionButton
-                          onClick={() =>
-                            handleCancelAddingTask(rowId, columnId)
+                          {taskGrid[rowId][columnId].map((task, index) => (
+                            <TaskItem
+                              key={task.id}
+                              task={task}
+                              index={index}
+                              columnId={columnId}
+                              onDeleteTask={() =>
+                                confirmDeleteTask(
+                                  rowId,
+                                  columnId,
+                                  task.id,
+                                  task.name
+                                )
+                              }
+                              onTaskUpdate={(updatedData) =>
+                                handleTaskUpdate(
+                                  rowId,
+                                  columnId,
+                                  task.id,
+                                  updatedData
+                                )
+                              }
+                            />
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+
+                    {isAddingTaskToThisCell ? (
+                      <div className={styles.addTaskForm}>
+                        <input
+                          type="text"
+                          value={newTaskTitleForCell}
+                          onChange={(e) =>
+                            handleTaskTitleChange(rowId, columnId, e.target.value)
                           }
-                          variant="default"
-                        >
-                          Anuluj
-                        </ActionButton>
+                          placeholder="Nazwa zadania"
+                          className={styles.taskInput}
+                          autoFocus
+                        />
+                        <div className={styles.addTaskActions}>
+                          <ActionButton
+                            onClick={() => handleAddTaskSubmit(rowId, columnId)}
+                            variant="success"
+                            disabled={!newTaskTitleForCell.trim()}
+                          >
+                            Dodaj
+                          </ActionButton>
+                          <ActionButton
+                            onClick={() =>
+                              handleCancelAddingTask(rowId, columnId)
+                            }
+                            variant="default"
+                          >
+                            Anuluj
+                          </ActionButton>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    columnHasSpace && (
-                      <button
-                        onClick={() => handleStartAddingTask(rowId, columnId)}
-                        className={styles.addTaskButton}
-                      >
-                        <i className="bi bi-plus-circle"></i> Dodaj zadanie
-                      </button>
-                    )
-                  )}
-                </div>
-              );
-            })}
+                    ) : (
+                      canAddTask && (
+                        <button
+                          onClick={() => handleStartAddingTask(rowId, columnId)}
+                          className={styles.addTaskButton}
+                        >
+                          <i className="bi bi-plus-circle"></i> Dodaj zadanie
+                        </button>
+                      )
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

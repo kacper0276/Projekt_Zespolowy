@@ -50,66 +50,73 @@ export function useKanbanBoard() {
     initializeRows(kanbanData.rows);
   }, [initializeColumns, initializeRows]);
 
-  // Add a task to a column
-  const onAddTask = async (columnId: string, taskName: string) => {
-    if (!canAddTaskToColumn(columnId)) {
-      toast.error(`Kolumna ${columns[columnId].title} osiągnęła limit zadań!`);
-      return;
-    }
+ // Add a task to a column and row
+const onAddTask = async (columnId: string, rowId: string, taskName: string) => {
+  if (!canAddTaskToColumn(columnId)) {
+    toast.error(`Kolumna ${columns[columnId].title} osiągnęła limit zadań!`);
+    return;
+  }
+  
+  if (!canAddTaskToRow(rowId)) {
+    toast.error(`Wiersz ${rows[rowId].title} osiągnęła limit zadań!`);
+    return;
+  }
 
-    const column = columns[columnId];
+  const column = columns[columnId];
+  const row = rows[rowId];
 
-    try {
-      // Create task request payload
-      const taskData = {
+  try {
+    // Create task request payload
+    const taskData = {
+      name: taskName,
+      description: "",
+      status: column.title,
+      priority: "normal",
+      deadline: new Date(),
+      users: [],
+      columnId: column.columnId,
+      rowId: row.rowId, // Add the row ID to the request
+      kanbanId: boardData?.id,
+    };
+
+    // Send request to create task in the database
+    const response = await api.post<ApiResponse<ITask>>(
+      "tasks/create-new",
+      taskData
+    );
+
+    // If successful, add to UI with the database ID
+    if (response.data && response.data.data) {
+      const newTask = {
+        id: `task-${response.data.data.id}-${Math.random()
+          .toString(36)
+          .substr(2, 9)}`,
+        content: taskName,
         name: taskName,
         description: "",
         status: column.title,
-        priority: "normal",
+        priority: row.title,
         deadline: new Date(),
         users: [],
-        columnId: column.columnId,
-        kanbanId: boardData?.id,
+        dbId: response.data.data.id,
+        rowId: row.rowId, // Store the row ID in the task
       };
 
-      // Send request to create task in the database
-      const response = await api.post<ApiResponse<ITask>>(
-        "tasks/create-new",
-        taskData
-      );
+      setColumns((prev) => ({
+        ...prev,
+        [columnId]: {
+          ...prev[columnId],
+          tasks: [...prev[columnId].tasks, newTask],
+        },
+      }));
 
-      // If successful, add to UI with the database ID
-      if (response.data && response.data.data) {
-        const newTask = {
-          id: `task-${response.data.data.id}-${Math.random()
-            .toString(36)
-            .substr(2, 9)}`,
-          content: taskName,
-          name: taskName,
-          description: "",
-          status: column.title,
-          priority: "normal",
-          deadline: new Date(),
-          users: [],
-          dbId: response.data.data.id,
-        };
-
-        setColumns((prev) => ({
-          ...prev,
-          [columnId]: {
-            ...prev[columnId],
-            tasks: [...prev[columnId].tasks, newTask],
-          },
-        }));
-
-        toast.success(`Dodano zadanie do kolumny ${columns[columnId].title}`);
-      }
-    } catch (error) {
-      console.error("Error creating task:", error);
-      toast.error("Nie udało się dodać zadania. Spróbuj ponownie później.");
+      toast.success(`Dodano zadanie do kolumny ${columns[columnId].title}`);
     }
-  };
-
+  } catch (error) {
+    console.error("Error creating task:", error);
+    toast.error("Nie udało się dodać zadania. Spróbuj ponownie później.");
+  }
+};
   // Delete a task
   const onDeleteTask = async (columnId: string, taskId: string) => {
     const task = columns[columnId].tasks.find((t) => t.id === taskId);
