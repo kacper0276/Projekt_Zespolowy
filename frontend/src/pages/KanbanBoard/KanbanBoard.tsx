@@ -521,8 +521,6 @@ function KanbanBoard() {
       }
     }
 
-    console.log("DUPA");
-
     // setTaskGrid(newTaskGrid);
   };
 
