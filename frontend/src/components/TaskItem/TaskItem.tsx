@@ -19,7 +19,7 @@ interface ItemProps {
   index: number;
   columnId: string;
   onDeleteTask: () => void;
-  onTaskUpdate: (updatedData: any) => void; // Added this missing prop
+  onTaskUpdate: (updatedData: any) => void; 
 }
 
 const TaskItem: React.FC<ItemProps> = ({
@@ -27,7 +27,7 @@ const TaskItem: React.FC<ItemProps> = ({
   index,
   columnId,
   onDeleteTask,
-  onTaskUpdate, // Added this missing prop
+  onTaskUpdate, 
 }) => {
   const api = useApiJson();
   const [isModalOpen, setIsModalOpen] = useState(false);

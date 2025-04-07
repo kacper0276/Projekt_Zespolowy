@@ -53,6 +53,7 @@ export function useKanbanBoard() {
     [initializeColumns, initializeRows]
   );
 
+  
   // Dodawanie zadania do kolumny i wiersza
   const onAddTask = async (
     rowId: string,
@@ -127,14 +128,11 @@ export function useKanbanBoard() {
   };
 
   // Usuwanie zadania
-  const onDeleteTask = async (columnId: string, taskId: string) => {
-    const task = columns[columnId].tasks.find((t) => t.id === taskId);
-    const dbId = task?.dbId;
-    console.log(dbId)
+  const onDeleteTask = async (columnId: string, taskId: number) => {
 
     try {
-      if (dbId) {
-        await api.delete(`tasks/${dbId}`);
+      if (taskId) {
+        await api.delete(`tasks/${taskId}`);
       }
 
       setColumns((prev) => ({

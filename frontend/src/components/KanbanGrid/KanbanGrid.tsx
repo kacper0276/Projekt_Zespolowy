@@ -34,7 +34,7 @@ interface KanbanGridProps {
   onDeleteTaskFromCell: (
     rowId: string,
     columnId: string,
-    taskId: string
+    taskId: number
   ) => void;
   handleTaskUpdate: (
     rowId: string,
@@ -66,7 +66,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
   const confirmDeleteTask = (
     rowId: string,
     columnId: string,
-    taskId: string,
+    taskId: number,
     taskName: string
   ) => {
     if (
@@ -77,7 +77,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
       onDeleteTaskFromCell(rowId, columnId, taskId);
     }
   };
-
+  
   return (
     <div className={styles.gridRows}>
       {rowOrder.map((rowId) => {
