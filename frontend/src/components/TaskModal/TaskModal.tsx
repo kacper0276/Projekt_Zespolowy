@@ -102,6 +102,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
     setTaskData({ ...taskData, users: selectedList });
   };
 
+  // Function to handle manual removal of a user chip
+  const handleRemoveUser = (userId: string | number) => {
+    const updatedUsers = taskData.users.filter(user => user.id !== userId);
+    setTaskData({ ...taskData, users: updatedUsers });
+  };
+
   const handleSaveTask = async () => {
     setIsLoading(true);
     try {
@@ -131,7 +137,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }
   };
 
-  if (!isOpen) return null; 
+  if (!isOpen) return null;
+  
   return (
     <div className={styles.modalBackdrop} onClick={handleBackdropClick}>
       <div className={styles.modalContent}>
@@ -165,6 +172,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
             <div className={styles.formGroup}>
               <label>Przypisani użytkownicy:</label>
               <div className={styles.multiselectContainer}>
+                {/* Custom selected users wrapper */}
+                <div className={styles.selectedUsersWrapper}>
+                  {taskData.users.map(user => (
+                    <div key={user.id} className={styles.userChip}>
+                      {user.email}
+                      <span 
+                        className={styles.removeIcon} 
+                        onClick={() => handleRemoveUser(user.id)}
+                      >
+                        <i className="bi bi-x"></i>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Multiselect component with hidden chips */}
                 <Multiselect
                   options={allUsers}
                   selectedValues={taskData.users}
@@ -174,14 +197,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   placeholder="Wybierz użytkowników"
                   emptyRecordMsg="Brak użytkowników"
                   loading={isLoading}
+                  hidePlaceholder={taskData.users.length > 0}
+                  hideSelectedList={true} // Hide the default chips
                   style={{
-                    chips: {
-                      background: "#02a676",
-                    },
                     searchBox: {
                       background: "#1E1E1E",
                       border: "1px solid #444",
-                      borderRadius: "4px",
+                      borderRadius: "0 0 4px 4px",
                       color: "#E0E0E0",
                     },
                     optionContainer: {
@@ -192,6 +214,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     option: {
                       color: "#E0E0E0",
                     },
+                    // Don't include chips styling since we're using a custom implementation
                   }}
                 />
               </div>
