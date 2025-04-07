@@ -55,8 +55,8 @@ export function useKanbanBoard() {
 
   // Dodawanie zadania do kolumny i wiersza
   const onAddTask = async (
-    columnId: string,
     rowId: string,
+    columnId: string,
     taskName: string
   ) => {
     if (!canAddTaskToColumn(columnId)) {
@@ -130,6 +130,7 @@ export function useKanbanBoard() {
   const onDeleteTask = async (columnId: string, taskId: string) => {
     const task = columns[columnId].tasks.find((t) => t.id === taskId);
     const dbId = task?.dbId;
+    console.log(dbId)
 
     try {
       if (dbId) {

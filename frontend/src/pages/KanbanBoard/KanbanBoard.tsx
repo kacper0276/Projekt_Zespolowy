@@ -528,6 +528,7 @@ function KanbanBoard() {
     // Sprawdzenie limitu WIP przed dodaniem zadania
     const currentTaskCount = countTasksInColumn(colId);
     const column = columns[colId];
+    
 
     if (column && column.wipLimit > 0 && currentTaskCount >= column.wipLimit) {
       toast.error(
