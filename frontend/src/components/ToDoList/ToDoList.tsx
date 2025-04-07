@@ -37,7 +37,9 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
     }
   };
 
-  const addToDoItem = async () => {
+  const addToDoItem = async (listId: number) => {
+    if (listId < 0) return;
+
     if (!newItemName.trim() || !toDoList) {
       alert(
         "Nazwa zadania nie może być pusta lub lista nie została utworzona!"
@@ -46,11 +48,14 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
     }
 
     try {
-      const response = await api.post<IToDoItem>("/api/todo-items", {
-        name: newItemName,
-        isDone: false,
-        toDoList: toDoList,
-      });
+      const response = await api.post<IToDoItem>(
+        `to-do-lists/${listId}/items`,
+        {
+          name: newItemName,
+          isDone: false,
+          toDoList: toDoList,
+        }
+      );
       setItems((prevItems) => [...prevItems, response.data]);
       setNewItemName("");
       alert("Zadanie zostało dodane!");
@@ -98,7 +103,9 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
           />
-          <button onClick={addToDoItem}>Dodaj zadanie</button>
+          <button onClick={() => addToDoItem(toDoList.id ?? -1)}>
+            Dodaj zadanie
+          </button>
         </div>
       )}
 

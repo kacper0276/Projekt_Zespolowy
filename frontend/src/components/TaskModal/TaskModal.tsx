@@ -46,6 +46,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     },
     kanbans: [],
     toDoLists: [],
+    row: { name: "", order: 0, tasks: [], maxTasks: 0 },
   });
 
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
@@ -199,7 +200,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
             <div className={styles.formGroup}>
               <label>Listy zadań:</label>
-              <ToDoList taskId={+taskId.split("-")[1]} />
+              <ToDoList taskId={+taskId} />
             </div>
 
             <div className={styles.formActions}>
