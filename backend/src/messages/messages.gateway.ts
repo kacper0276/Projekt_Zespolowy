@@ -7,6 +7,7 @@ import {
 import { Socket, Server } from 'socket.io';
 import { MessagesService } from './messages.service';
 import { ConversationsService } from 'src/conversations/conversations.service';
+import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({ cors: true })
 export class MessagesGateway
@@ -15,6 +16,7 @@ export class MessagesGateway
   @WebSocketServer()
   server: Server;
 
+  private readonly logger = new Logger(MessagesGateway.name);
   private userSockets: Map<string, number[]> = new Map();
 
   constructor(
@@ -23,7 +25,7 @@ export class MessagesGateway
   ) {}
 
   async handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
+    this.logger.log(`Client connected: ${client.id}`);
 
     const conversationId = client.handshake.query.conversationId as string;
     const userId = client.handshake.query.userId as string;
@@ -42,7 +44,7 @@ export class MessagesGateway
   }
 
   async handleDisconnect(client: Socket) {
-    console.log(`Client disconnected: ${client.id}`);
+    this.logger.log(`Client disconnected: ${client.id}`);
     const conversationIds = this.userSockets.get(client.id);
 
     if (conversationIds) {

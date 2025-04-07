@@ -26,6 +26,8 @@ import { RowsModule } from './rows/rows.module';
 import { Row } from './rows/entities/row.entity';
 import { KanbanSettingsModule } from './kanban-settings/kanban-settings.module';
 import { KanbanSetting } from './kanban-settings/entities/kanban-setting.entity';
+import { Team } from './teams/entities/team.entity';
+import { TeamInvite } from './teams/entities/team-invite.entity';
 
 @Module({
   imports: [
@@ -49,6 +51,8 @@ import { KanbanSetting } from './kanban-settings/entities/kanban-setting.entity'
         ToDoItem,
         Row,
         KanbanSetting,
+        Team,
+        TeamInvite,
       ],
       synchronize: true,
       migrations: ['../migrations/**/*.ts'],

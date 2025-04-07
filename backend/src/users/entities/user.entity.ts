@@ -6,6 +6,8 @@ import { Task } from '../../tasks/entities/task.entity';
 import { Conversation } from 'src/conversations/entities/conversation.entity';
 import { Message } from 'src/messages/entities/message.entity';
 import { KanbanSetting } from 'src/kanban-settings/entities/kanban-setting.entity';
+import { TeamInvite } from 'src/teams/entities/team-invite.entity';
+import { Team } from 'src/teams/entities/team.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -50,4 +52,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => KanbanSetting, (kanbanSetting) => kanbanSetting.user)
   kanbanSettings: KanbanSetting[];
+
+  @OneToMany(() => TeamInvite, (invite) => invite.user)
+  teamInvites: TeamInvite[];
+
+  @OneToMany(() => Team, (team) => team.users)
+  teams: Team[];
 }

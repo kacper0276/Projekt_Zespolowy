@@ -6,26 +6,28 @@ import {
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { UsersService } from './users.service';
+import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({ cors: true })
 export class UserStatusGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
+  private readonly logger = new Logger(UserStatusGateway.name);
   constructor(private readonly usersService: UsersService) {}
 
   afterInit(server: any) {
-    console.log('Gateway Initialized');
+    this.logger.log('Gateway Initialized');
   }
 
   async handleConnection(socket: Socket) {
     const userId = socket.handshake.query.userId;
     await this.usersService.updateUserStatus(+userId, true);
-    console.log(`User ${userId} connected`);
+    this.logger.log(`User ${userId} connected`);
   }
 
   async handleDisconnect(socket: Socket) {
     const userId = socket.handshake.query.userId;
     await this.usersService.updateUserStatus(+userId, false);
-    console.log(`User ${userId} disconnected`);
+    this.logger.log(`User ${userId} disconnected`);
   }
 }
