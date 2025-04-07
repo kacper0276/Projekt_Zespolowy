@@ -4,9 +4,12 @@
 .mainHeader {
   @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
   padding: 1rem 0;
-  // box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  position: relative;
-  z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 20; 
 }
 
 .navbar {
@@ -52,6 +55,7 @@
   }
 }
 
+/* The rest of your header styling remains unchanged */
 .modalBackdrop {
   position: fixed;
   top: 0;

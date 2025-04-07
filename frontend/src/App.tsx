@@ -11,10 +11,12 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import NotFound from "./pages/NotFound/NotFound";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import Sidebar from "./layout/Sidebar/Sidebar";
 import { UserProvider } from "./context/UserContext";
 import ActivateAccount from "./pages/ActivateAccount/ActivateAccount";
 import BoardsNew from "./pages/BoardsNew/BoardsNew";
 import AuthenticatedRoute from "./hoc/AuthenticatedRoute";
+
 
 function App() {
   const content = (
@@ -59,6 +61,13 @@ function App() {
     </>
   );
 
+  const sidebar = (
+    <Routes>
+      <Route path="/boards/:id" element={<Sidebar />} />
+      <Route path="*" element={<></>} />
+    </Routes>
+  );
+
   const footer = (
     <>
       <Routes>
@@ -67,6 +76,7 @@ function App() {
         <Route path="/signup" element={<></>} />
         <Route path="/KanbanBoard" element={<></>} />
         <Route path="/activate-account/:userEmail" element={<></>} />
+        <Route path="/boards/:id" element={<></>} />
         <Route path="*" element={<Footer />} />
       </Routes>
     </>
@@ -75,7 +85,12 @@ function App() {
   return (
     <Router>
       <UserProvider>
-        <Layout header={header} content={content} footer={footer} />
+        <Layout 
+        header={header} 
+        content={content} 
+        sidebar={sidebar} 
+        footer={footer}
+         />
       </UserProvider>
     </Router>
   );
