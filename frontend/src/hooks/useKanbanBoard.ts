@@ -128,11 +128,16 @@ export function useKanbanBoard() {
   };
 
   // Usuwanie zadania
-  const onDeleteTask = async (columnId: string, taskId: number) => {
+  const onDeleteTask = async (columnId: string, taskId: string) => {
+    const task = columns[columnId].tasks.find((t) => t.dbId === taskId);
+
+    console.log(task)
+    const dbId = task?.dbId;
+
 
     try {
-      if (taskId) {
-        await api.delete(`tasks/${taskId}`);
+      if (dbId) {
+        await api.delete(`tasks/${dbId}`);
       }
 
       setColumns((prev) => ({

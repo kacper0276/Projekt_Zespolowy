@@ -131,8 +131,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
-
+  if (!isOpen) return null; 
   return (
     <div className={styles.modalBackdrop} onClick={handleBackdropClick}>
       <div className={styles.modalContent}>

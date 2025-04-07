@@ -49,7 +49,7 @@ const TaskItem: React.FC<ItemProps> = ({
   };
   
   const handleTaskUpdate = (updatedTask: { name: string; users: IUser[] }) => {
-    const taskId = task.id.split("-")[1];
+    const taskId = task.id;
     api
       .patch(`tasks/${taskId}/assign-users`, { users: updatedTask.users })
       .then((res) => {

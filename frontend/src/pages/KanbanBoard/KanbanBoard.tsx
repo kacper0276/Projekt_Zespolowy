@@ -566,7 +566,7 @@ function KanbanBoard() {
   const onDeleteTaskFromCell = (
     rowId: string,
     colId: string,
-    taskId: number
+    taskId: string
   ) => {
     const newTaskGrid = { ...taskGrid };
     if (newTaskGrid[rowId] && newTaskGrid[rowId][colId]) {
