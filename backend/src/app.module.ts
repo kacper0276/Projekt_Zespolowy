@@ -24,6 +24,8 @@ import { ToDoItem } from './to-do-lists/entities/to-do-item.entity';
 import { TeamsModule } from './teams/teams.module';
 import { RowsModule } from './rows/rows.module';
 import { Row } from './rows/entities/row.entity';
+import { KanbanSettingsModule } from './kanban-settings/kanban-settings.module';
+import { KanbanSetting } from './kanban-settings/entities/kanban-setting.entity';
 
 @Module({
   imports: [
@@ -46,6 +48,7 @@ import { Row } from './rows/entities/row.entity';
         Conversation,
         ToDoItem,
         Row,
+        KanbanSetting,
       ],
       synchronize: true,
       migrations: ['../migrations/**/*.ts'],
@@ -62,6 +65,7 @@ import { Row } from './rows/entities/row.entity';
     MessagesModule,
     TeamsModule,
     RowsModule,
+    KanbanSettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

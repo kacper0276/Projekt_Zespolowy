@@ -5,6 +5,7 @@ import { Kanban } from '../../kanban/entities/kanban.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Conversation } from 'src/conversations/entities/conversation.entity';
 import { Message } from 'src/messages/entities/message.entity';
+import { KanbanSetting } from 'src/kanban-settings/entities/kanban-setting.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -46,4 +47,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Message, (message) => message.sender)
   messages: Message[];
+
+  @OneToMany(() => KanbanSetting, (kanbanSetting) => kanbanSetting.user)
+  kanbanSettings: KanbanSetting[];
 }

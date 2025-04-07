@@ -8,6 +8,7 @@ import { Task } from '../tasks/entities/task.entity';
 import { ToDoList } from '../to-do-lists/entities/to-do-list.entity';
 import { ToDoItem } from 'src/to-do-lists/entities/to-do-item.entity';
 import { Row } from 'src/rows/entities/row.entity';
+import { KanbanSetting } from 'src/kanban-settings/entities/kanban-setting.entity';
 dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -19,7 +20,17 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'test',
   synchronize: false,
   logging: true,
-  entities: [User, ColumnEntity, Kanban, Status, Task, ToDoList, ToDoItem, Row],
+  entities: [
+    User,
+    ColumnEntity,
+    Kanban,
+    Status,
+    Task,
+    ToDoList,
+    ToDoItem,
+    Row,
+    KanbanSetting,
+  ],
   migrations: ['migrations/**/*.ts'],
   migrationsTableName: 'migrations_typeorm',
 });
