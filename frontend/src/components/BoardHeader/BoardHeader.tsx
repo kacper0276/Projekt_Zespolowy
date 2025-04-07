@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import styles from '../../pages/KanbanBoard/KanbanBoard.module.scss';
+import styles from './BoardHeader.module.scss';
 
 interface BoardHeaderProps {
   boardData: {
