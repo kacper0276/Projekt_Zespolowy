@@ -1,6 +1,6 @@
 import React from 'react';
 import { Draggable, Droppable } from '@hello-pangea/dnd';
-import styles from '../../pages/KanbanBoard/KanbanBoard.module.scss';
+import styles from './ColumnHeader.module.scss';
 import WipLimitEditor from '../../components/WipLimitEditor/WipLimitEditor';
 import ActionButton from '../../components/ActionButton/ActionButton';
 import { useApiJson } from "../../config/api";
