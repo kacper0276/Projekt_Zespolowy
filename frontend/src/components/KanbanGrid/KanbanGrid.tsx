@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Droppable } from "@hello-pangea/dnd";
-import styles from "../../pages/KanbanBoard/KanbanBoard.module.scss";
+import styles from "./KanbanGrid.module.scss";
 import TaskItem from "../../components/TaskItem/TaskItem";
 import ActionButton from "../../components/ActionButton/ActionButton";
 import RowHeader from "../../components/RowHeader/RowHeader";

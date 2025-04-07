@@ -1,0 +1,123 @@
+@use "../../styles/variables" as *;
+
+// Grid-specific styles for KanbanGrid component
+.gridRows {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    max-height: calc(100vh - 180px);
+  }
+  
+  .gridRow {
+    display: flex;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    width: fit-content;
+    min-width: 100%;
+    
+    &:hover {
+      background-color: rgba(40, 42, 47, 0.5);
+    }
+  }
+  
+  .rowCells {
+    display: flex;
+    flex: 1;
+    gap: 8px;
+    padding: 4px 8px;
+    overflow-x: visible;
+  }
+  
+  .gridCell {
+    min-width: 250px;
+    width: 250px;
+    min-height: 100px;
+    max-height: 400px;
+    margin: 0 4px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(36, 37, 42, 0.85);
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+    border: 1px solid rgba(60, 62, 67, 0.5);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    
+    &:hover {
+      background-color: rgba(36, 37, 42, 0.95);
+    }
+  }
+  
+  .cellContent {
+    flex: 1;
+    padding: 8px;
+    overflow-y: auto;
+    min-height: 100px;
+    
+    &.draggingOver {
+      background-color: rgba(165, 8, 46, 0.15);
+      border-radius: 4px;
+    }
+    
+    &.limitReached {
+      background-color: rgba(255, 77, 77, 0.1);
+      border: 1px dashed rgba(255, 77, 77, 0.5);
+    }
+    
+    &.rowLimitReached {
+      background-color: rgba(255, 77, 77, 0.1);
+      border: 1px dashed rgba(255, 77, 77, 0.5);
+    }
+  }
+  
+  .addTaskButton {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 8px;
+    margin-top: 4px;
+    border-radius: 4px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    
+    &:hover {
+      background-color: rgba(165, 8, 46, 0.2);
+      color: rgba(255, 255, 255, 1);
+    }
+  }
+  
+  .addTaskForm {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background-color: rgba(2, 166, 118, 0.15);
+    border-radius: 0 0 4px 4px;
+  }
+  
+  .taskInput {
+    background-color: $cardBackground;
+    border: 1px solid $formGradientStart;
+    color: $textColor;
+    padding: 8px;
+    border-radius: 4px;
+    width: 100%;
+    margin-bottom: 8px;
+    
+    &:focus {
+      outline: none;
+      border-color: $formGradientEnd;
+      box-shadow: 0 0 0 2px rgba(165, 8, 46, 0.2);
+    }
+  }
+  
+  .addTaskActions {
+    display: flex;
+    gap: 8px;
+  }
+  
