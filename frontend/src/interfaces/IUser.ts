@@ -1,3 +1,7 @@
+import { IKanbanSettings } from "./IKanbanSettings";
+import { ITeam } from "./ITeam";
+import { ITeamInvite } from "./ITeamInvite";
+
 export interface IUser {
   email: string;
   login: string;
@@ -9,4 +13,7 @@ export interface IUser {
   lastname: string | null;
   isOnline: boolean;
   maxTasks: number;
+  kanbanSettings: IKanbanSettings[];
+  teamInvites: ITeamInvite[];
+  teams: ITeam[];
 }
