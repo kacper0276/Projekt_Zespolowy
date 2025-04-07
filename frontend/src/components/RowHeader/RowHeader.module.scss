@@ -1,0 +1,140 @@
+@use "../../styles/variables" as *;
+
+.rowHeader {
+  min-width: 150px;
+  width: 150px;
+  padding: 15px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(32, 34, 39, 0.9); 
+  border-right: 1px solid rgba(255, 255, 255, 0.15); 
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  
+  &:hover {
+    background-color: rgba(36, 37, 42, 0.95);
+  }
+}
+
+.rowTitle {
+  margin: 0;
+  font-size: 1rem;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 10px;
+}
+
+.rowHeaderActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.taskCount {
+  background-color: rgba(255, 255, 255, 0.15); 
+  color: #ccc;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  
+  &.limitReached {
+    background-color: rgba(255, 77, 77, 0.3); 
+    color: $dangerColor;
+  }
+}
+
+.wipLimitDisplay {
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.08); 
+  transition: all 0.2s ease;
+  width: 100%;
+  justify-content: center;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+  
+  &.limitReached {
+    background-color: rgba(255, 77, 77, 0.2); 
+    color: $dangerColor;
+  }
+}
+
+.wipLimitEditor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.wipLimitInput {
+  background-color: $cardBackground;
+  border: 1px solid $formGradientStart;
+  color: $textColor;
+  padding: 4px 8px;
+  border-radius: 4px;
+  width: 70px;
+  text-align: center;
+  
+  &:focus {
+    outline: none;
+    border-color: $formGradientEnd;
+    box-shadow: 0 0 0 2px rgba(165, 8, 46, 0.2);
+  }
+}
+
+.wipLimitButtons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.deleteRowButton {
+  background: none;
+  border: none;
+  color: rgba(255, 77, 77, 0.7);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  width: 24px;
+  height: 24px;
+  
+  &:hover {
+    color: $dangerColor;
+    background-color: rgba(255, 77, 77, 0.2); 
+  }
+  
+  i {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .rowHeader {
+    min-width: 120px;
+    padding: 10px;
+  }
+  
+  .rowTitle {
+    font-size: 0.9rem;
+  }
+}

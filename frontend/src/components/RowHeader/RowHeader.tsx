@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from '../../pages/KanbanBoard/KanbanBoard.module.scss';
+import styles from './RowHeader.module.scss';
 import WipLimitEditor from '../WipLimitEditor/WipLimitEditor';
 import { useApiJson } from "../../config/api";
 
