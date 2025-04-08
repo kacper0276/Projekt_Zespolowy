@@ -77,7 +77,7 @@ export function useKanbanBoard() {
       const taskData = {
         name: taskName,
         description: "",
-        status: column.title,
+        status:"",
         priority: "normal",
         deadline: new Date(),
         users: [],

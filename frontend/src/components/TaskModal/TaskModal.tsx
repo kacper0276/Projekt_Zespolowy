@@ -67,11 +67,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
   // Reset task data when props change
   useEffect(() => {
     if (isOpen) {
-      setTaskData((prev) => ({
-        ...prev,
+      const updatedTaskData = {
+        ...taskData,
         name: taskText,
         users: users || [],
-      }));
+      };
+      
+      setTaskData(updatedTaskData);
     }
   }, [isOpen, taskText, users]);
 
@@ -114,7 +116,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const handleSaveTask = async () => {
     setIsLoading(true);
     try {
-      //tu api potem
+      //TODO tu api potem
+      
       if (onTaskUpdate) {
         onTaskUpdate({
           name: taskData.name,
@@ -174,7 +177,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
               />
             </div>
 
-            {/* Status select */}
+            {/* Status select with improved UI */}
             <div className={styles.formGroup}>
               <label htmlFor="status">Status zadania:</label>
               <select

@@ -37,10 +37,10 @@ const TaskItem: React.FC<ItemProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskText, setTaskText] = useState(task.name || task.content || "");
   const [taskUsers, setTaskUsers] = useState<IUser[]>(task.users || []);
+  const [taskStatus, setTaskStatus] = useState<string | undefined>(task.status);
   
   // Ensure uniqueness by combining columnId and task id
   const uniqueDraggableId = `${columnId}-${task.id}-${index}`;
-
 
   const handleTaskClick = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest(`.${styles.deleteTaskButton}`)) {
@@ -53,7 +53,7 @@ const TaskItem: React.FC<ItemProps> = ({
     setIsModalOpen(false);
   };
   
-  const handleTaskUpdate = (updatedTask: { name: string; users: IUser[] }) => {
+  const handleTaskUpdate = (updatedTask: { name: string; users: IUser[], status?: string }) => {
     const taskId = task.id;
     api
       .patch(`tasks/${taskId}/assign-users`, { users: updatedTask.users })
@@ -63,16 +63,29 @@ const TaskItem: React.FC<ItemProps> = ({
     setTaskText(updatedTask.name);
     setTaskUsers(updatedTask.users || []);
     
+    // Update task status if provided
+    if (updatedTask.status) {
+      setTaskStatus(updatedTask.status);
+    }
+    
     // Call the parent's onTaskUpdate with the updated task data
     onTaskUpdate({
       name: updatedTask.name,
-      users: updatedTask.users
+      users: updatedTask.users,
+      status: updatedTask.status
     });
   };
   
   const getUserInitials = (email: string): string => {
     if (!email) return "??";
     return email.substring(0, 2).toUpperCase();
+  };
+
+  // Find status color based on status name
+  const getStatusColor = (): string => {
+    if (!taskStatus || !statuses) return "transparent";
+    const status = statuses.find(s => s.name === taskStatus);
+    return status?.color || "transparent";
   };
   
   return (
@@ -86,6 +99,13 @@ const TaskItem: React.FC<ItemProps> = ({
             className={styles.item}
             onClick={handleTaskClick}
           >
+            {/* Add status badge if status exists */}
+            {taskStatus && (
+              <div className={styles.statusBadge} style={{ backgroundColor: getStatusColor() }}>
+                {taskStatus}
+              </div>
+            )}
+            
             <div className={styles.taskContent}>
               <span className={styles.taskText}>{taskText}</span>
               <div className={styles.taskActions}>
@@ -137,7 +157,7 @@ const TaskItem: React.FC<ItemProps> = ({
         onClose={closeModal}
         users={taskUsers}
         onTaskUpdate={handleTaskUpdate}
-         statuses={statuses} 
+        statuses={statuses} 
       />
     </>
   );
