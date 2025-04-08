@@ -54,6 +54,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showNewStatusForm, setShowNewStatusForm] = useState<boolean>(false);
+  const [showStatusList, setShowStatusList] = useState<boolean>(false);
+  const [newStatus, setNewStatus] = useState<IStatus>({ name: "", color: "#3394dc" });
+  const [allStatuses, setAllStatuses] = useState<IStatus[]>(statuses);
 
   const api = useApiJson();
 
@@ -74,8 +78,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
       };
       
       setTaskData(updatedTaskData);
+      setAllStatuses(statuses);
     }
-  }, [isOpen, taskText, users]);
+  }, [isOpen, taskText, users, statuses]);
 
   const fetchUsers = async () => {
     setIsLoading(true);
@@ -97,6 +102,89 @@ const TaskModal: React.FC<TaskModalProps> = ({
       ...prevState,
       [name]: value ?? "",
     }));
+  };
+
+  // Handle new status form input changes
+  const handleNewStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewStatus((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  // Add new status
+  const handleAddStatus = () => {
+    if (!newStatus.name.trim()) {
+      toast.error("Nazwa statusu nie może być pusta");
+      return;
+    }
+
+    // Check if status with the same name already exists
+    if (allStatuses.some(status => status.name === newStatus.name)) {
+      toast.error("Status o takiej nazwie już istnieje");
+      return;
+    }
+
+    const updatedStatuses = [...allStatuses, newStatus];
+    setAllStatuses(updatedStatuses);
+    
+    // Automatically select the new status
+    setTaskData(prevState => ({
+      ...prevState,
+      status: newStatus.name
+    }));
+
+    // Reset form
+    setNewStatus({ name: "", color: "#3394dc" });
+    setShowNewStatusForm(false);
+    
+    toast.success("Dodano nowy status");
+    
+    // In a real implementation, you would save this to the database here
+  };
+
+  // Handle delete status with window.confirm
+  const handleDeleteStatus = (statusName: string) => {
+    const confirmDelete = window.confirm(`Czy na pewno chcesz usunąć status "${statusName}"?`);
+    
+    if (confirmDelete) {
+      console.log(`Deleting status: ${statusName}`);
+      
+      // Remove the status from the list
+      const updatedStatuses = allStatuses.filter(
+        status => status.name !== statusName
+      );
+      
+      setAllStatuses(updatedStatuses);
+      
+      // If the current task has this status, clear the status
+      if (taskData.status === statusName) {
+        setTaskData(prevState => ({
+          ...prevState,
+          status: ""
+        }));
+      }
+      
+      toast.success(`Status "${statusName}" został usunięty`);
+    }
+  };
+
+  // NEW FUNCTION: Clear selected status without deleting it from the list
+  const handleClearSelectedStatus = () => {
+    setTaskData(prevState => ({
+      ...prevState,
+      status: ""
+    }));
+    toast.info("Status zadania został wyczyszczony");
+  };
+
+  // Toggle status list visibility
+  const toggleStatusList = () => {
+    setShowStatusList(!showStatusList);
+    if (showNewStatusForm && !showStatusList) {
+      setShowNewStatusForm(false);
+    }
   };
 
   const onSelect = (selectedList: IUser[], _selectedItem: IUser) => {
@@ -177,9 +265,109 @@ const TaskModal: React.FC<TaskModalProps> = ({
               />
             </div>
 
-            {/* Status select with improved UI */}
+            {/* Status section with status creation and management options */}
             <div className={styles.formGroup}>
-              <label htmlFor="status">Status zadania:</label>
+              <div className={styles.statusHeader}>
+                <label htmlFor="status">Status zadania:</label>
+                <div className={styles.statusActions}>
+                  <button 
+                    className={styles.manageStatusButton} 
+                    onClick={toggleStatusList}
+                  >
+                    {showStatusList ? (
+                      <><i className="bi bi-x-circle"></i> Ukryj statusy</>
+                    ) : (
+                      <><i className="bi bi-trash"></i> Usuń status</>
+                    )}
+                  </button>
+                  <button 
+                    className={styles.addStatusButton} 
+                    onClick={() => {
+                      setShowNewStatusForm(!showNewStatusForm);
+                      if (showStatusList && !showNewStatusForm) {
+                        setShowStatusList(false);
+                      }
+                    }}
+                  >
+                    {showNewStatusForm ? (
+                      <><i className="bi bi-x-circle"></i> Anuluj</>
+                    ) : (
+                      <><i className="bi bi-plus-circle"></i> Nowy status</>
+                    )}
+                  </button>
+                </div>
+              </div>
+              
+              {/* Status list for deletion */}
+              {showStatusList && (
+                <div className={styles.statusListContainer}>
+                  <h4 className={styles.statusListTitle}>Zarządzanie statusami</h4>
+                  <div className={styles.statusList}>
+                    {allStatuses.length > 0 ? (
+                      allStatuses.map((status, index) => (
+                        <div key={index} className={styles.statusListItem}>
+                          <span
+                            className={styles.statusColorIndicator}
+                            style={{ backgroundColor: status.color }}
+                          ></span>
+                          <span className={styles.statusName}>{status.name}</span>
+                          <button
+                            className={styles.closeButtonAnimated}
+                            onClick={() => handleDeleteStatus(status.name)}
+                            title="Usuń status"
+                          >
+                            <i className="bi bi-x"></i>
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <p className={styles.noStatusMessage}>Brak zdefiniowanych statusów</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Show the new status form if user clicked the button */}
+              {showNewStatusForm && (
+                <div className={styles.newStatusForm}>
+                  <div className={styles.formRow}>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="statusName">Nazwa:</label>
+                      <input
+                        type="text"
+                        id="statusName"
+                        name="name"
+                        value={newStatus.name}
+                        onChange={handleNewStatusChange}
+                        className={styles.formControl}
+                        placeholder="Nazwa statusu"
+                      />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="statusColor">Kolor:</label>
+                      <div className={styles.colorPickerWrapper}>
+                        <input
+                          type="color"
+                          id="statusColor"
+                          name="color"
+                          value={newStatus.color}
+                          onChange={handleNewStatusChange}
+                          className={styles.colorPicker}
+                        />
+                        <span className={styles.colorPreview} style={{ backgroundColor: newStatus.color }}></span>
+                      </div>
+                    </div>
+                  </div>
+                  <button 
+                    className={styles.addButton}
+                    onClick={handleAddStatus}
+                  >
+                    Dodaj status
+                  </button>
+                </div>
+              )}
+
+              {/* Status dropdown */}
               <select
                 id="status"
                 name="status"
@@ -188,21 +376,30 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 className={styles.formControl}
               >
                 <option value="">Wybierz status</option>
-                {statuses.map((status, index) => (
+                {allStatuses.map((status, index) => (
                   <option key={index} value={status.name}>
                     {status.name}
                   </option>
                 ))}
               </select>
+              
+              {/* Status preview with clear button (not delete) */}
               {taskData.status && (
                 <div className={styles.statusPreview}>
                   <span 
                     className={styles.statusBadge}
                     style={{ 
-                      backgroundColor: statuses.find(s => s.name === taskData.status)?.color || "#3394dc" 
+                      backgroundColor: allStatuses.find(s => s.name === taskData.status)?.color || "#3394dc" 
                     }}
                   ></span>
                   {taskData.status}
+                  <button 
+                    className={styles.closeButtonAnimated}
+                    onClick={handleClearSelectedStatus}
+                    title="Wyczyść wybrany status"
+                  >
+                    <i className="bi bi-x"></i>
+                  </button>
                 </div>
               )}
             </div>
@@ -216,7 +413,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     <div key={user.id} className={styles.userChip}>
                       {user.email}
                       <span
-                        className={styles.removeIcon}
+                        className={styles.closeButtonAnimated}
                         onClick={() => handleRemoveUser(user.id)}
                       >
                         <i className="bi bi-x"></i>
@@ -236,7 +433,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   emptyRecordMsg="Brak użytkowników"
                   loading={isLoading}
                   hidePlaceholder={taskData.users.length > 0}
-                  hideSelectedList={true} // Hide the default chips
+                  hideSelectedList={true}
                   style={{
                     searchBox: {
                       background: "#1E1E1E",
@@ -252,7 +449,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     option: {
                       color: "#E0E0E0",
                     },
-                    // Don't include chips styling since we're using a custom implementation
                   }}
                 />
               </div>

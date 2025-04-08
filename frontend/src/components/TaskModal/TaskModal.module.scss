@@ -8,43 +8,55 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  backdrop-filter: blur(3px);
-  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .modalContent {
   background-color: $cardBackground;
-  border-radius: 12px;
+  border-radius: 16px;
   width: 90%;
-  max-width: 550px;
-  max-height: 80vh;
-  margin-top: 5rem;
+  max-width: 600px;
+  max-height: 85vh;
+  margin-top: 6rem;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 42px rgba(0, 0, 0, 0.6);
   transform: translateY(0);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
+
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   background: linear-gradient(135deg, $formGradientStart, $formGradientEnd);
-  border-radius: 12px 12px 0 0;
+  border-radius: 16px 16px 0 0;
   position: sticky;
   top: 0;
   z-index: 10;
-  flex-shrink: 0; /* Prevent the header from shrinking */
+  flex-shrink: 0;
+  
+  h3 {
+    font-size: 1.4rem;
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
 }
 
 .closeButton {
-  background: rgba(255, 255, 255, 0);
+  background: none;
   border: none;
   color: white;
   font-size: 1.4rem;
@@ -52,35 +64,57 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  transition: all 0.2s ease;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  margin: 0;
+  transition: transform 0.2s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0);
     transform: rotate(90deg);
   }
 }
 
-.modalBody {
-  padding: 24px;
-  color: $textColor;
-  overflow-y: auto; /* Move the scrollbar to the body */
-  flex-grow: 1; /* Allow the body to grow and take available space */
+// New unified animated close button style
+.closeButtonAnimated {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin: 0;
+  transition: transform 0.2s ease;
+  opacity: 0.7;
 
-  /* Scrollbar styling for the body */
+  &:hover {
+    transform: rotate(90deg);
+    opacity: 1;
+  }
+}
+
+.modalBody {
+  padding: 24px 28px;
+  color: $textColor;
+  overflow-y: auto;
+  flex-grow: 1;
+
   &::-webkit-scrollbar {
     width: 8px;
   }
 
   &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 0 0 8px 0;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba($inProgressColor, 0.6);
+    background: rgba($inProgressColor, 0.5);
     border-radius: 10px;
 
     &:hover {
@@ -89,41 +123,42 @@
   }
 }
 
-
 .taskInfo {
   p {
     margin: 12px 0;
-    padding: 8px 12px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
+    padding: 12px 16px;
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
     font-size: 0.95rem;
+    border-left: 3px solid rgba($inProgressColor, 0.6);
   }
 
   strong {
-    color: color.adjust($textColor, $lightness: 15%);
+    color: color.adjust($textColor, $lightness: 20%);
     margin-right: 8px;
+    font-weight: 600;
   }
 }
 
-/* Form styling */
 .formGroup {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 
   label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 500;
-    color: color.adjust($textColor, $lightness: 15%);
+    font-weight: 600;
+    color: color.adjust($textColor, $lightness: 18%);
     font-size: 0.95rem;
+    letter-spacing: 0.02em;
   }
 }
 
 .formControl {
   width: 100%;
-  padding: 12px 14px;
-  background-color: color.adjust($cardBackground, $lightness: -3%);
+  padding: 14px 16px;
+  background-color: color.adjust($cardBackground, $lightness: -4%);
   border: 1px solid #444;
-  border-radius: 6px;
+  border-radius: 8px;
   color: $textColor;
   font-size: 1rem;
   transition: all 0.2s ease;
@@ -131,133 +166,289 @@
   &:focus {
     outline: none;
     border-color: $inProgressColor;
-    box-shadow: 0 0 0 3px rgba($inProgressColor, 0.2);
+    box-shadow: 0 0 0 3px rgba($inProgressColor, 0.25);
   }
 }
 
-// Make sure form actions are displayed properly
-.formActions {
-  margin-top: 20px;
-  position: relative;
-  z-index: 1; // Ensure button stays above dropdown
+.statusPreview {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  font-size: 0.9rem;
 }
 
-// Adjust button styling
+.statusBadge {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.formActions {
+  margin-top: 28px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .saveButton {
   background-color: $inProgressColor;
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
+  border-radius: 8px;
+  padding: 12px 24px;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba($inProgressColor, 0.3);
+  letter-spacing: 0.03em;
 
   &:hover {
-    background-color: color.adjust($inProgressColor, $lightness: -10%);
+    background-color: color.adjust($inProgressColor, $lightness: -8%);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &:disabled {
-    opacity: 0.7;
+    opacity: 0.65;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 }
 
-/* Animation for modal appearance */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+// Status section styles
+.statusHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.statusActions {
+  display: flex;
+  gap: 10px;
+}
+
+.addStatusButton, .manageStatusButton {
+  background: none;
+  border: none;
+  color: $inProgressColor;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba($inProgressColor, 0.1);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  i {
+    font-size: 1rem;
   }
 }
 
-.modalContent {
+.manageStatusButton {
+  color: #e67e22;
+  
+  &:hover {
+    background-color: rgba(#e67e22, 0.1);
+  }
+}
+
+.newStatusForm {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid rgba($inProgressColor, 0.3);
   animation: fadeIn 0.3s ease forwards;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
+// Status list container styles
+.statusListContainer {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(#e67e22, 0.3);
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.statusListTitle {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  color: color.adjust($textColor, $lightness: 10%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.statusList {
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
   }
-  to {
-    transform: rotate(360deg);
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(#e67e22, 0.5);
+    border-radius: 8px;
+
+    &:hover {
+      background: #e67e22;
+    }
   }
 }
-/* Add this to your TaskModal.module.scss file */
 
-.multiselectContainer {
+.statusListItem {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.35);
+  }
+}
+
+.statusColorIndicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.statusName {
+  flex-grow: 1;
+  font-size: 0.95rem;
+}
+
+
+
+.noStatusMessage {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  text-align: center;
+  padding: 15px 0;
+}
+
+.formRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.inputGroup {
+  flex: 1;
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+  }
+}
+
+.colorPickerWrapper {
   position: relative;
-  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
 
-  /* Custom styling for the selected users wrapper */
-  .selectedUsersWrapper {
-    width: 100%;
-    background-color: rgb(22.35, 22.35, 22.35);
-    border: 1px solid #444;
-    border-radius: 6px 6px 0 0;
-    padding: 8px;
-    padding-bottom: 8px;
-    margin-bottom: -1px;
-    min-height: 45px;
-    height: 60px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 8px;
-    padding-bottom: 17px;
+.colorPicker {
+  height: 44px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
 
-    /* Horizontal scrollbar styling */
-    &::-webkit-scrollbar {
-      height: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.1);
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: rgba($inProgressColor, 0.6);
-      border-radius: 10px;
-
-      &:hover {
-        background: $inProgressColor;
-      }
-    }
-
-    /* Style for individual selected user chip */
-    .userChip {
-      background-color: $inProgressColor;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      white-space: nowrap;
-      flex-shrink: 0;
-
-      .removeIcon {
-        margin-left: 6px;
-        cursor: pointer;
-        font-size: 14px;
-
-        &:hover {
-          opacity: 0.8;
-        }
-      }
-    }
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
   }
 
-  /* Override Multiselect searchbox styling */
-  :global(.multiselect-container) {
-    .searchBox {
-      border-radius: 0 0 4px 4px !important;
-      border-top: none !important;
-    }
+  &::-webkit-color-swatch {
+    border: none;
+    border-radius: 6px;
   }
+}
+
+.colorPreview {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  margin-left: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.addButton {
+  background-color: $inProgressColor;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: block;
+  margin-left: auto;
+
+  &:hover {
+    background-color: color.adjust($inProgressColor, $lightness: -8%);
+  }
+}
+
+// Styles for user chips
+.selectedUsersWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.userChip {
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  
+  .closeButtonAnimated {
+    width: 22px;
+    height: 22px;
+    font-size: 1rem;
+    margin-left: 8px;
+  }
+}
+
+// Add animation for close buttons
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
