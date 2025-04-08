@@ -104,7 +104,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   // Function to handle manual removal of a user chip
   const handleRemoveUser = (userId: string | number) => {
-    const updatedUsers = taskData.users.filter(user => user.id !== userId);
+    const updatedUsers = taskData.users.filter((user) => user.id !== userId);
     setTaskData({ ...taskData, users: updatedUsers });
   };
 
@@ -122,6 +122,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       toast.success("Zadanie zostało zaktualizowane");
       onClose();
     } catch (error: any) {
+      console.log(error);
       toast.error(
         error.response?.data.message ||
           "Wystąpił błąd podczas aktualizacji zadania"
@@ -138,7 +139,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   };
 
   if (!isOpen) return null;
-  
+
   return (
     <div className={styles.modalBackdrop} onClick={handleBackdropClick}>
       <div className={styles.modalContent}>
@@ -174,11 +175,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
               <div className={styles.multiselectContainer}>
                 {/* Custom selected users wrapper */}
                 <div className={styles.selectedUsersWrapper}>
-                  {taskData.users.map(user => (
+                  {taskData.users.map((user) => (
                     <div key={user.id} className={styles.userChip}>
                       {user.email}
-                      <span 
-                        className={styles.removeIcon} 
+                      <span
+                        className={styles.removeIcon}
                         onClick={() => handleRemoveUser(user.id)}
                       >
                         <i className="bi bi-x"></i>
@@ -186,7 +187,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     </div>
                   ))}
                 </div>
-                
+
                 {/* Multiselect component with hidden chips */}
                 <Multiselect
                   options={allUsers}

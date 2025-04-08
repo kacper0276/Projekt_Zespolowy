@@ -87,7 +87,7 @@ export class TasksService {
       throw new NotFoundException('No users provided');
     }
 
-    task.users = [...task.users, ...users];
+    task.users = [...users];
 
     const updatedTask = await this.taskRepository.save(task);
 

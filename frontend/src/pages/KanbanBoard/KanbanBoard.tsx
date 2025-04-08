@@ -528,7 +528,6 @@ function KanbanBoard() {
     // Sprawdzenie limitu WIP przed dodaniem zadania
     const currentTaskCount = countTasksInColumn(colId);
     const column = columns[colId];
-    
 
     if (column && column.wipLimit > 0 && currentTaskCount >= column.wipLimit) {
       toast.error(
@@ -606,9 +605,8 @@ function KanbanBoard() {
     setTaskGrid(newTaskGrid);
 
     // Aktualizacja w bazie danych
-    const actualTaskId = taskId.split("-")[1];
     api
-      .patch(`tasks/${actualTaskId}/assign-users`, { users: updatedData.users })
+      .patch(`tasks/${taskId}/assign-users`, { users: updatedData.users })
       .then(() => {
         toast.success("Zadanie zostało zaktualizowane!");
       })
