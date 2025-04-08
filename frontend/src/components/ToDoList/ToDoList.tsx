@@ -17,7 +17,6 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
 
   const createToDoList = async () => {
     if (!newListName.trim()) {
-      console.log("Lista nie możę być pusta");
       return;
     }
 
@@ -69,7 +68,6 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
     api
       .get<ApiResponse<IToDoList[]>>(`to-do-lists/task/${taskId}`)
       .then((response) => {
-        console.log(response.data);
         const lists = response.data.data ?? [];
         if (lists.length > 0) {
           setToDoList(lists[0]);
