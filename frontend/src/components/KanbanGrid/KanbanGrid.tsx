@@ -4,6 +4,7 @@ import styles from "./KanbanGrid.module.scss";
 import TaskItem from "../../components/TaskItem/TaskItem";
 import ActionButton from "../../components/ActionButton/ActionButton";
 import RowHeader from "../../components/RowHeader/RowHeader";
+import { IStatus } from "../../interfaces/IStatus";
 
 interface KanbanGridProps {
   rows: Record<
@@ -17,6 +18,7 @@ interface KanbanGridProps {
   >;
   rowOrder: string[];
   columnOrder: string[];
+  statuses?: IStatus[];
   columns: Record<string, { wipLimit: number }>;
   taskGrid: Record<string, Record<string, any[]>>;
   isAddingTaskMap: Record<string, boolean>;
@@ -43,6 +45,7 @@ interface KanbanGridProps {
     updatedData: any
   ) => void;
   handleRowWipLimitUpdate: (rowId: string, newWipLimit: number) => void;
+
 }
 
 const KanbanGrid: React.FC<KanbanGridProps> = ({
@@ -51,6 +54,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
   columnOrder,
   columns,
   taskGrid,
+  statuses,
   isAddingTaskMap,
   newTaskTitleMap,
   countTasksInColumn,
@@ -77,7 +81,6 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
       onDeleteTaskFromCell(rowId, columnId, taskId);
     }
   };
-  
   return (
     <div className={styles.gridRows}>
       {rowOrder.map((rowId) => {
@@ -154,6 +157,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                         >
                           {taskGrid[rowId][columnId].map((task, index) => (
                             <TaskItem
+
                               key={task.id}
                               task={task}
                               index={index}
@@ -174,6 +178,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                                   updatedData
                                 )
                               }
+                              statuses={statuses}
                             />
                           ))}
                           {provided.placeholder}

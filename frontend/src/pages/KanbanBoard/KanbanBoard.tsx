@@ -76,7 +76,6 @@ function KanbanBoard() {
           const newTaskGrid: {
             [rowName: string]: { [colName: string]: any[] };
           } = {};
-
           if (res.data.data.tasks) {
             res.data.data.tasks.forEach((task: any) => {
               const rowName = task.row?.name.replace(/\s+/g, "").toLowerCase();
@@ -738,6 +737,7 @@ function KanbanBoard() {
             onDeleteTaskFromCell={onDeleteTaskFromCell}
             handleTaskUpdate={handleTaskUpdate}
             handleRowWipLimitUpdate={handleRowWipLimitUpdate}
+            statuses={boardData?.statuses}
           />
         </div>
       </DragDropContext>

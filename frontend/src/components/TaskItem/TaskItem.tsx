@@ -4,6 +4,7 @@ import styles from "./TaskItem.module.scss";
 import TaskModal from "../TaskModal/TaskModal";
 import { IUser } from "../../interfaces/IUser";
 import { useApiJson } from "../../config/api";
+import { IStatus } from "../../interfaces/IStatus"; 
 
 interface ItemProps {
   task: {
@@ -15,11 +16,13 @@ interface ItemProps {
     status?: string;
     priority?: string;
     deadline?: Date;
+    statusId?: number;
   };
   index: number;
   columnId: string;
   onDeleteTask: () => void;
   onTaskUpdate: (updatedData: any) => void; 
+  statuses?: IStatus[];
 }
 
 const TaskItem: React.FC<ItemProps> = ({
@@ -28,6 +31,7 @@ const TaskItem: React.FC<ItemProps> = ({
   columnId,
   onDeleteTask,
   onTaskUpdate, 
+  statuses,
 }) => {
   const api = useApiJson();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +40,8 @@ const TaskItem: React.FC<ItemProps> = ({
   
   // Ensure uniqueness by combining columnId and task id
   const uniqueDraggableId = `${columnId}-${task.id}-${index}`;
-  
+
+
   const handleTaskClick = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest(`.${styles.deleteTaskButton}`)) {
       return;
@@ -132,6 +137,7 @@ const TaskItem: React.FC<ItemProps> = ({
         onClose={closeModal}
         users={taskUsers}
         onTaskUpdate={handleTaskUpdate}
+         statuses={statuses} 
       />
     </>
   );

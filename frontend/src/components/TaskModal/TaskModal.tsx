@@ -4,6 +4,7 @@ import { IUser } from "../../interfaces/IUser";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import { toast } from "react-toastify";
+import { IStatus } from "../../interfaces/IStatus"; 
 import Multiselect from "multiselect-react-dropdown";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import styles from "./TaskModal.module.scss";
@@ -16,7 +17,8 @@ interface TaskModalProps {
   onClose: () => void;
   isOpen: boolean;
   users?: IUser[];
-  onTaskUpdate?: (updatedTask: { name: string; users: IUser[] }) => void;
+  onTaskUpdate?: (updatedTask: { name: string; users: IUser[]; status?: string }) => void;
+  statuses?: IStatus[];
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -27,6 +29,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   isOpen,
   users = [],
   onTaskUpdate,
+  statuses = [],
 }) => {
   const [taskData, setTaskData] = useState<ITask>({
     name: taskText,
@@ -86,7 +89,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setTaskData((prevState) => ({
       ...prevState,
@@ -116,6 +119,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         onTaskUpdate({
           name: taskData.name,
           users: taskData.users,
+          status: taskData.status,
         });
       }
 
@@ -168,6 +172,36 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 onChange={handleInputChange}
                 className={styles.formControl}
               />
+            </div>
+
+            {/* Status select */}
+            <div className={styles.formGroup}>
+              <label htmlFor="status">Status zadania:</label>
+              <select
+                id="status"
+                name="status"
+                value={taskData.status}
+                onChange={handleInputChange}
+                className={styles.formControl}
+              >
+                <option value="">Wybierz status</option>
+                {statuses.map((status, index) => (
+                  <option key={index} value={status.name}>
+                    {status.name}
+                  </option>
+                ))}
+              </select>
+              {taskData.status && (
+                <div className={styles.statusPreview}>
+                  <span 
+                    className={styles.statusBadge}
+                    style={{ 
+                      backgroundColor: statuses.find(s => s.name === taskData.status)?.color || "#3394dc" 
+                    }}
+                  ></span>
+                  {taskData.status}
+                </div>
+              )}
             </div>
 
             <div className={styles.formGroup}>
