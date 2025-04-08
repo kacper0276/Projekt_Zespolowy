@@ -10,7 +10,7 @@ export interface IUser {
   role: string;
   id: number;
   firstName: string | null;
-  lastname: string | null;
+  lastName: string | null;
   isOnline: boolean;
   maxTasks: number;
   kanbanSettings: IKanbanSettings[];

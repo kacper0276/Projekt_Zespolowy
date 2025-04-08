@@ -139,7 +139,7 @@ const ProfilePage: React.FC = () => {
         <div className={styles.profileInfo}>
           <h1>
             {profileUser.firstName || "User"}{" "}
-            {profileUser.lastname || profileUser.lastname || ""}
+            {profileUser.lastName || profileUser.lastName || ""}
           </h1>
           <p className={styles.username}>@{profileUser.login}</p>
           <p className={styles.email}>{profileUser.email}</p>
