@@ -6,6 +6,7 @@ import { IKanban } from "../../interfaces/IKanban";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const Header: React.FC = () => {
   const api = useApiJson();
@@ -38,9 +39,9 @@ const Header: React.FC = () => {
     <header className={styles.mainHeader}>
       <nav className={`navbar navbar-expand-lg ${styles.navbar}`}>
         <div className="container">
-          <a className={`navbar-brand ${styles.logo}`} href="/">
+          <Link className={`navbar-brand ${styles.logo}`} to="/">
             KanbanPro
-          </a>
+          </Link>
           <button
             className="navbar-toggler"
             type="button"
@@ -52,19 +53,27 @@ const Header: React.FC = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className={`navbar-nav ms-auto ${styles.navItems}`}>
               <li className="nav-item">
-                <a className={`nav-link ${styles.navLink}`} href="/features">
+                <Link className={`nav-link ${styles.navLink}`} to="/features">
                   {t("features")}
-                </a>
+                </Link>
               </li>
               <li className="nav-item">
-                <a className={`nav-link ${styles.navLink}`} href="/pricing">
+                <Link className={`nav-link ${styles.navLink}`} to="/pricing">
                   {t("pricing")}
-                </a>
+                </Link>
               </li>
 
               {isAuthenticated ? (
                 // Opcje dla zalogowanego użytkownika
                 <>
+                  <li className="nav-item">
+                    <Link
+                      className={`nav-link ${styles.navLink}`}
+                      to="/my-teams"
+                    >
+                      {t("my-teams")}
+                    </Link>
+                  </li>
                   <li className="nav-item">
                     <button
                       className={`nav-link ${styles.navLink}`}
@@ -79,20 +88,20 @@ const Header: React.FC = () => {
                     </button>
                   </li>
                   <li className="nav-item">
-                    <a
+                    <Link
                       className={`nav-link ${styles.navLink}`}
-                      href="/dashboard"
+                      to="/dashboard"
                     >
                       Panel
-                    </a>
+                    </Link>
                   </li>
                   <li className="nav-item">
-                    <a
+                    <Link
                       className={`nav-link ${styles.navLink}`}
-                      href={`/profile?email=${user.email}`}
+                      to={`/profile?email=${user.email}`}
                     >
                       {t("profile")}
-                    </a>
+                    </Link>
                   </li>
                   <li className="nav-item">
                     <button
@@ -108,17 +117,17 @@ const Header: React.FC = () => {
                 // Opcje dla niezalogowanego użytkownika
                 <>
                   <li className="nav-item">
-                    <a className={`nav-link ${styles.navLink}`} href="/login">
+                    <Link className={`nav-link ${styles.navLink}`} to="/login">
                       {t("sign-in")}
-                    </a>
+                    </Link>
                   </li>
                   <li className="nav-item">
-                    <a
+                    <Link
                       className={`nav-link ${styles.signupButton}`}
-                      href="/signup"
+                      to="/signup"
                     >
                       {t("register")}
-                    </a>
+                    </Link>
                   </li>
                 </>
               )}
@@ -154,20 +163,20 @@ const Header: React.FC = () => {
                     </div>
                     <div className={styles.boardMeta}>
                       <span>{board.users?.length} uczestników</span>
-                      <a
-                        href={`/boards/${board.id}`}
+                      <Link
+                        to={`/boards/${board.id}`}
                         className={styles.viewBoardBtn}
                       >
                         Otwórz
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 ))}
               </div>
               <div className={styles.newBoardOption}>
-                <a href="/boards/new" className={styles.newBoardBtn}>
+                <Link to="/boards/new" className={styles.newBoardBtn}>
                   + Utwórz nową tablicę
-                </a>
+                </Link>
               </div>
             </div>
           </div>

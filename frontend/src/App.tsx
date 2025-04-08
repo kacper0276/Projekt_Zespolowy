@@ -16,7 +16,7 @@ import { UserProvider } from "./context/UserContext";
 import ActivateAccount from "./pages/ActivateAccount/ActivateAccount";
 import BoardsNew from "./pages/BoardsNew/BoardsNew";
 import AuthenticatedRoute from "./hoc/AuthenticatedRoute";
-
+import TeamPage from "./pages/TeamPage/TeamPage";
 
 function App() {
   const content = (
@@ -46,6 +46,14 @@ function App() {
           </AuthenticatedRoute>
         }
       />
+      <Route
+        path="/my-teams"
+        element={
+          <AuthenticatedRoute>
+            <TeamPage />
+          </AuthenticatedRoute>
+        }
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -64,6 +72,7 @@ function App() {
   const sidebar = (
     <Routes>
       <Route path="/boards/:id" element={<Sidebar />} />
+      <Route path="/boards/new" element={<></>} />
       <Route path="*" element={<></>} />
     </Routes>
   );
@@ -85,12 +94,12 @@ function App() {
   return (
     <Router>
       <UserProvider>
-        <Layout 
-        header={header} 
-        content={content} 
-        sidebar={sidebar} 
-        footer={footer}
-         />
+        <Layout
+          header={header}
+          content={content}
+          sidebar={sidebar}
+          footer={footer}
+        />
       </UserProvider>
     </Router>
   );
