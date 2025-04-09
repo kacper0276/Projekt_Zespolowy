@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Droppable } from "@hello-pangea/dnd";
 import styles from "./KanbanGrid.module.scss";
 import TaskItem from "../../components/TaskItem/TaskItem";
@@ -45,7 +45,6 @@ interface KanbanGridProps {
     updatedData: any
   ) => void;
   handleRowWipLimitUpdate: (rowId: string, newWipLimit: number) => void;
-
 }
 
 const KanbanGrid: React.FC<KanbanGridProps> = ({
@@ -157,7 +156,6 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                         >
                           {taskGrid[rowId][columnId].map((task, index) => (
                             <TaskItem
-
                               key={task.id}
                               task={task}
                               index={index}

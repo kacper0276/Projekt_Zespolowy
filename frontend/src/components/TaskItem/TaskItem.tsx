@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Draggable } from "@hello-pangea/dnd";
 import styles from "./TaskItem.module.scss";
 import TaskModal from "../TaskModal/TaskModal";
@@ -40,6 +40,10 @@ const TaskItem: React.FC<ItemProps> = ({
   const [taskStatus, setTaskStatus] = useState<IStatus | undefined>(
     task.status
   );
+
+  useEffect(() => {
+    console.log(task);
+  }, []);
 
   // Ensure uniqueness by combining columnId and task id
   const uniqueDraggableId = `${columnId}-${task.id}-${index}`;
