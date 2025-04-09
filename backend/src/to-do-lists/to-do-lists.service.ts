@@ -62,10 +62,6 @@ export class ToDoListsService {
       relations: ['task', 'items'],
     });
 
-    if (!toDoLists || toDoLists.length === 0) {
-      throw new NotFoundException('No To-Do Lists found for the given Task ID');
-    }
-
     return toDoLists;
   }
 }

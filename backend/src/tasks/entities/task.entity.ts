@@ -5,6 +5,7 @@ import { ToDoList } from '../../to-do-lists/entities/to-do-list.entity';
 import { ColumnEntity } from '../../columns/entities/column.entity';
 import { Kanban } from 'src/kanban/entities/kanban.entity';
 import { Row } from 'src/rows/entities/row.entity';
+import { Status } from 'src/status/entities/status.entity';
 
 @Entity('tasks')
 export class Task extends BaseEntity {
@@ -14,8 +15,8 @@ export class Task extends BaseEntity {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({ default: '' })
-  status: string;
+  @ManyToOne(() => Status, (status) => status.tasks)
+  status: Status;
 
   @Column({ default: '' })
   priority: string;

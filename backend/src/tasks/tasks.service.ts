@@ -15,6 +15,7 @@ import { ChangeColumnDto } from './dto/change-column.dto';
 import { ChangeTasksOrderDto } from './dto/change-tasks-order.dto';
 import { Row } from 'src/rows/entities/row.entity';
 import { ChangeTaskRowColumnDto } from './dto/change-task-row-column.dto';
+import { ChangeTaskStatusDto } from './dto/change-task-status.dto';
 
 @Injectable()
 export class TasksService {
@@ -56,7 +57,7 @@ export class TasksService {
       const task = new Task();
       task.name = data.name;
       task.description = data.description;
-      task.status = data.status;
+      // task.status = data.status;
       task.priority = data.priority;
       task.column = column;
       task.row = row;
@@ -190,5 +191,17 @@ export class TasksService {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async changeTaskStatus(taskId: string, data: ChangeTaskStatusDto) {
+    const task = await this.taskRepository.findOne({
+      where: { id: +taskId },
+      relations: ['status'],
+    });
+
+    task.status = data.status;
+
+    const updatedTask = await this.taskRepository.save(task);
+    return updatedTask;
   }
 }

@@ -1,6 +1,7 @@
+import { Task } from 'src/tasks/entities/task.entity';
 import { BaseEntity } from '../../entities/base.entity';
 import { Kanban } from '../../kanban/entities/kanban.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('statuses')
 export class Status extends BaseEntity {
@@ -12,4 +13,7 @@ export class Status extends BaseEntity {
 
   @ManyToOne(() => Kanban, (kanban) => kanban.statuses)
   kanban: Kanban;
+
+  @OneToMany(() => Task, (task) => task.status)
+  tasks: Task[];
 }

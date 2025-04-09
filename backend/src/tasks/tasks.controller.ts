@@ -18,6 +18,7 @@ import { EditTaskDescriptionDto } from './dto/edit-task-description.dto';
 import { ChangeColumnDto } from './dto/change-column.dto';
 import { ChangeTasksOrderDto } from './dto/change-tasks-order.dto';
 import { ChangeTaskRowColumnDto } from './dto/change-task-row-column.dto';
+import { ChangeTaskStatusDto } from './dto/change-task-status.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -146,6 +147,26 @@ export class TasksController {
           message: 'internal-server-error',
         });
       }
+    }
+  }
+
+  @Patch(':taskId/change-status')
+  async changeTaskStatus(
+    @Param('taskId') taskId: string,
+    @Body() data: ChangeTaskStatusDto,
+    @Res() response: Response,
+  ) {
+    try {
+      const res = await this.tasksService.changeTaskStatus(taskId, data);
+
+      response.status(HttpStatus.OK).send({
+        message: 'changed-task-status',
+        data: res,
+      });
+    } catch (error) {
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: 'internal-server-error',
+      });
     }
   }
 
