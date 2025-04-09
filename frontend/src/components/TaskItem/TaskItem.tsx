@@ -4,7 +4,7 @@ import styles from "./TaskItem.module.scss";
 import TaskModal from "../TaskModal/TaskModal";
 import { IUser } from "../../interfaces/IUser";
 import { useApiJson } from "../../config/api";
-import { IStatus } from "../../interfaces/IStatus"; 
+import { IStatus } from "../../interfaces/IStatus";
 
 interface ItemProps {
   task: {
@@ -13,7 +13,7 @@ interface ItemProps {
     name?: string;
     description?: string;
     users?: IUser[];
-    status?: string;
+    status?: IStatus;
     priority?: string;
     deadline?: Date;
     statusId?: number;
@@ -21,7 +21,7 @@ interface ItemProps {
   index: number;
   columnId: string;
   onDeleteTask: () => void;
-  onTaskUpdate: (updatedData: any) => void; 
+  onTaskUpdate: (updatedData: any) => void;
   statuses?: IStatus[];
 }
 
@@ -30,15 +30,17 @@ const TaskItem: React.FC<ItemProps> = ({
   index,
   columnId,
   onDeleteTask,
-  onTaskUpdate, 
+  onTaskUpdate,
   statuses,
 }) => {
   const api = useApiJson();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskText, setTaskText] = useState(task.name || task.content || "");
   const [taskUsers, setTaskUsers] = useState<IUser[]>(task.users || []);
-  const [taskStatus, setTaskStatus] = useState<string | undefined>(task.status);
-  
+  const [taskStatus, setTaskStatus] = useState<IStatus | undefined>(
+    task.status
+  );
+
   // Ensure uniqueness by combining columnId and task id
   const uniqueDraggableId = `${columnId}-${task.id}-${index}`;
 
@@ -48,12 +50,16 @@ const TaskItem: React.FC<ItemProps> = ({
     }
     setIsModalOpen(true);
   };
-  
+
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  
-  const handleTaskUpdate = (updatedTask: { name: string; users: IUser[], status?: string }) => {
+
+  const handleTaskUpdate = (updatedTask: {
+    name: string;
+    users: IUser[];
+    status?: IStatus;
+  }) => {
     const taskId = task.id;
     api
       .patch(`tasks/${taskId}/assign-users`, { users: updatedTask.users })
@@ -62,20 +68,20 @@ const TaskItem: React.FC<ItemProps> = ({
       });
     setTaskText(updatedTask.name);
     setTaskUsers(updatedTask.users || []);
-    
+
     // Update task status if provided
     if (updatedTask.status) {
       setTaskStatus(updatedTask.status);
     }
-    
+
     // Call the parent's onTaskUpdate with the updated task data
     onTaskUpdate({
       name: updatedTask.name,
       users: updatedTask.users,
-      status: updatedTask.status
+      status: updatedTask.status,
     });
   };
-  
+
   const getUserInitials = (email: string): string => {
     if (!email) return "??";
     return email.substring(0, 2).toUpperCase();
@@ -84,10 +90,10 @@ const TaskItem: React.FC<ItemProps> = ({
   // Find status color based on status name
   const getStatusColor = (): string => {
     if (!taskStatus || !statuses) return "transparent";
-    const status = statuses.find(s => s.name === taskStatus);
+    const status = statuses.find((s) => s.name === taskStatus.name);
     return status?.color || "transparent";
   };
-  
+
   return (
     <>
       <Draggable draggableId={uniqueDraggableId} index={index}>
@@ -101,11 +107,14 @@ const TaskItem: React.FC<ItemProps> = ({
           >
             {/* Add status badge if status exists */}
             {taskStatus && (
-              <div className={styles.statusBadge} style={{ backgroundColor: getStatusColor() }}>
-                {taskStatus}
+              <div
+                className={styles.statusBadge}
+                style={{ backgroundColor: getStatusColor() }}
+              >
+                {taskStatus.name}
               </div>
             )}
-            
+
             <div className={styles.taskContent}>
               <span className={styles.taskText}>{taskText}</span>
               <div className={styles.taskActions}>
@@ -157,7 +166,7 @@ const TaskItem: React.FC<ItemProps> = ({
         onClose={closeModal}
         users={taskUsers}
         onTaskUpdate={handleTaskUpdate}
-        statuses={statuses} 
+        statuses={statuses}
       />
     </>
   );
