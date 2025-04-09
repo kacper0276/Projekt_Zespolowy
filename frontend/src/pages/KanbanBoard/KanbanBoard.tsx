@@ -602,17 +602,6 @@ function KanbanBoard() {
     }
 
     setTaskGrid(newTaskGrid);
-
-    // Aktualizacja w bazie danych
-    api
-      .patch(`tasks/${taskId}/assign-users`, { users: updatedData.users })
-      .then(() => {
-        toast.success("Zadanie zostało zaktualizowane!");
-      })
-      .catch((error) => {
-        console.error("Błąd podczas aktualizacji zadania:", error);
-        toast.error("Nie udało się zaktualizować zadania.");
-      });
   };
 
   // Przygotowanie danych dla nagłówka tablicy

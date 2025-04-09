@@ -71,6 +71,12 @@ const TaskItem: React.FC<ItemProps> = ({
 
     // Update task status if provided
     if (updatedTask.status) {
+      api
+        .patch(`tasks/${taskId}/change-status`, { status: updatedTask.status })
+        .then((res) => {
+          console.log(res);
+        });
+
       setTaskStatus(updatedTask.status);
     }
 
