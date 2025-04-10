@@ -125,7 +125,7 @@ export class UsersService {
 
     const message = {
       to: email,
-      from: `"Administracja serwisu" <kacper4312@op.pl>`,
+      from: `"Administracja serwisu" <mailtestowy1221@op.pl>`,
       subject: 'Potwierdzenie utworzenia konta',
       html: emailTemplate,
     };
