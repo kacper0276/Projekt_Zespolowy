@@ -102,7 +102,7 @@ const TaskItem: React.FC<ItemProps> = ({
   // Handle drag over for user drop
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
+    e.dataTransfer.dropEffect = "copy";
     setIsDropTargetActive(true);
   };
 
@@ -115,25 +115,25 @@ const TaskItem: React.FC<ItemProps> = ({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDropTargetActive(false);
-    
+
     try {
-      const userData = e.dataTransfer.getData('application/json');
+      const userData = e.dataTransfer.getData("application/json");
       if (userData) {
         const user: IUser = JSON.parse(userData);
-        
+
         // Check if user is already assigned to this task
-        if (!taskUsers.some(existingUser => existingUser.id === user.id)) {
+        if (!taskUsers.some((existingUser) => existingUser.id === user.id)) {
           const updatedUsers = [...taskUsers, user];
           setTaskUsers(updatedUsers);
-          
+
           // Call API to update task users
           api.patch(`tasks/${task.id}/assign-users`, { users: updatedUsers });
-          
+
           // Update parent component
           onTaskUpdate({
             name: taskText,
             users: updatedUsers,
-            status: taskStatus
+            status: taskStatus,
           });
         }
       }
@@ -141,7 +141,6 @@ const TaskItem: React.FC<ItemProps> = ({
       console.error("Error processing dropped user:", error);
     }
   };
-
 
   return (
     <>
@@ -151,7 +150,9 @@ const TaskItem: React.FC<ItemProps> = ({
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
-            className={`${styles.item} ${isDropTargetActive ? styles.dropActive : ''}`}
+            className={`${styles.item} ${
+              isDropTargetActive ? styles.dropActive : ""
+            }`}
             onClick={handleTaskClick}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -170,7 +171,7 @@ const TaskItem: React.FC<ItemProps> = ({
             <div className={styles.taskContent}>
               <span className={styles.taskText}>{taskText}</span>
               <div className={styles.taskActions}>
-                <div 
+                <div
                   className={styles.userAvatars}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -183,7 +184,10 @@ const TaskItem: React.FC<ItemProps> = ({
                           title={`${user.firstName} ${user.lastName}`}
                           // Removed the onClick handler that was causing users to be removed
                         >
-                          {getUserInitials(user.firstName || "", user.lastName || "")}
+                          {getUserInitials(
+                            user.firstName || "",
+                            user.lastName || ""
+                          )}
                         </div>
                       ))}
                       {taskUsers.length > 3 && (

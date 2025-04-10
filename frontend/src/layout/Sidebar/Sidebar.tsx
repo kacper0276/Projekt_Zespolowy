@@ -28,17 +28,15 @@ const Sidebar = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [settings, setSettings] = useState<IKanbanSettings[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  
 
   const toggleSidebar = () => {
     setIsMinimized(!isMinimized);
   };
-  
+
   // Function to get initials from first and last name
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`;
   };
-  
 
   useEffect(() => {
     setLoading(true);
@@ -55,16 +53,19 @@ const Sidebar = () => {
         setLoading(false);
       });
   }, [params]);
-  
+
   const handleDragStart = (e: React.DragEvent, user: IUser) => {
-    e.dataTransfer.setData('application/json', JSON.stringify(user));
-    e.dataTransfer.effectAllowed = 'copy';
-    
-    const dragImage = document.createElement('div');
+    e.dataTransfer.setData("application/json", JSON.stringify(user));
+    e.dataTransfer.effectAllowed = "copy";
+
+    const dragImage = document.createElement("div");
     dragImage.className = styles.dragImage;
-    dragImage.textContent = getInitials(user.firstName ?? "", user.lastName ?? "");
+    dragImage.textContent = getInitials(
+      user.firstName ?? "",
+      user.lastName ?? ""
+    );
     document.body.appendChild(dragImage);
-    
+
     e.dataTransfer.setDragImage(dragImage, 15, 15);
 
     setTimeout(() => {
@@ -89,7 +90,9 @@ const Sidebar = () => {
         {/* Header */}
         <div className={styles.sidebarHeader}>
           <h3 className={styles.sidebarTitle}>{isMinimized ? "" : "Users"}</h3>
-          <p className={styles.dragHint}>{isMinimized ? "" : "Drag users to tasks to assign them"}</p>
+          <p className={styles.dragHint}>
+            {isMinimized ? "" : "Drag users to tasks to assign them"}
+          </p>
         </div>
         {/* Users Section */}
         <div className={styles.usersSection}>
@@ -98,8 +101,8 @@ const Sidebar = () => {
           ) : (
             <>
               {users.map((user) => (
-                <div 
-                  key={user.id} 
+                <div
+                  key={user.id}
                   className={`${styles.userCircle}`}
                   draggable={true}
                   onDragStart={(e) => handleDragStart(e, user)}

@@ -76,7 +76,7 @@ function KanbanBoard() {
         const res = await api.get<ApiResponse<IKanban>>(
           `kanban/board/${params.id}`
         );
-        console.log(res.data)
+        console.log(res.data);
         if (isMounted && res.data && res.data.data) {
           initializeBoard(res.data.data);
 
