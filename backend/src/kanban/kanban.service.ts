@@ -131,6 +131,8 @@ export class KanbanService {
         relations: [
           'users',
           'columns',
+          'kanbanSettings',
+          'kanbanSettings.user',
           'statuses',
           'tasks.column',
           'tasks.row',

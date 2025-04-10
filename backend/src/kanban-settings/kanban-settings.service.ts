@@ -15,15 +15,19 @@ export class KanbanSettingsService {
     kanbanId: string,
     newWipLimit: number,
   ): Promise<KanbanSetting> {
-    const kanbanSetting = await this.kanbanSettingRepository.findOne({
+    let kanbanSetting = await this.kanbanSettingRepository.findOne({
       where: { user: { id: +userId }, kanban: { id: +kanbanId } },
     });
 
     if (!kanbanSetting) {
-      throw new NotFoundException(`kanban-settings-for-user-not-found`);
+      kanbanSetting = this.kanbanSettingRepository.create({
+        user: { id: +userId },
+        kanban: { id: +kanbanId },
+        wipLimit: newWipLimit,
+      });
+    } else {
+      kanbanSetting.wipLimit = newWipLimit;
     }
-
-    kanbanSetting.wipLimit = newWipLimit;
 
     return this.kanbanSettingRepository.save(kanbanSetting);
   }

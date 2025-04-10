@@ -4,18 +4,18 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
-  Patch,
+  Put,
   Res,
 } from '@nestjs/common';
 import { KanbanSettingsService } from './kanban-settings.service';
-import e, { Response } from 'express';
+import { Response } from 'express';
 import { EditWipLimitDto } from './dto/edit-wip-limit.dto';
 
 @Controller('kanban-settings')
 export class KanbanSettingsController {
   constructor(private readonly kanbanSettingsService: KanbanSettingsService) {}
 
-  @Patch(':userId/:kanbanId/edit-wip-limit')
+  @Put(':userId/:kanbanId/edit-wip-limit')
   async updateWipLimit(
     @Param('userId') userId: string,
     @Param('kanbanId') kanbanId: string,
