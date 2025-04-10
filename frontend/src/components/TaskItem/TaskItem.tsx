@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Draggable } from "@hello-pangea/dnd";
 import styles from "./TaskItem.module.scss";
 import TaskModal from "../TaskModal/TaskModal";
@@ -41,10 +41,6 @@ const TaskItem: React.FC<ItemProps> = ({
     task.status
   );
 
-  useEffect(() => {
-    console.log(task);
-  }, []);
-
   // Ensure uniqueness by combining columnId and task id
   const uniqueDraggableId = `${columnId}-${task.id}-${index}`;
 
@@ -65,21 +61,16 @@ const TaskItem: React.FC<ItemProps> = ({
     status?: IStatus;
   }) => {
     const taskId = task.id;
-    api
-      .patch(`tasks/${taskId}/assign-users`, { users: updatedTask.users })
-      .then((res) => {
-        console.log(res);
-      });
+    api.patch(`tasks/${taskId}/assign-users`, { users: updatedTask.users });
+
     setTaskText(updatedTask.name);
     setTaskUsers(updatedTask.users || []);
 
     // Update task status if provided
     if (updatedTask.status) {
-      api
-        .patch(`tasks/${taskId}/change-status`, { status: updatedTask.status })
-        .then((res) => {
-          console.log(res);
-        });
+      api.patch(`tasks/${taskId}/change-status`, {
+        status: updatedTask.status,
+      });
 
       setTaskStatus(updatedTask.status);
     }
@@ -100,8 +91,7 @@ const TaskItem: React.FC<ItemProps> = ({
   // Find status color based on status name
   const getStatusColor = (): string => {
     if (!taskStatus || !statuses) return "transparent";
-    const status = statuses.find((s) => s.name === taskStatus.name);
-    return status?.color || "transparent";
+    return taskStatus.color || "transparent";
   };
 
   return (

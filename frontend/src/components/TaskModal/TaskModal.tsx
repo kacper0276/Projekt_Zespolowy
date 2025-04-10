@@ -9,6 +9,7 @@ import Multiselect from "multiselect-react-dropdown";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import styles from "./TaskModal.module.scss";
 import ToDoList from "../ToDoList/ToDoList";
+import { useParams } from "react-router-dom";
 
 interface TaskModalProps {
   taskId: string;
@@ -35,6 +36,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   onTaskUpdate,
   statuses = [],
 }) => {
+  const params = useParams();
   const [taskData, setTaskData] = useState<ITask>({
     name: taskText,
     description: "",
@@ -135,7 +137,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   };
 
   // Add new status
-  const handleAddStatus = () => {
+  const handleAddStatus = async () => {
     if (!newStatus.name.trim()) {
       toast.error("Nazwa statusu nie może być pusta");
       return;
@@ -147,13 +149,23 @@ const TaskModal: React.FC<TaskModalProps> = ({
       return;
     }
 
-    const updatedStatuses = [...allStatuses, newStatus];
+    const data = {
+      name: newStatus.name,
+      color: newStatus.color,
+      kanbanId: params.id,
+    };
+
+    const res = await api.post<ApiResponse<IStatus>>(`status/create`, data);
+
+    const updatedStatuses = [...allStatuses, res.data.data ?? newStatus];
+
+    console.log(updatedStatuses);
     setAllStatuses(updatedStatuses);
 
     // Automatically select the new status
     setTaskData((prevState) => ({
       ...prevState,
-      status: newStatus,
+      status: res.data.data ?? newStatus,
     }));
 
     // Reset form
