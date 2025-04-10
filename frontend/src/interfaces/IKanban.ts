@@ -1,5 +1,6 @@
 import { IBaseEntity } from "./IBaseEntity";
 import { IColumnEntity } from "./IColumnEntity";
+import { IKanbanSettings } from "./IKanbanSettings";
 import { IRow } from "./IRow";
 import { IStatus } from "./IStatus";
 import { ITask } from "./ITask";
@@ -13,4 +14,5 @@ export interface IKanban extends IBaseEntity {
   rows: IRow[];
   statuses: IStatus[];
   backgroundImage: string | null;
+  kanbanSettings: IKanbanSettings[];
 }
