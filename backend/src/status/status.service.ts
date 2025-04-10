@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateNewStatusDto } from './dto/create-new-status.dto';
 import { Kanban } from 'src/kanban/entities/kanban.entity';
+import { UpdateStatusDto } from './dto/update-status.dto';
 
 @Injectable()
 export class StatusService {
@@ -55,5 +56,25 @@ export class StatusService {
     }
 
     await this.statusRepository.remove(status);
+  }
+
+  async updateStatus(id: string, data: UpdateStatusDto) {
+    const status = await this.statusRepository.findOne({
+      where: { id: +id },
+    });
+
+    if (!status) {
+      throw new NotFoundException('not-found-status');
+    }
+
+    if (data.name) {
+      status.name = data.name;
+    }
+
+    if (data.color) {
+      status.color = data.color;
+    }
+
+    await this.statusRepository.save(status);
   }
 }

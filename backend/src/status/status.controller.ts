@@ -6,12 +6,14 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  Patch,
   Post,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { StatusService } from './status.service';
 import { CreateNewStatusDto } from './dto/create-new-status.dto';
+import { UpdateStatusDto } from './dto/update-status.dto';
 
 @Controller('status')
 export class StatusController {
@@ -77,6 +79,32 @@ export class StatusController {
 
       response.status(HttpStatus.OK).send({
         message: 'status-deleted',
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'internal-server-error',
+        });
+      }
+    }
+  }
+
+  @Patch(':statusId/update')
+  async updateStatus(
+    @Param('statusId') statusId: string,
+    @Body() data: UpdateStatusDto,
+    @Res() response: Response,
+  ) {
+    try {
+      const res = await this.statusService.updateStatus(statusId, data);
+
+      response.status(HttpStatus.OK).send({
+        message: 'status-updated',
+        data: res,
       });
     } catch (error) {
       if (error instanceof NotFoundException) {
