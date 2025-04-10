@@ -6,10 +6,15 @@ import { ApiResponse } from "../types/api.types";
 import { ITask } from "../interfaces/ITask";
 import { useColumn } from "./useColumn";
 import { useRow } from "./useRow";
+import { Subject } from "rxjs";
 
 export function useKanbanBoard() {
   const [boardData, setBoardData] = useState<IKanban | null>(null);
   const api = useApiJson();
+  const columnChangeSubject = new Subject<{
+    sourceColumnName: string;
+    destinationColumnName: string;
+  }>();
 
   const {
     columns,
@@ -53,7 +58,6 @@ export function useKanbanBoard() {
     [initializeColumns, initializeRows]
   );
 
-  
   // Dodawanie zadania do kolumny i wiersza
   const onAddTask = async (
     rowId: string,
@@ -77,7 +81,7 @@ export function useKanbanBoard() {
       const taskData = {
         name: taskName,
         description: "",
-        status:"",
+        status: "",
         priority: "normal",
         deadline: new Date(),
         users: [],
@@ -131,9 +135,8 @@ export function useKanbanBoard() {
   const onDeleteTask = async (columnId: string, taskId: string) => {
     const task = columns[columnId].tasks.find((t) => t.dbId === taskId);
 
-    console.log(task)
+    console.log(task);
     const dbId = task?.dbId;
-
 
     try {
       if (dbId) {
@@ -187,10 +190,17 @@ export function useKanbanBoard() {
     }
 
     try {
-      await api.patch<ApiResponse<ITask>>(`tasks/${dbId}/change-row-column`, {
-        columnId: destColumn.columnId,
-        rowId: destRow.rowId,
-      });
+      await api
+        .patch<ApiResponse<ITask>>(`tasks/${dbId}/change-row-column`, {
+          columnId: destColumn.columnId,
+          rowId: destRow.rowId,
+        })
+        .then((_res) => {
+          columnChangeSubject.next({
+            sourceColumnName: _sourceColumnId,
+            destinationColumnName: destinationColumnId,
+          });
+        });
 
       toast.success(
         `Przeniesiono zadanie do ${destColumn.title} w wierszu ${destRow.title}`
@@ -232,5 +242,6 @@ export function useKanbanBoard() {
     initializeBoard,
     boardData,
     setBoardData,
+    columnChangeSubject,
   };
 }

@@ -6,7 +6,7 @@ import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 import { useKanbanBoard } from "../../hooks/useKanbanBoard";
 import ActionButton from "../../components/ActionButton/ActionButton";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useApiJson } from "../../config/api";
 import { IUser } from "../../interfaces/IUser";
 import BoardHeader from "../../components/BoardHeader/BoardHeader";
@@ -20,6 +20,11 @@ function KanbanBoard() {
   useWebsiteTitle("Kanban Board");
   const params = useParams<{ id: string }>();
   const api = useApiJson();
+  const bars = useRef<HTMLDivElement>(null);
+  const strengthDiv = useRef<HTMLDivElement>(null);
+  const subscriptionRef = useRef<any>(null);
+
+  const [initColumns, setInitColumns] = useState<IColumnEntity[]>([]);
   const [newRowName, setNewRowName] = useState("");
   const [isAddingRow, setIsAddingRow] = useState(false);
   const [isAddingTaskMap, setIsAddingTaskMap] = useState<{
@@ -55,6 +60,7 @@ function KanbanBoard() {
     boardData,
     setBoardData,
     updateRowWipLimit,
+    columnChangeSubject,
   } = useKanbanBoard();
 
   // Struktura siatki dla zadań
@@ -631,6 +637,65 @@ function KanbanBoard() {
     updateRowWipLimit(rowId, newWipLimit);
   };
 
+  const calculateProgress = (
+    sourceColumnName: string = "",
+    destinationColumnName: string = ""
+  ): number => {
+    let totalTasks = 0;
+    let completedTasks = 0;
+
+    if (initColumns.length === 0) {
+      const columnsArray: any[] = [];
+      Object.keys(columns).forEach((colId) => {
+        const column = columns[colId];
+
+        columnsArray.push(column);
+
+        if (column.title === "Done") completedTasks = column.tasks.length;
+
+        totalTasks += column.tasks.length;
+      });
+
+      setInitColumns(columnsArray);
+
+      return totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+    } else {
+      initColumns.forEach((column) => {
+        if (column.id?.toString() === sourceColumnName && column.tasks) {
+          column.tasks.length = Math.max(0, column.tasks.length - 1);
+        }
+
+        if (column.id?.toString() === destinationColumnName && column.tasks) {
+          column.tasks.length = Math.max(0, column.tasks.length + 1);
+        }
+
+        if (column.id?.toString() === "done")
+          completedTasks = column.tasks?.length || 0;
+
+        totalTasks += column.tasks?.length || 0;
+      });
+
+      return totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+    }
+  };
+
+  useEffect(() => {
+    subscriptionRef.current = columnChangeSubject.subscribe(
+      ({ sourceColumnName, destinationColumnName }) => {
+        const progress = calculateProgress(
+          sourceColumnName,
+          destinationColumnName
+        );
+
+        if (strengthDiv.current) {
+          strengthDiv.current.style.width = `${progress}%`;
+          strengthDiv.current.style.backgroundColor =
+            progress < 50 ? "red" : progress < 80 ? "yellow" : "green";
+        }
+      }
+    );
+  }, [columnChangeSubject]);
+
   return (
     <div
       className={styles.kanbanBoard}
@@ -647,6 +712,10 @@ function KanbanBoard() {
         api={api}
         params={{ id: params.id || "" }}
       />
+
+      <div id={`${styles.bars}`} ref={bars}>
+        <div className={`${styles.strength}`} ref={strengthDiv}></div>
+      </div>
 
       <div className={styles.boardControls}>
         <div className={styles.rowControls}>

@@ -2,23 +2,22 @@
 @use "../../styles/mixins" as *;
 @use "../../styles/variables" as *;
 
-
 .kanbanBoard {
   background-color: $backgroundColor;
   min-height: 100vh;
   color: $textColor;
   padding: 20px;
-  position: relative; 
+  position: relative;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); 
-    z-index: 1; 
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1;
   }
 
   & > * {
@@ -36,7 +35,7 @@
   overflow: hidden;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  background-color: rgba(25, 27, 31, 0.9); 
+  background-color: rgba(25, 27, 31, 0.9);
   max-width: 100%;
   position: relative;
 }
@@ -44,8 +43,8 @@
 .taskItem {
   background: linear-gradient(
     to right,
-    rgba(45, 47, 52, 0.98), 
-    rgba(55, 57, 62, 0.98) 
+    rgba(45, 47, 52, 0.98),
+    rgba(55, 57, 62, 0.98)
   );
   padding: 10px;
   margin-bottom: 8px;
@@ -56,25 +55,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid rgba(65, 67, 72, 0.8); 
-  
+  border: 1px solid rgba(65, 67, 72, 0.8);
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     background: linear-gradient(
       to right,
-      rgba(50, 52, 57, 0.98), 
-      rgba(60, 62, 67, 0.98) 
+      rgba(50, 52, 57, 0.98),
+      rgba(60, 62, 67, 0.98)
     );
   }
-  
+
   &.dragging {
     transform: rotate(2deg) scale(1.05);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
     background: linear-gradient(
       to right,
-      rgba(70, 72, 77, 0.98), 
-      rgba(80, 82, 87, 0.98) 
+      rgba(70, 72, 77, 0.98),
+      rgba(80, 82, 87, 0.98)
     );
   }
 }
@@ -89,7 +88,7 @@
 .boardControls {
   margin-bottom: 15px; // Reduced from 20px
   margin-left: 250px;
-  margin-top: 15px; 
+  margin-top: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -105,11 +104,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: rgba(36, 37, 42, 0.8); 
+  background-color: rgba(36, 37, 42, 0.8);
   padding: 10px;
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-
 }
 
 .rowInput {
@@ -119,7 +117,7 @@
   padding: 8px 12px;
   border-radius: 4px;
   min-width: 200px;
-  
+
   &:focus {
     outline: none;
     border-color: $formGradientEnd;
@@ -144,14 +142,14 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  opacity: 0.6; 
-  
+  opacity: 0.6;
+
   &:hover {
     color: $dangerColor;
     opacity: 1;
     background-color: rgba(255, 77, 77, 0.2);
   }
-  
+
   i {
     font-size: 0.85rem;
   }
@@ -175,10 +173,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: rgba(36, 37, 42, 0.8); 
+  background-color: rgba(36, 37, 42, 0.8);
   padding: 10px;
   border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .rowInput {
@@ -188,7 +186,7 @@
   padding: 8px 12px;
   border-radius: 4px;
   min-width: 200px;
-  
+
   &:focus {
     outline: none;
     border-color: $formGradientEnd;
@@ -206,13 +204,32 @@
   .gridContainer {
     overflow-x: auto;
   }
-  
+
   .rowLabel {
     min-width: 120px;
     font-size: 0.9rem;
   }
-  
+
   .columnHeader {
     min-width: 200px;
+  }
+}
+
+/* Progress bar */
+#bars {
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 6px;
+  width: calc(100vw - 300px);
+  transform: translateX(250px);
+  border-radius: 3px;
+  background: rgb(211, 202, 202);
+
+  .strength {
+    height: 6px;
+    border-radius: 3px;
+    transition: 0.4s;
   }
 }
