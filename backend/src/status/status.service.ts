@@ -44,4 +44,16 @@ export class StatusService {
 
     return createdStatus;
   }
+
+  async deleteStatus(id: string): Promise<void> {
+    const status = await this.statusRepository.findOne({
+      where: { id: +id },
+    });
+
+    if (!status) {
+      throw new NotFoundException('not-found-status');
+    }
+
+    await this.statusRepository.remove(status);
+  }
 }

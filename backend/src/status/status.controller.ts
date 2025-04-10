@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   NotFoundException,
@@ -21,7 +22,6 @@ export class StatusController {
     @Param('kanbanId') kanbanId: string,
     @Res() response: Response,
   ) {
-    console.log(kanbanId);
     try {
       const res = await this.statusService.getStatusForKanban(kanbanId);
 
@@ -53,6 +53,30 @@ export class StatusController {
       response.status(HttpStatus.CREATED).send({
         message: 'status-created',
         data: res,
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'internal-server-error',
+        });
+      }
+    }
+  }
+
+  @Delete(':statusId/delete')
+  async deleteStatus(
+    @Param('statusId') statusId: string,
+    @Res() response: Response,
+  ) {
+    try {
+      await this.statusService.deleteStatus(statusId);
+
+      response.status(HttpStatus.OK).send({
+        message: 'status-deleted',
       });
     } catch (error) {
       if (error instanceof NotFoundException) {
