@@ -50,5 +50,7 @@
 
   "page-not-found": "Page not found",
   "not-found": "404 - Not found",
-  "sorry-the-page-you-are-looking-for-does-not-exist": "Sorry, the page you are looking for does not exist."
+  "sorry-the-page-you-are-looking-for-does-not-exist": "Sorry, the page you are looking for does not exist.",
+
+  "my-teams": "My teams"
 }

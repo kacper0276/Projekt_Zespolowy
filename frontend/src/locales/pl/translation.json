@@ -51,5 +51,7 @@
 
   "page-not-found": "Nie znaleziono strony",
   "not-found": "404 - Nie znaleziono",
-  "sorry-the-page-you-are-looking-for-does-not-exist": "Przepraszamy, strona której szukasz nie istnieje."
+  "sorry-the-page-you-are-looking-for-does-not-exist": "Przepraszamy, strona której szukasz nie istnieje.",
+
+  "my-teams": "Moje zespoły"
 }
