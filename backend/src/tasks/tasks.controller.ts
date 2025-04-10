@@ -13,12 +13,13 @@ import {
 import { TasksService } from './tasks.service';
 import { CreateNewTaskDto } from './dto/create-new-task.dto';
 import { Response } from 'express';
-import { AssignUserToTaskDto } from './dto/assign-user-to-task.dto';
+import { AssignUsersToTaskDto } from './dto/assign-users-to-task.dto';
 import { EditTaskDescriptionDto } from './dto/edit-task-description.dto';
 import { ChangeColumnDto } from './dto/change-column.dto';
 import { ChangeTasksOrderDto } from './dto/change-tasks-order.dto';
 import { ChangeTaskRowColumnDto } from './dto/change-task-row-column.dto';
 import { ChangeTaskStatusDto } from './dto/change-task-status.dto';
+import { AssignUserToTaskDto } from './dto/assign-user-to-task.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -52,7 +53,7 @@ export class TasksController {
   @Patch(':taskId/assign-users')
   async assignUsersToTask(
     @Param('taskId') taskId: string,
-    @Body() assignUserToTaskDto: AssignUserToTaskDto,
+    @Body() assignUserToTaskDto: AssignUsersToTaskDto,
     @Res() response: Response,
   ) {
     try {
@@ -68,6 +69,32 @@ export class TasksController {
     } catch (error) {
       if (error instanceof BadRequestException) {
         response.status(HttpStatus.BAD_REQUEST).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'internal-server-error',
+        });
+      }
+    }
+  }
+
+  @Patch(':taskId/assign-user')
+  async assignUserToTask(
+    @Param('taskId') taskId: string,
+    @Body() data: AssignUserToTaskDto,
+    @Res() response: Response,
+  ) {
+    try {
+      const res = await this.tasksService.assignUserToTask(taskId, data.user);
+
+      response.status(HttpStatus.OK).send({
+        message: 'user-assigned',
+        data: res,
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
           message: error.message,
         });
       } else {

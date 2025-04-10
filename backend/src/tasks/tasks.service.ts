@@ -81,14 +81,35 @@ export class TasksService {
     });
 
     if (!task) {
-      throw new NotFoundException('Task not found');
+      throw new NotFoundException('task-not-found');
     }
 
     if (!users || users.length === 0) {
-      throw new NotFoundException('No users provided');
+      throw new NotFoundException('no-users-provided');
     }
 
     task.users = [...users];
+
+    const updatedTask = await this.taskRepository.save(task);
+
+    return updatedTask;
+  }
+
+  async assignUserToTask(taskId: string, user: User) {
+    const task = await this.taskRepository.findOne({
+      where: { id: +taskId },
+      relations: ['users'],
+    });
+
+    if (!task) {
+      throw new NotFoundException('task-not-found');
+    }
+
+    if (!user) {
+      throw new NotFoundException('no-user-provided');
+    }
+
+    task.users = [...task.users, user];
 
     const updatedTask = await this.taskRepository.save(task);
 
