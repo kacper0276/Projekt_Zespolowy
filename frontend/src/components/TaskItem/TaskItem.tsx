@@ -40,12 +40,17 @@ const TaskItem: React.FC<ItemProps> = ({
   const [taskStatus, setTaskStatus] = useState<IStatus | undefined>(
     task.status
   );
+  const [isDropTargetActive, setIsDropTargetActive] = useState(false);
 
   // Ensure uniqueness by combining columnId and task id
   const uniqueDraggableId = `${columnId}-${task.id}-${index}`;
 
   const handleTaskClick = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest(`.${styles.deleteTaskButton}`)) {
+    // Prevent opening modal when clicking delete button or user avatar
+    if (
+      (e.target as HTMLElement).closest(`.${styles.deleteTaskButton}`) ||
+      (e.target as HTMLElement).closest(`.${styles.userAvatars}`)
+    ) {
       return;
     }
     setIsModalOpen(true);
@@ -83,9 +88,9 @@ const TaskItem: React.FC<ItemProps> = ({
     });
   };
 
-  const getUserInitials = (email: string): string => {
-    if (!email) return "??";
-    return email.substring(0, 2).toUpperCase();
+  const getUserInitials = (firstName: string, lastName: string): string => {
+    if (!firstName || !lastName) return "??";
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
   // Find status color based on status name
@@ -93,6 +98,50 @@ const TaskItem: React.FC<ItemProps> = ({
     if (!taskStatus || !statuses) return "transparent";
     return taskStatus.color || "transparent";
   };
+
+  // Handle drag over for user drop
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    setIsDropTargetActive(true);
+  };
+
+  // Handle drag leave
+  const handleDragLeave = () => {
+    setIsDropTargetActive(false);
+  };
+
+  // Handle drop of user onto task
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDropTargetActive(false);
+    
+    try {
+      const userData = e.dataTransfer.getData('application/json');
+      if (userData) {
+        const user: IUser = JSON.parse(userData);
+        
+        // Check if user is already assigned to this task
+        if (!taskUsers.some(existingUser => existingUser.id === user.id)) {
+          const updatedUsers = [...taskUsers, user];
+          setTaskUsers(updatedUsers);
+          
+          // Call API to update task users
+          api.patch(`tasks/${task.id}/assign-users`, { users: updatedUsers });
+          
+          // Update parent component
+          onTaskUpdate({
+            name: taskText,
+            users: updatedUsers,
+            status: taskStatus
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error processing dropped user:", error);
+    }
+  };
+
 
   return (
     <>
@@ -102,8 +151,11 @@ const TaskItem: React.FC<ItemProps> = ({
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
-            className={styles.item}
+            className={`${styles.item} ${isDropTargetActive ? styles.dropActive : ''}`}
             onClick={handleTaskClick}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
           >
             {/* Add status badge if status exists */}
             {taskStatus && (
@@ -118,16 +170,20 @@ const TaskItem: React.FC<ItemProps> = ({
             <div className={styles.taskContent}>
               <span className={styles.taskText}>{taskText}</span>
               <div className={styles.taskActions}>
-                <div className={styles.userAvatars}>
+                <div 
+                  className={styles.userAvatars}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {taskUsers && taskUsers.length > 0 ? (
                     <>
                       {taskUsers.slice(0, 3).map((user, index) => (
                         <div
                           key={index}
                           className={styles.userAvatar}
-                          title={user.email || "Unknown user"}
+                          title={`${user.firstName} ${user.lastName}`}
+                          // Removed the onClick handler that was causing users to be removed
                         >
-                          {getUserInitials(user.email)}
+                          {getUserInitials(user.firstName || "", user.lastName || "")}
                         </div>
                       ))}
                       {taskUsers.length > 3 && (

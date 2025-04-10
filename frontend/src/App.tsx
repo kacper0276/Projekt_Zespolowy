@@ -17,6 +17,7 @@ import ActivateAccount from "./pages/ActivateAccount/ActivateAccount";
 import BoardsNew from "./pages/BoardsNew/BoardsNew";
 import AuthenticatedRoute from "./hoc/AuthenticatedRoute";
 import TeamPage from "./pages/TeamPage/TeamPage";
+import { AssignedUsersProvider } from "./layout/AssignedUserProvider";
 
 function App() {
   const content = (
@@ -91,18 +92,21 @@ function App() {
     </>
   );
 
-  return (
-    <Router>
-      <UserProvider>
+// Updated part in App.tsx
+return (
+  <Router>
+    <UserProvider>
+      <AssignedUsersProvider>
         <Layout
           header={header}
           content={content}
           sidebar={sidebar}
           footer={footer}
         />
-      </UserProvider>
-    </Router>
-  );
+      </AssignedUsersProvider>
+    </UserProvider>
+  </Router>
+);
 }
 
 export default App;

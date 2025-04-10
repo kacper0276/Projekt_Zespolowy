@@ -9,6 +9,18 @@ import Spinner from "../../components/Spinner/Spinner";
 import { toast } from "react-toastify";
 import { IKanbanSettings } from "../../interfaces/IKanbanSettings";
 
+import React, { createContext, useContext } from "react";
+
+export const AssignedUsersContext = createContext<{
+  assignedUsers: IUser[];
+  setAssignedUsers: React.Dispatch<React.SetStateAction<IUser[]>>;
+}>({
+  assignedUsers: [],
+  setAssignedUsers: () => {},
+});
+
+export const useAssignedUsers = () => useContext(AssignedUsersContext);
+
 const Sidebar = () => {
   const params = useParams();
   const api = useApiJson();
@@ -16,24 +28,17 @@ const Sidebar = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [settings, setSettings] = useState<IKanbanSettings[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
-  // Dummy users data
-  // const users = [
-  //   { id: 1, firstName: "John", lastName: "Doe" },
-  //   { id: 2, firstName: "Sarah", lastName: "Parker" },
-  //   { id: 3, firstName: "Mike", lastName: "Johnson" },
-  //   { id: 4, firstName: "Anna", lastName: "Brown" },
-  //   { id: 5, firstName: "Tom", lastName: "Wilson" },
-  // ];
+  
 
   const toggleSidebar = () => {
     setIsMinimized(!isMinimized);
   };
-
+  
   // Function to get initials from first and last name
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`;
   };
+  
 
   useEffect(() => {
     setLoading(true);
@@ -50,6 +55,22 @@ const Sidebar = () => {
         setLoading(false);
       });
   }, [params]);
+  
+  const handleDragStart = (e: React.DragEvent, user: IUser) => {
+    e.dataTransfer.setData('application/json', JSON.stringify(user));
+    e.dataTransfer.effectAllowed = 'copy';
+    
+    const dragImage = document.createElement('div');
+    dragImage.className = styles.dragImage;
+    dragImage.textContent = getInitials(user.firstName ?? "", user.lastName ?? "");
+    document.body.appendChild(dragImage);
+    
+    e.dataTransfer.setDragImage(dragImage, 15, 15);
+
+    setTimeout(() => {
+      document.body.removeChild(dragImage);
+    }, 0);
+  };
 
   return (
     <div className={styles.container}>
@@ -65,12 +86,11 @@ const Sidebar = () => {
             }`}
           ></i>
         </div>
-
         {/* Header */}
         <div className={styles.sidebarHeader}>
           <h3 className={styles.sidebarTitle}>{isMinimized ? "" : "Users"}</h3>
+          <p className={styles.dragHint}>{isMinimized ? "" : "Drag users to tasks to assign them"}</p>
         </div>
-
         {/* Users Section */}
         <div className={styles.usersSection}>
           {loading ? (
@@ -78,7 +98,13 @@ const Sidebar = () => {
           ) : (
             <>
               {users.map((user) => (
-                <div key={user.id} className={styles.userCircle}>
+                <div 
+                  key={user.id} 
+                  className={`${styles.userCircle}`}
+                  draggable={true}
+                  onDragStart={(e) => handleDragStart(e, user)}
+                  title={`Drag to assign ${user.firstName} ${user.lastName} to a task`}
+                >
                   <div className={styles.avatarCircle}>
                     {getInitials(user.firstName ?? "", user.lastName ?? "")}
                   </div>
