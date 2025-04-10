@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { KanbanSetting } from './entities/kanban-setting.entity';
 import { Repository } from 'typeorm';
@@ -9,4 +9,22 @@ export class KanbanSettingsService {
     @InjectRepository(KanbanSetting)
     private readonly kanbanSettingRepository: Repository<KanbanSetting>,
   ) {}
+
+  async updateWipLimit(
+    userId: string,
+    kanbanId: string,
+    newWipLimit: number,
+  ): Promise<KanbanSetting> {
+    const kanbanSetting = await this.kanbanSettingRepository.findOne({
+      where: { user: { id: +userId }, kanban: { id: +kanbanId } },
+    });
+
+    if (!kanbanSetting) {
+      throw new NotFoundException(`kanban-settings-for-user-not-found`);
+    }
+
+    kanbanSetting.wipLimit = newWipLimit;
+
+    return this.kanbanSettingRepository.save(kanbanSetting);
+  }
 }
