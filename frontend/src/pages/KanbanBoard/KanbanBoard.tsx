@@ -622,6 +622,7 @@ function KanbanBoard() {
         statuses: [],
         backgroundImage: "",
         rows: [],
+        kanbanSettings: [],
       } as IKanban);
     }
   };

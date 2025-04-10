@@ -7,12 +7,14 @@ import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
 import Spinner from "../../components/Spinner/Spinner";
 import { toast } from "react-toastify";
+import { IKanbanSettings } from "../../interfaces/IKanbanSettings";
 
 const Sidebar = () => {
   const params = useParams();
   const api = useApiJson();
   const [isMinimized, setIsMinimized] = useState(false);
   const [users, setUsers] = useState<IUser[]>([]);
+  const [settings, setSettings] = useState<IKanbanSettings[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   // Dummy users data
@@ -39,6 +41,7 @@ const Sidebar = () => {
       .get<ApiResponse<IKanban>>(`kanban/board/${params.id}`)
       .then((res) => {
         setUsers(res.data.data?.users ?? []);
+        setSettings(res.data.data?.kanbanSettings ?? []);
       })
       .catch((_err) => {
         toast.error("error-fetching-users");
@@ -80,9 +83,14 @@ const Sidebar = () => {
                     {getInitials(user.firstName ?? "", user.lastName ?? "")}
                   </div>
                   {!isMinimized && (
-                    <span className={styles.userName}>
-                      {user.firstName} {user.lastName}
-                    </span>
+                    <>
+                      <span className={styles.userName}>
+                        {user.firstName} {user.lastName} (
+                        {settings.find((setting) => setting.user.id === user.id)
+                          ?.wipLimit ?? 0}
+                        )
+                      </span>
+                    </>
                   )}
                 </div>
               ))}
