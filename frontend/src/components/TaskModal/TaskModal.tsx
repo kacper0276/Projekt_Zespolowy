@@ -174,7 +174,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
     toast.success("Dodano nowy status");
 
-    // In a real implementation, you would save this to the database here
   };
 
   // Handle delete status with window.confirm
@@ -205,7 +204,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }
   };
 
-  // NEW FUNCTION: Clear selected status without deleting it from the list
+  //Clear selected status without deleting it from the list
   const handleClearSelectedStatus = () => {
     setTaskData((prevState) => ({
       ...prevState,

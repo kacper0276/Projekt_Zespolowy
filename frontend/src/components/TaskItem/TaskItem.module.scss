@@ -22,6 +22,11 @@ $toggleActiveBackground: $inProgressColor;
     background-color: rgba(2, 166, 118, 0.15);
     box-shadow: 0 0 0 1px rgba(2, 166, 118, 0.5);
   }
+
+  &.dropActive {
+    box-shadow: 0 0 0 2px $inProgressColor;
+    background-color: rgba(2, 166, 118, 0.1);
+  }
 }
 
 .taskContent {
@@ -42,153 +47,6 @@ $toggleActiveBackground: $inProgressColor;
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.statusToggleContainer {
-  display: flex;
-  align-items: center;
-}
-
-.statusToggle {
-  background: none;
-  border: none;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
- 
-  &.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.toggleSlider {
-  width: 36px;
-  height: 20px;
-  background-color: $toggleBackground;
-  border-radius: 10px;
-  position: relative;
-  transition: background-color 0.3s ease;
- 
-  &.active {
-    background-color: $toggleActiveBackground;
-  }
-}
-
-.toggleHandle {
-  width: 16px;
-  height: 16px;
-  background-color: white;
-  border-radius: 50%;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  transition: transform 0.3s ease;
- 
-  .active & {
-    transform: translateX(16px);
-  }
-}
-
-.statusLabel {
-  font-size: 0.8rem;
-  color: $textColor;
-}
-
-.deleteTaskButton {
-  background: none;
-  border: none;
-  color: #ff4d4d;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.3s ease;
-  
-  &:hover {
-    color: #ff1a1a;
-  }
-  
-  i {
-    font-size: 18px;
-  }
-}
-
-
-.userAvatars {
-  display: flex;
-  align-items: center;
-  margin-right: 5px;
-}
-
-.userAvatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #0079d3, #02a676);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: bold;
-  margin-left: -8px;
-  border: 2px solid #2c2c2c;
-  position: relative;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
- 
-  &:first-child {
-    margin-left: 0;
-    z-index: 3;
-  }
-  
-  &:nth-child(2) {
-    z-index: 2;
-  }
-  
-  &:nth-child(3), &:nth-child(4) {
-    z-index: 1;
-  }
-
-
-  &:nth-child(2n) {
-    background: linear-gradient(135deg, #a5082e, #be0533);
-  }
- 
-  &:nth-child(3n) {
-    background: linear-gradient(135deg, #030030, #080078);
-  }
-  
-
-  &:last-child:not(:first-child) {
-    background: linear-gradient(135deg, #444, #666);
-  }
-}
-
-.noUsers {
-  font-size: 10px;
-  color: #888;
-  font-style: italic;
-}
-/* Add these styles to your TaskItem.module.scss file */
-
-.item {
-  background-color: #2c2c2c;
-  border-radius: 4px;
-  padding: 10px;
-  margin-bottom: 8px;
-  display: flex;
-  flex-direction: column;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-  padding-top: 24px; /* Add space at the top for the status badge */
- 
-  &.inProgress {
-    background-color: rgba(2, 166, 118, 0.15);
-    box-shadow: 0 0 0 1px rgba(2, 166, 118, 0.5);
-  }
 }
 
 .statusBadge {
@@ -207,73 +65,6 @@ $toggleActiveBackground: $inProgressColor;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.taskContent {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-/* Rest of your existing styles */
-.taskText {
-  flex: 1;
-  word-break: break-word;
-}
-.taskActions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.statusToggleContainer {
-  display: flex;
-  align-items: center;
-}
-.statusToggle {
-  background: none;
-  border: none;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
- 
-  &.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-.toggleSlider {
-  width: 36px;
-  height: 20px;
-  background-color: $toggleBackground;
-  border-radius: 10px;
-  position: relative;
-  transition: background-color 0.3s ease;
- 
-  &.active {
-    background-color: $toggleActiveBackground;
-  }
-}
-.toggleHandle {
-  width: 16px;
-  height: 16px;
-  background-color: white;
-  border-radius: 50%;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  transition: transform 0.3s ease;
- 
-  .active & {
-    transform: translateX(16px);
-  }
-}
-.statusLabel {
-  font-size: 0.8rem;
-  color: $textColor;
-}
 .deleteTaskButton {
   background: none;
   border: none;
@@ -283,20 +74,22 @@ $toggleActiveBackground: $inProgressColor;
   align-items: center;
   justify-content: center;
   transition: color 0.3s ease;
- 
+  
   &:hover {
     color: #ff1a1a;
   }
- 
+  
   i {
     font-size: 18px;
   }
 }
+
 .userAvatars {
   display: flex;
   align-items: center;
   margin-right: 5px;
 }
+
 .userAvatar {
   width: 24px;
   height: 24px;
@@ -317,14 +110,15 @@ $toggleActiveBackground: $inProgressColor;
     margin-left: 0;
     z-index: 3;
   }
- 
+  
   &:nth-child(2) {
     z-index: 2;
   }
- 
+  
   &:nth-child(3), &:nth-child(4) {
     z-index: 1;
   }
+
   &:nth-child(2n) {
     background: linear-gradient(135deg, #a5082e, #be0533);
   }
@@ -332,13 +126,140 @@ $toggleActiveBackground: $inProgressColor;
   &:nth-child(3n) {
     background: linear-gradient(135deg, #030030, #080078);
   }
- 
+
   &:last-child:not(:first-child) {
     background: linear-gradient(135deg, #444, #666);
   }
 }
+
 .noUsers {
   font-size: 10px;
   color: #888;
   font-style: italic;
+}
+
+/* Todo Lists styles */
+.todoListSection {
+  margin-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 6px;
+}
+
+.todoListToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 4px 0;
+  font-size: 0.85rem;
+  color: #ccc;
+  transition: color 0.2s ease;
+  user-select: none;
+  
+  &:hover {
+    color: white;
+  }
+  
+  i {
+    font-size: 12px;
+    transition: transform 0.2s ease;
+  }
+}
+
+.todoListContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 0;
+  position: relative;
+  
+  &.expanded {
+    max-height: 500px; /* Adjust based on your needs */
+    opacity: 1;
+    padding: 6px 0;
+    margin-top: 4px;
+  }
+}
+
+.todoList {
+  background-color: #1e1e1e;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.todoListHeader {
+  padding: 6px 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  
+  h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e0e0e0;
+  }
+}
+
+.todoItems {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.todoItem {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  &.completed .todoItemText {
+    text-decoration: line-through;
+    color: #888;
+  }
+}
+
+.todoCheckbox {
+  margin-right: 8px;
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  
+  .completed & {
+    color: $inProgressColor;
+  }
+  
+  &:hover {
+    color: $inProgressColor;
+  }
+}
+
+.todoItemText {
+  font-size: 0.85rem;
+  flex: 1;
+}
+
+.emptyListMessage {
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+  text-align: center;
 }

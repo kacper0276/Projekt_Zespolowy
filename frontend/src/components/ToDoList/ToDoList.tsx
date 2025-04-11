@@ -3,23 +3,50 @@ import { IToDoItem } from "../../interfaces/IToDoItem";
 import { IToDoList } from "../../interfaces/IToDoList";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
+import styles from "./ToDoList.module.scss";
 
 interface ItemProps {
-  taskId: number;
+  taskId: number | string;
 }
 
 const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
   const api = useApiJson();
-  const [toDoList, setToDoList] = useState<IToDoList | null>(null);
+  const [todoLists, setTodoLists] = useState<IToDoList[]>([]);
   const [newListName, setNewListName] = useState<string>("");
   const [newItemName, setNewItemName] = useState<string>("");
-  const [items, setItems] = useState<IToDoItem[]>([]);
+  const [activeListId, setActiveListId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetchTodoLists();
+  }, [taskId]);
+
+  const fetchTodoLists = async () => {
+    setIsLoading(true);
+    try {
+      const response = await api.get<ApiResponse<IToDoList[]>>(
+        `to-do-lists/task/${taskId}`
+      );
+      const lists = response.data.data || [];
+      setTodoLists(lists);
+      
+      // Set active list if exists
+      if (lists.length > 0) {
+        setActiveListId(lists[0].id || null);
+      }
+    } catch (error) {
+      console.error("Error fetching TODO lists:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const createToDoList = async () => {
     if (!newListName.trim()) {
       return;
     }
 
+    setIsLoading(true);
     try {
       const response = await api.post<ApiResponse<IToDoList>>(
         `to-do-lists/${taskId}`,
@@ -27,96 +54,228 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
           name: newListName,
         }
       );
-      setToDoList(response.data.data ?? null);
+      
+      if (response.data.data) {
+        setTodoLists([...todoLists, response.data.data]);
+        setActiveListId(response.data.data.id || null);
+      }
+      
       setNewListName("");
-      alert("Lista została utworzona!");
     } catch (error) {
-      console.error("Błąd podczas tworzenia listy:", error);
-      alert("Nie udało się utworzyć listy.");
+      console.error("Error creating todo list:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const addToDoItem = async (listId: number) => {
-    if (listId < 0) return;
-
-    if (!newItemName.trim() || !toDoList) {
-      alert(
-        "Nazwa zadania nie może być pusta lub lista nie została utworzona!"
-      );
+  const addToDoItem = async () => {
+    if (!activeListId || !newItemName.trim()) {
       return;
     }
 
+    setIsLoading(true);
     try {
-      const response = await api.post<IToDoItem>(
-        `to-do-lists/${listId}/items`,
+      const response = await api.post<ApiResponse<IToDoItem>>(
+        `to-do-lists/${activeListId}/items`,
         {
           name: newItemName,
-          isDone: false,
-          toDoList: toDoList,
+          isDone: false
         }
       );
-      setItems((prevItems) => [...prevItems, response.data]);
+      
+      if (response.data.data) {
+        // Update the specific list with the new item
+        const updatedLists = todoLists.map(list => {
+          if (list.id === activeListId) {
+            return {
+              ...list,
+              items: [...(list.items || []), response.data.data as IToDoItem]
+            };
+          }
+          return list;
+        });
+        
+        setTodoLists(updatedLists);
+      }
+      
       setNewItemName("");
-      alert("Zadanie zostało dodane!");
     } catch (error) {
-      console.error("Błąd podczas dodawania zadania:", error);
-      alert("Nie udało się dodać zadania.");
+      console.error("Error adding todo item:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    api
-      .get<ApiResponse<IToDoList[]>>(`to-do-lists/task/${taskId}`)
-      .then((response) => {
-        const lists = response.data.data ?? [];
-        if (lists.length > 0) {
-          setToDoList(lists[0]);
-          setItems(lists[0].items ?? []);
-        } else {
-          setToDoList(null);
-        }
+  const toggleItemStatus = async (listId: number, itemId: number, currentStatus: boolean) => {
+    try {
+      await api.patch(`to-do-lists/${listId}/items/${itemId}`, {
+        isDone: !currentStatus
       });
-  }, []);
+      
+      // Update local state
+      const updatedLists = todoLists.map(list => {
+        if (list.id === listId) {
+          return {
+            ...list,
+            items: (list.items || []).map(item => 
+              item.id === itemId ? { ...item, isDone: !currentStatus } : item
+            )
+          };
+        }
+        return list;
+      });
+      
+      setTodoLists(updatedLists);
+    } catch (error) {
+      console.error("Error toggling item status:", error);
+    }
+  };
+
+  const deleteItem = async (listId: number, itemId: number) => {
+    try {
+      await api.delete(`to-do-lists/${listId}/items/${itemId}`);
+      
+      // Update local state
+      const updatedLists = todoLists.map(list => {
+        if (list.id === listId) {
+          return {
+            ...list,
+            items: (list.items || []).filter(item => item.id !== itemId)
+          };
+        }
+        return list;
+      });
+      
+      setTodoLists(updatedLists);
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
+  };
+
+  const deleteList = async (listId: number) => {
+    if (!window.confirm("Are you sure you want to delete this list?")) {
+      return;
+    }
+    
+    try {
+      await api.delete(`to-do-lists/${listId}`);
+      
+      // Update local state
+      const updatedLists = todoLists.filter(list => list.id !== listId);
+      setTodoLists(updatedLists);
+      
+      // Set new active list if needed
+      if (activeListId === listId) {
+        setActiveListId(updatedLists.length > 0 ? updatedLists[0].id || null : null);
+      }
+    } catch (error) {
+      console.error("Error deleting list:", error);
+    }
+  };
 
   return (
-    <div>
-      <h1>To-Do List</h1>
-
-      <div>
-        <input
-          type="text"
-          placeholder="Nazwa nowej listy"
-          value={newListName}
-          onChange={(e) => setNewListName(e.target.value)}
-        />
-        <button onClick={createToDoList}>Utwórz listę</button>
-      </div>
-
-      {toDoList && (
-        <div>
-          <h2>Lista: {toDoList.name}</h2>
+    <div className={styles.todoListContainer}>
+      <div className={styles.todoListHeader}>
+        <h3>Listy zadań ({todoLists.length})</h3>
+        
+        <div className={styles.createListForm}>
           <input
             type="text"
-            placeholder="Nazwa nowego zadania"
-            value={newItemName}
-            onChange={(e) => setNewItemName(e.target.value)}
+            placeholder="Nazwa nowej listy"
+            value={newListName}
+            onChange={(e) => setNewListName(e.target.value)}
+            className={styles.inputField}
           />
-          <button onClick={() => addToDoItem(toDoList.id ?? -1)}>
-            Dodaj zadanie
+          <button 
+            onClick={createToDoList} 
+            disabled={isLoading || !newListName.trim()}
+            className={styles.actionButton}
+          >
+            <i className="bi bi-plus-circle"></i> Utwórz
           </button>
         </div>
-      )}
+      </div>
 
-      {items.length > 0 && (
-        <div>
-          <h3>Zadania:</h3>
-          <ul>
-            {items.map((item) => (
-              <li key={item.id}>
-                {item.name} - {item.isDone ? "Zrobione" : "Do zrobienia"}
-              </li>
+      {todoLists.length > 0 ? (
+        <div className={styles.listsContainer}>
+          <div className={styles.listsTabs}>
+            {todoLists.map((list) => (
+              <div 
+                key={list.id} 
+                className={`${styles.listTab} ${activeListId === list.id ? styles.activeTab : ''}`}
+                onClick={() => setActiveListId(list.id || null)}
+              >
+                <span>{list.name}</span>
+                <span className={styles.itemCount}>
+                  {(list.items || []).length} zadań
+                </span>
+                <button 
+                  className={styles.deleteListButton}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    list.id && deleteList(list.id);
+                  }}
+                >
+                  <i className="bi bi-trash"></i>
+                </button>
+              </div>
             ))}
-          </ul>
+          </div>
+          
+          {activeListId && (
+            <div className={styles.listContent}>
+              <div className={styles.addItemForm}>
+                <input
+                  type="text"
+                  placeholder="Nowe zadanie"
+                  value={newItemName}
+                  onChange={(e) => setNewItemName(e.target.value)}
+                  className={styles.inputField}
+                />
+                <button 
+                  onClick={addToDoItem} 
+                  disabled={isLoading || !newItemName.trim()}
+                  className={styles.actionButton}
+                >
+                  <i className="bi bi-plus"></i> Dodaj
+                </button>
+              </div>
+              
+              <ul className={styles.itemsList}>
+                {todoLists
+                  .find(list => list.id === activeListId)
+                  ?.items?.map((item) => (
+                    <li key={item.id} className={styles.todoItem}>
+                      <div 
+                        className={`${styles.todoCheckbox} ${item.isDone ? styles.checked : ''}`}
+                        onClick={() => item.id && activeListId && toggleItemStatus(activeListId, item.id, !!item.isDone)}
+                      >
+                        <i className={`bi ${item.isDone ? 'bi-check-square' : 'bi-square'}`}></i>
+                      </div>
+                      <span className={`${styles.todoItemText} ${item.isDone ? styles.completed : ''}`}>
+                        {item.name}
+                      </span>
+                      <button 
+                        className={styles.deleteItemButton}
+                        onClick={() => item.id && activeListId && deleteItem(activeListId, item.id)}
+                      >
+                        <i className="bi bi-x"></i>
+                      </button>
+                    </li>
+                  )) || (
+                    <li className={styles.emptyMessage}>
+                      Ta lista nie zawiera jeszcze żadnych zadań
+                    </li>
+                  )
+                }
+              </ul>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className={styles.emptyState}>
+          <p>Brak list zadań dla tego zadania</p>
+          <p>Utwórz pierwszą listę używając formularza powyżej</p>
         </div>
       )}
     </div>
