@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { mailerConfig } from 'src/config/mailer.config';
+import { mailerConfig } from '../config/mailer.config';
 import { UserStatusGateway } from './users.gateway';
 
 @Module({

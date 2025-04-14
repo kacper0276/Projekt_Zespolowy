@@ -7,13 +7,13 @@ import { Task } from './entities/task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateNewTaskDto } from './dto/create-new-task.dto';
-import { Kanban } from 'src/kanban/entities/kanban.entity';
+import { Kanban } from '../kanban/entities/kanban.entity';
 import { ColumnEntity } from 'src/columns/entities/column.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { EditTaskDescriptionDto } from './dto/edit-task-description.dto';
 import { ChangeColumnDto } from './dto/change-column.dto';
 import { ChangeTasksOrderDto } from './dto/change-tasks-order.dto';
-import { Row } from 'src/rows/entities/row.entity';
+import { Row } from '../rows/entities/row.entity';
 import { ChangeTaskRowColumnDto } from './dto/change-task-row-column.dto';
 import { ChangeTaskStatusDto } from './dto/change-task-status.dto';
 

@@ -1,6 +1,6 @@
-import { BaseEntity } from 'src/entities/base.entity';
-import { Kanban } from 'src/kanban/entities/kanban.entity';
-import { Task } from 'src/tasks/entities/task.entity';
+import { BaseEntity } from '../../entities/base.entity';
+import { Kanban } from '../../kanban/entities/kanban.entity';
+import { Task } from '../../tasks/entities/task.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('rows')

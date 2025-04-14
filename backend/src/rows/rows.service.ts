@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Row } from './entities/row.entity';
 import { LessThan, Repository } from 'typeorm';
-import { Kanban } from 'src/kanban/entities/kanban.entity';
+import { Kanban } from '../kanban/entities/kanban.entity';
 import { CreateRowDto } from './dto/create-row.dto';
 
 @Injectable()

@@ -4,8 +4,8 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { Task } from '../../tasks/entities/task.entity';
 import { ColumnEntity } from '../../columns/entities/column.entity';
 import { Status } from '../../status/entities/status.entity';
-import { Row } from 'src/rows/entities/row.entity';
-import { KanbanSetting } from 'src/kanban-settings/entities/kanban-setting.entity';
+import { Row } from '../../rows/entities/row.entity';
+import { KanbanSetting } from '../../kanban-settings/entities/kanban-setting.entity';
 
 @Entity('kanbans')
 export class Kanban extends BaseEntity {

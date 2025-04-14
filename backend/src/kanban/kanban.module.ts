@@ -8,7 +8,7 @@ import { User } from '../users/entities/user.entity';
 import { Status } from '../status/entities/status.entity';
 import { Task } from '../tasks/entities/task.entity';
 import { ColumnEntity } from '../columns/entities/column.entity';
-import { Row } from 'src/rows/entities/row.entity';
+import { Row } from '../rows/entities/row.entity';
 
 @Module({
   imports: [

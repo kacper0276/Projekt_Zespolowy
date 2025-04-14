@@ -3,12 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Kanban } from './entities/kanban.entity';
 import { In, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
-import { ColumnEntity } from 'src/columns/entities/column.entity';
-import { Status } from 'src/status/entities/status.entity';
-import { Task } from 'src/tasks/entities/task.entity';
+import { ColumnEntity } from '../columns/entities/column.entity';
+import { Status } from '../status/entities/status.entity';
+import { Task } from '../tasks/entities/task.entity';
 import { CreateKanbanDto } from './dto/create-kanban.dto';
 import { ChangeTableNameDto } from './dto/change-table-name.dto';
-import { Row } from 'src/rows/entities/row.entity';
+import { Row } from '../rows/entities/row.entity';
 
 @Injectable()
 export class KanbanService {

@@ -1,6 +1,6 @@
-import { BaseEntity } from 'src/entities/base.entity';
-import { Kanban } from 'src/kanban/entities/kanban.entity';
-import { User } from 'src/users/entities/user.entity';
+import { BaseEntity } from '../../entities/base.entity';
+import { Kanban } from '../../kanban/entities/kanban.entity';
+import { User } from '../../users/entities/user.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity('kanban_settings')

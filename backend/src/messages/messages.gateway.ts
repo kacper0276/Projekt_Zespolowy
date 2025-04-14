@@ -6,7 +6,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { MessagesService } from './messages.service';
-import { ConversationsService } from 'src/conversations/conversations.service';
+import { ConversationsService } from '../conversations/conversations.service';
 import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({ cors: true })

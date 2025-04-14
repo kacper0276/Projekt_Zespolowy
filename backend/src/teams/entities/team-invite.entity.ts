@@ -1,8 +1,8 @@
-import { InviteStatus } from 'src/enums/invite-status.enum';
-import { User } from 'src/users/entities/user.entity';
+import { InviteStatus } from '../../enums/invite-status.enum';
+import { User } from '../../users/entities/user.entity';
 import { Entity, ManyToOne, Column } from 'typeorm';
 import { Team } from './team.entity';
-import { BaseEntity } from 'src/entities/base.entity';
+import { BaseEntity } from '../../entities/base.entity';
 
 @Entity('team_invites')
 export class TeamInvite extends BaseEntity {

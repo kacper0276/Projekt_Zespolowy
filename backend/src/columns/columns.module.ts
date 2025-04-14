@@ -3,7 +3,7 @@ import { ColumnsController } from './columns.controller';
 import { ColumnsService } from './columns.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ColumnEntity } from './entities/column.entity';
-import { Kanban } from 'src/kanban/entities/kanban.entity';
+import { Kanban } from '../kanban/entities/kanban.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ColumnEntity, Kanban])],

@@ -1,6 +1,6 @@
-import { BaseEntity } from 'src/entities/base.entity';
-import { Message } from 'src/messages/entities/message.entity';
-import { User } from 'src/users/entities/user.entity';
+import { BaseEntity } from '../../entities/base.entity';
+import { Message } from '../../messages/entities/message.entity';
+import { User } from '../../users/entities/user.entity';
 import { Entity, ManyToMany, JoinTable, OneToMany, Column } from 'typeorm';
 
 @Entity('conversations')

@@ -3,9 +3,9 @@ import { BaseEntity } from '../../entities/base.entity';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import { ToDoList } from '../../to-do-lists/entities/to-do-list.entity';
 import { ColumnEntity } from '../../columns/entities/column.entity';
-import { Kanban } from 'src/kanban/entities/kanban.entity';
-import { Row } from 'src/rows/entities/row.entity';
-import { Status } from 'src/status/entities/status.entity';
+import { Kanban } from '../../kanban/entities/kanban.entity';
+import { Row } from '../../rows/entities/row.entity';
+import { Status } from '../../status/entities/status.entity';
 
 @Entity('tasks')
 export class Task extends BaseEntity {

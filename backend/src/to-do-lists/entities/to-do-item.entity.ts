@@ -1,4 +1,4 @@
-import { BaseEntity } from 'src/entities/base.entity';
+import { BaseEntity } from '../../entities/base.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { ToDoList } from './to-do-list.entity';
 

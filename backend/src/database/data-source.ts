@@ -6,11 +6,11 @@ import { Kanban } from '../kanban/entities/kanban.entity';
 import { Status } from '../status/entities/status.entity';
 import { Task } from '../tasks/entities/task.entity';
 import { ToDoList } from '../to-do-lists/entities/to-do-list.entity';
-import { ToDoItem } from 'src/to-do-lists/entities/to-do-item.entity';
-import { Row } from 'src/rows/entities/row.entity';
-import { KanbanSetting } from 'src/kanban-settings/entities/kanban-setting.entity';
-import { Team } from 'src/teams/entities/team.entity';
-import { TeamInvite } from 'src/teams/entities/team-invite.entity';
+import { ToDoItem } from '../to-do-lists/entities/to-do-item.entity';
+import { Row } from '../rows/entities/row.entity';
+import { KanbanSetting } from '../kanban-settings/entities/kanban-setting.entity';
+import { Team } from '../teams/entities/team.entity';
+import { TeamInvite } from '../teams/entities/team-invite.entity';
 dotenv.config();
 
 export const AppDataSource = new DataSource({

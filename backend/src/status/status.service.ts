@@ -3,7 +3,7 @@ import { Status } from './entities/status.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateNewStatusDto } from './dto/create-new-status.dto';
-import { Kanban } from 'src/kanban/entities/kanban.entity';
+import { Kanban } from '../kanban/entities/kanban.entity';
 import { UpdateStatusDto } from './dto/update-status.dto';
 
 @Injectable()

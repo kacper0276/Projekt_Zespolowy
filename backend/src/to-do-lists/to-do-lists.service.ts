@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ToDoList } from './entities/to-do-list.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Task } from 'src/tasks/entities/task.entity';
+import { Task } from '../tasks/entities/task.entity';
 import { CreateToDoListDto } from './dto/create-to-do-list.dto';
 import { CreateToDoItemDto } from './dto/create-to-do-item.dto';
 import { ToDoItem } from './entities/to-do-item.entity';
