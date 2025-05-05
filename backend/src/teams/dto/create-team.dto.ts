@@ -1,11 +1,14 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
 
 export class CreateTeamDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  teamName: string;
 
-  @IsString()
   @IsOptional()
-  description?: string;
+  users: User[];
+
+  @IsNotEmpty()
+  invitedBy: User;
 }

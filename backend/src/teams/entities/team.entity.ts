@@ -11,6 +11,6 @@ export class Team extends BaseEntity {
   @OneToMany(() => TeamInvite, (invite) => invite.team)
   invites: TeamInvite[];
 
-  @OneToMany(() => User, (user) => user.teams)
+  @OneToMany(() => User, (user) => user.team)
   users: User[];
 }

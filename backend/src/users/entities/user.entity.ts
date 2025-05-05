@@ -1,6 +1,6 @@
 import { BaseEntity } from '../../entities/base.entity';
 import { Role } from '../../enums/role.enum';
-import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { Kanban } from '../../kanban/entities/kanban.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Conversation } from '../../conversations/entities/conversation.entity';
@@ -56,6 +56,6 @@ export class User extends BaseEntity {
   @OneToMany(() => TeamInvite, (invite) => invite.user)
   teamInvites: TeamInvite[];
 
-  @OneToMany(() => Team, (team) => team.users)
-  teams: Team[];
+  @ManyToOne(() => Team, (team) => team.users, { onDelete: 'SET NULL' })
+  team: Team;
 }
