@@ -6,14 +6,17 @@ import { IKanban } from "../../interfaces/IKanban";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { ITeamInvite } from "../../interfaces/ITeamInvite";
 
 const Header: React.FC = () => {
   const api = useApiJson();
+  const location = useLocation();
   const { user, logout } = useUser();
   const isAuthenticated = !!user;
   const [showBoardsModal, setShowBoardsModal] = useState(false);
   const [kanbanBoards, setKanbanBoards] = useState<IKanban[]>([]);
+  const [teamInvites, setTeamInvites] = useState<ITeamInvite[]>([]);
   const { t } = useTranslation();
 
   const toggleBoardsModal = () => {
@@ -31,9 +34,21 @@ const Header: React.FC = () => {
     }
   };
 
+  const fetchTeamInvites = async () => {
+    try {
+      const { data } = await api.get<ApiResponse<ITeamInvite[]>>(
+        `teams/invites/${user?.id}`
+      );
+      setTeamInvites(data.data ?? []);
+    } catch (error) {
+      console.error("Failed to fetch team invites:", error);
+    }
+  };
+
   useEffect(() => {
     fetchKanbanBoards();
-  }, [user]);
+    fetchTeamInvites();
+  }, [user, location]);
 
   return (
     <header className={styles.mainHeader}>
@@ -72,6 +87,11 @@ const Header: React.FC = () => {
                       to="/my-teams"
                     >
                       {t("my-teams")}
+                      {teamInvites.length > 0 && (
+                        <span className={styles.inviteBadge}>
+                          {teamInvites.length}
+                        </span>
+                      )}
                     </Link>
                   </li>
                   <li className="nav-item">
