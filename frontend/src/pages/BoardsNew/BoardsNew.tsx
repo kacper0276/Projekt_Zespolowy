@@ -26,6 +26,7 @@ const BoardsNew: React.FC = () => {
     statuses: [],
     backgroundImage: null,
     rows: [],
+    kanbanSettings: [],
   });
   const [users, setUsers] = useState<IUser[]>([]);
   const [statusInput, setStatusInput] = useState<IStatus>({
