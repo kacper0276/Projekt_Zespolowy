@@ -8,12 +8,17 @@ interface LayoutProps {
   sidebar: ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ header, content, footer, sidebar }) => {
+const Layout: React.FC<LayoutProps> = ({
+  header,
+  content,
+  footer,
+  sidebar,
+}) => {
   return (
     <div className={styles.layoutContainer}>
       <header className={styles.header}>{header}</header>
       <div className="d-flex" style={{ overflow: "auto" }}>
-      <aside className={`${styles.sidebar} position-fixed`}>{sidebar}</aside>
+        <aside className={`${styles.sidebar} position-fixed`}>{sidebar}</aside>
         <main className={styles.content}>{content}</main>
       </div>
       <footer className={styles.footer}>{footer}</footer>

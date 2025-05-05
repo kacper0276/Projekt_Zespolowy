@@ -1,7 +1,6 @@
 .layoutContainer {
   display: flex;
   flex-direction: column;
-
 }
 
 .sidebar {
@@ -11,6 +10,7 @@
 
 .content {
   flex: 1;
+  margin-top: 94px;
 }
 
 header:empty,
