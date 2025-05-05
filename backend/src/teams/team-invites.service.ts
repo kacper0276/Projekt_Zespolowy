@@ -34,6 +34,13 @@ export class TeamInitesService {
     return invite;
   }
 
+  async getInvitesByUserId(userId: string): Promise<TeamInvite[]> {
+    return this.teamInviteRepository.find({
+      where: { user: { id: +userId } },
+      relations: ['team'],
+    });
+  }
+
   async updateInvite(
     id: string,
     updateTeamInviteDto: UpdateTeamInviteDto,

@@ -37,6 +37,24 @@ export class TeamsController {
     }
   }
 
+  @Get('invites/:userId')
+  async getInvitesByUserId(
+    @Param('userId') userId: string,
+    @Res() response: Response,
+  ) {
+    try {
+      const invites = await this.teamInvitesService.getInvitesByUserId(userId);
+      response.status(HttpStatus.OK).send({
+        message: 'invites-retrieved',
+        data: invites,
+      });
+    } catch (error) {
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: 'internal-server-error',
+      });
+    }
+  }
+
   @Post()
   async createTeam(@Body() data: CreateTeamDto, @Res() response: Response) {
     try {
