@@ -60,14 +60,12 @@ function App() {
   );
 
   const header = (
-    <>
-      <Routes>
-        <Route path="/login" element={<></>} />
-        <Route path="/signup" element={<></>} />
-        <Route path="/activate-account/:userEmail" element={<></>} />
-        <Route path="*" element={<Header />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/login" element={<></>} />
+      <Route path="/signup" element={<></>} />
+      <Route path="/activate-account/:userEmail" element={<></>} />
+      <Route path="*" element={<Header />} />
+    </Routes>
   );
 
   const sidebar = (
@@ -79,34 +77,32 @@ function App() {
   );
 
   const footer = (
-    <>
-      <Routes>
-        <Route path="/profile" element={<></>} />
-        <Route path="/login" element={<></>} />
-        <Route path="/signup" element={<></>} />
-        <Route path="/KanbanBoard" element={<></>} />
-        <Route path="/activate-account/:userEmail" element={<></>} />
-        <Route path="/boards/:id" element={<></>} />
-        <Route path="*" element={<Footer />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/profile" element={<></>} />
+      <Route path="/login" element={<></>} />
+      <Route path="/signup" element={<></>} />
+      <Route path="/KanbanBoard" element={<></>} />
+      <Route path="/activate-account/:userEmail" element={<></>} />
+      <Route path="/boards/:id" element={<></>} />
+      <Route path="*" element={<Footer />} />
+    </Routes>
   );
 
-// Updated part in App.tsx
-return (
-  <Router>
-    <UserProvider>
-      <AssignedUsersProvider>
-        <Layout
-          header={header}
-          content={content}
-          sidebar={sidebar}
-          footer={footer}
-        />
-      </AssignedUsersProvider>
-    </UserProvider>
-  </Router>
-);
+  // Updated part in App.tsx
+  return (
+    <Router>
+      <UserProvider>
+        <AssignedUsersProvider>
+          <Layout
+            header={header}
+            content={content}
+            sidebar={sidebar}
+            footer={footer}
+          />
+        </AssignedUsersProvider>
+      </UserProvider>
+    </Router>
+  );
 }
 
 export default App;
