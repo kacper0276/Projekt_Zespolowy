@@ -10,7 +10,6 @@ export class CreateNewTaskDto {
   @IsNumber()
   columnId: number;
 
-  // TODO: Odkomentować rowId, ale to jak Tomek resztę zrobi
   @IsNumber()
   rowId: number;
 

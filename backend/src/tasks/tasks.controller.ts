@@ -20,6 +20,7 @@ import { ChangeTasksOrderDto } from './dto/change-tasks-order.dto';
 import { ChangeTaskRowColumnDto } from './dto/change-task-row-column.dto';
 import { ChangeTaskStatusDto } from './dto/change-task-status.dto';
 import { AssignUserToTaskDto } from './dto/assign-user-to-task.dto';
+import { ChangeTaskDeadlineDto } from './dto/change-task-deadline.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -194,6 +195,43 @@ export class TasksController {
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
         message: 'internal-server-error',
       });
+    }
+  }
+
+  @Patch(':taskId/change-deadline')
+  async changeTaskDeadline(
+    @Param('taskId') taskId: string,
+    @Body() data: ChangeTaskDeadlineDto,
+    @Res() response: Response,
+  ) {
+    try {
+      const res = await this.tasksService.changeTaskDeadline(
+        taskId,
+        data.deadline,
+      );
+
+      response.status(HttpStatus.OK).send({
+        message: 'changed-task-deadline',
+        data: res,
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
+          message: error.message,
+        });
+      } else if (error instanceof BadRequestException) {
+        response.status(HttpStatus.BAD_REQUEST).send({
+          message: error.message,
+        });
+      } else if (error instanceof TypeError) {
+        response.status(HttpStatus.BAD_REQUEST).send({
+          message: 'invalid-date-format',
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'internal-server-error',
+        });
+      }
     }
   }
 

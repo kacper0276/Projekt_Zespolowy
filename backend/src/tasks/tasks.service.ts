@@ -167,6 +167,20 @@ export class TasksService {
     return await this.taskRepository.save(task);
   }
 
+  async changeTaskDeadline(taskId: string, deadline: Date) {
+    const task = await this.taskRepository.findOne({
+      where: { id: +taskId },
+    });
+
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+
+    task.deadline = deadline;
+    const updatedTask = await this.taskRepository.save(task);
+    return updatedTask;
+  }
+
   async changeTasksOrder(data: ChangeTasksOrderDto) {
     for (const taskOrder in data.tasksIds) {
       const taskEntity = await this.taskRepository.findOne({

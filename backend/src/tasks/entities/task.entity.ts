@@ -15,17 +15,17 @@ export class Task extends BaseEntity {
   @Column({ type: 'text' })
   description: string;
 
-  @ManyToOne(() => Status, (status) => status.tasks)
-  status: Status;
-
   @Column({ default: '' })
   priority: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: null })
   deadline: Date;
 
   @Column({ default: -1 })
   order: number;
+
+  @ManyToOne(() => Status, (status) => status.tasks)
+  status: Status;
 
   @ManyToMany(() => User)
   @JoinTable()
