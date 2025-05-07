@@ -1,8 +1,10 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Res,
@@ -11,6 +13,7 @@ import { TeamsService } from './teams.service';
 import { TeamInitesService } from './team-invites.service';
 import { Response } from 'express';
 import { CreateTeamDto } from './dto/create-team.dto';
+import { RespondToInviteDto } from './dto/respond-to-invite.dto';
 
 @Controller('teams')
 export class TeamsController {
@@ -64,6 +67,37 @@ export class TeamsController {
       });
     } catch (error) {
       console.log(error);
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: 'internal-server-error',
+      });
+    }
+  }
+
+  @Post('invites/:inviteId/respond')
+  async respondToInvite(
+    @Param('inviteId') inviteId: string,
+    @Body() respondToInviteDto: RespondToInviteDto,
+    @Res() response: Response,
+  ) {
+    try {
+      const { userId, action } = respondToInviteDto;
+      await this.teamsService.respondToInvite(inviteId, userId, action);
+
+      response.status(HttpStatus.OK).send({
+        message: 'invite-responded',
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
+          message: error.message,
+        });
+      }
+      if (error instanceof BadRequestException) {
+        response.status(HttpStatus.BAD_REQUEST).send({
+          message: error.message,
+        });
+      }
+
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
         message: 'internal-server-error',
       });

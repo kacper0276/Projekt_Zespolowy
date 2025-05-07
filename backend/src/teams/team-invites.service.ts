@@ -6,6 +6,7 @@ import { UpdateTeamInviteDto } from './dto/update-team-invite.dto';
 import { CreateTeamInviteDto } from './dto/create-team-invite.dto';
 import { User } from '../users/entities/user.entity';
 import { first } from 'rxjs';
+import { InviteStatus } from 'src/enums/invite-status.enum';
 
 @Injectable()
 export class TeamInitesService {
@@ -38,9 +39,7 @@ export class TeamInitesService {
     return invite;
   }
 
-  async getInvitesByUserId(
-    userId: string,
-  ): Promise<
+  async getInvitesByUserId(userId: string): Promise<
     (TeamInvite & {
       invitedByUser: {
         email: string;
@@ -50,7 +49,7 @@ export class TeamInitesService {
     })[]
   > {
     const invites = await this.teamInviteRepository.find({
-      where: { user: { id: +userId } },
+      where: { user: { id: +userId }, status: InviteStatus.PENDING },
       relations: ['team'],
     });
 

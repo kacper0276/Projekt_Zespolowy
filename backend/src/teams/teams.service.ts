@@ -56,6 +56,56 @@ export class TeamsService {
     });
   }
 
+  async respondToInvite(
+    inviteId: string,
+    userId: number,
+    action: 'accept' | 'reject',
+  ): Promise<string> {
+    const invite = await this.teamInviteRepository.findOne({
+      where: { id: +inviteId, user: { id: userId } },
+      relations: ['team', 'user'],
+    });
+
+    if (!invite) {
+      throw new NotFoundException(
+        `Invite with ID ${inviteId} not found for user ${userId}`,
+      );
+    }
+
+    if (action === 'accept') {
+      const team = await this.teamRepository.findOne({
+        where: { id: invite.team.id },
+        relations: ['users'],
+      });
+
+      if (!team) {
+        throw new NotFoundException(`Team with ID ${invite.team.id} not found`);
+      }
+
+      const isUserAlreadyInTeam = team.users.some((user) => user.id === userId);
+      if (isUserAlreadyInTeam) {
+        throw new Error(
+          `User with ID ${userId} is already a member of the team`,
+        );
+      }
+
+      team.users.push(invite.user);
+      await this.teamRepository.save(team);
+
+      invite.status = InviteStatus.ACCEPTED;
+      await this.teamInviteRepository.save(invite);
+
+      return `Invite accepted. User with ID ${userId} added to team ${team.name}`;
+    } else if (action === 'reject') {
+      invite.status = InviteStatus.REJECTED;
+      await this.teamInviteRepository.save(invite);
+
+      return `Invite rejected by user with ID ${userId}`;
+    } else {
+      throw new Error(`Invalid action: ${action}`);
+    }
+  }
+
   async updateTeam(id: string, updateTeamDto: UpdateTeamDto): Promise<Team> {
     const team = await this.getTeamById(id);
     Object.assign(team, updateTeamDto);
