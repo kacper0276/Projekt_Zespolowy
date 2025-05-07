@@ -50,7 +50,7 @@ const TaskItem: React.FC<ItemProps> = ({
   // TODO Lists state
   const [todoLists, setTodoLists] = useState<IToDoList[]>([]);
   const [isToDoListExpanded, setIsToDoListExpanded] = useState(false);
-  const [todoListsLoading, setTodoListsLoading] = useState(false);
+  const [_todoListsLoading, setTodoListsLoading] = useState(false);
 
   // Ensure uniqueness by combining columnId and task id
   const uniqueDraggableId = `${columnId}-${task.id}-${index}`;

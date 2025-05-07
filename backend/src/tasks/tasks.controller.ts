@@ -230,8 +230,6 @@ export class TasksController {
     @Res() response: Response,
   ) {
     try {
-      console.log(data);
-
       const res = await this.tasksService.changeTaskDeadline(
         taskId,
         data.deadline,
