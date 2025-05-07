@@ -26,6 +26,7 @@ const TeamPage: React.FC = () => {
     invitedBy: IUser | null;
   }>({ users: [], teamName: "", invitedBy: null });
   const [teamInvites, setTeamInvites] = useState<ITeamInvite[]>([]);
+  const [activeTab, setActiveTab] = useState<"teams" | "invites">("teams");
 
   const toggleAddTeamClick = () => {
     setShowAddTeamModal(!showAddTeamModal);
@@ -41,7 +42,6 @@ const TeamPage: React.FC = () => {
 
   const handleAddTeam = async () => {
     if (!team.teamName.trim()) {
-      // Could add validation message here
       return;
     }
     
@@ -49,7 +49,6 @@ const TeamPage: React.FC = () => {
     try {
       await api.post<ApiResponse<ITeam>>("teams", team);
       
-      // Refresh teams list after adding a new team
       const response = await api.get<ApiResponse<ITeam[]>>(
         `teams/user/${userContext?.user?.id}`
       );
@@ -114,45 +113,87 @@ const TeamPage: React.FC = () => {
 
   return (
     <div className={styles.teamPage}>
-      <h2>Twoje zaproszenia</h2>
-      {loading ? (
-        <Spinner />
-      ) : (
-        <div className={styles.teamsList}>
-          {teamInvites.length > 0 ? (
-            teamInvites.map((invite) => (
-              <div key={invite.id} className={styles.teamCard}>
-                <p>Zaprosił: {invite.invitedByUser?.email}</p>
-                <p>Do zespołu: {invite.team.name}</p>
-                <button>Akceptuj</button>
-                <button>Odrzuć</button>
-              </div>
-            ))
+      <div className={styles.tabsContainer}>
+        <button 
+          className={`${styles.tabButton} ${activeTab === "teams" ? styles.activeTab : ""}`}
+          onClick={() => setActiveTab("teams")}
+        >
+          Zespoły
+        </button>
+        <button 
+          className={`${styles.tabButton} ${activeTab === "invites" ? styles.activeTab : ""}`}
+          onClick={() => setActiveTab("invites")}
+        >
+          Zaproszenia
+          {teamInvites.length > 0 && <span className={styles.badgeCount}>{teamInvites.length}</span>}
+        </button>
+      </div>
+
+      {activeTab === "invites" && (
+        <div className={styles.contentSection}>
+          <div className={styles.sectionHeaderContainer}>
+            <h2>Twoje zaproszenia</h2>
+          </div>
+          
+          {loading ? (
+            <div className={styles.spinnerContainer}>
+              <Spinner animation="border" role="status" variant="light">
+                <span className="sr-only">Ładowanie...</span>
+              </Spinner>
+            </div>
           ) : (
-            <p>Nie masz żadnych zaproszeń.</p>
+            <div className={styles.itemsList}>
+              {teamInvites.length > 0 ? (
+                teamInvites.map((invite) => (
+                  <div key={invite.id} className={styles.teamCard}>
+                    <p>Zaprosił: {invite.invitedByUser?.email}</p>
+                    <p>Do zespołu: {invite.team.name}</p>
+                    <div className={styles.inviteActions}>
+                      <button className={styles.acceptButton}>Akceptuj</button>
+                      <button className={styles.rejectButton}>Odrzuć</button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className={styles.emptyMessage}>Nie masz żadnych zaproszeń.</p>
+              )}
+            </div>
           )}
         </div>
       )}
-      <hr />
 
-      <h2>Twoje zespoły</h2>
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '50px 0' }}>
-          <Spinner animation="border" role="status" variant="light">
-            <span className="sr-only">Ładowanie...</span>
-          </Spinner>
-        </div>
-      ) : (
-        <div className={styles.teamsList}>
-          {teams.length > 0 ? (
-            teams.map((team) => (
-              <div key={team.id} className={styles.teamCard}>
-                <h2>{team.name}</h2>
-                <p>Ilość członków: {team.users.length}</p>
-              </div>
-            ))
+      {activeTab === "teams" && (
+        <div className={styles.contentSection}>
+          <div className={styles.headerContainer}>
+            <h1>Twoje zespoły</h1>
+            <button 
+              className={styles.addTeamButton} 
+              onClick={toggleAddTeamClick}
+              aria-label="Dodaj nowy zespół"
+            >
+              +
+            </button>
+          </div>
+          
+          {loading ? (
+            <div className={styles.spinnerContainer}>
+              <Spinner animation="border" role="status" variant="light">
+                <span className="sr-only">Ładowanie...</span>
+              </Spinner>
+            </div>
           ) : (
-            <p>Nie masz jeszcze żadnych zespołów.</p>
+            <div className={styles.itemsList}>
+              {teams.length > 0 ? (
+                teams.map((team) => (
+                  <div key={team.id} className={styles.teamCard}>
+                    <h2>{team.name}</h2>
+                    <p>Ilość członków: {team.users.length}</p>
+                  </div>
+                ))
+              ) : (
+                <p className={styles.emptyMessage}>Nie masz jeszcze żadnych zespołów.</p>
+              )}
+            </div>
           )}
         </div>
       )}
