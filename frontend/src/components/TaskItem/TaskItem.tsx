@@ -43,7 +43,7 @@ const TaskItem: React.FC<ItemProps> = ({
     task.status
   );
   const [isDropTargetActive, setIsDropTargetActive] = useState(false);
- 
+
   // TODO Lists state
   const [todoLists, setTodoLists] = useState<IToDoList[]>([]);
   const [isToDoListExpanded, setIsToDoListExpanded] = useState(false);
@@ -99,6 +99,7 @@ const TaskItem: React.FC<ItemProps> = ({
     name: string;
     users: IUser[];
     status?: IStatus;
+    deadline?: Date;
   }) => {
     const taskId = task.id;
     api.patch(`tasks/${taskId}/assign-users`, { users: updatedTask.users });
@@ -111,6 +112,13 @@ const TaskItem: React.FC<ItemProps> = ({
       });
       setTaskStatus(updatedTask.status);
     }
+
+    if (updatedTask.deadline) {
+      api.patch(`tasks/${taskId}/change-deadline`, {
+        deadline: updatedTask.deadline,
+      });
+    }
+
     // Call the parent's onTaskUpdate with the updated task data
     onTaskUpdate({
       name: updatedTask.name,
@@ -167,24 +175,33 @@ const TaskItem: React.FC<ItemProps> = ({
   };
 
   // Modified function to toggle todo item status locally without API call
-  const toggleTodoItemStatus = (listId: number, itemId: number, isDone: boolean, e: React.MouseEvent) => {
+  const toggleTodoItemStatus = (
+    listId: number,
+    itemId: number,
+    isDone: boolean,
+    e: React.MouseEvent
+  ) => {
     e.stopPropagation();
-    
-    const updatedLists = todoLists.map(list => {
+
+    const updatedLists = todoLists.map((list) => {
       if (list.id === listId) {
         return {
           ...list,
-          items: list.items.map(item =>
+          items: list.items.map((item) =>
             item.id === itemId ? { ...item, isDone: !isDone } : item
-          )
+          ),
         };
       }
       return list;
     });
-    
+
     setTodoLists(updatedLists);
-    
-    console.log("Todo item toggled locally:", { listId, itemId, newStatus: !isDone });
+
+    console.log("Todo item toggled locally:", {
+      listId,
+      itemId,
+      newStatus: !isDone,
+    });
   };
 
   return (
@@ -261,17 +278,33 @@ const TaskItem: React.FC<ItemProps> = ({
             {/* Todo Lists Section - only show if there are lists */}
             {todoLists.length > 0 && (
               <div className={styles.todoListSection}>
-                <div
-                  className={styles.todoListToggle}
-                  onClick={toggleTodoList}
-                >
-                  <i className={`bi ${isToDoListExpanded ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
-                  <span>Lista zadań ({todoLists.reduce((total, list) => total + list.items.length, 0)})</span>
+                <div className={styles.todoListToggle} onClick={toggleTodoList}>
+                  <i
+                    className={`bi ${
+                      isToDoListExpanded ? "bi-chevron-up" : "bi-chevron-down"
+                    }`}
+                  ></i>
+                  <span>
+                    Lista zadań (
+                    {todoLists.reduce(
+                      (total, list) => total + list.items.length,
+                      0
+                    )}
+                    )
+                  </span>
                 </div>
-               
-                <div className={`${styles.todoListContent} ${isToDoListExpanded ? styles.expanded : ''}`}>
+
+                <div
+                  className={`${styles.todoListContent} ${
+                    isToDoListExpanded ? styles.expanded : ""
+                  }`}
+                >
                   {todoLists.map((list) => (
-                    <div key={list.id} className={styles.todoList} onClick={e => e.stopPropagation()}>
+                    <div
+                      key={list.id}
+                      className={styles.todoList}
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <div className={styles.todoListHeader}>
                         <h4>{list.name}</h4>
                       </div>
@@ -280,20 +313,46 @@ const TaskItem: React.FC<ItemProps> = ({
                           list.items.map((item) => (
                             <li
                               key={item.id}
-                              className={`${styles.todoItem} ${item.isDone ? styles.completed : ''}`}
-                              onClick={(e) => toggleTodoItemStatus(list.id || 0, item.id || 0, item.isDone || false, e)}
+                              className={`${styles.todoItem} ${
+                                item.isDone ? styles.completed : ""
+                              }`}
+                              onClick={(e) =>
+                                toggleTodoItemStatus(
+                                  list.id || 0,
+                                  item.id || 0,
+                                  item.isDone || false,
+                                  e
+                                )
+                              }
                             >
-                              <div 
+                              <div
                                 className={styles.todoCheckbox}
-                                onClick={(e) => toggleTodoItemStatus(list.id || 0, item.id || 0, item.isDone || false, e)}
+                                onClick={(e) =>
+                                  toggleTodoItemStatus(
+                                    list.id || 0,
+                                    item.id || 0,
+                                    item.isDone || false,
+                                    e
+                                  )
+                                }
                               >
-                                <i className={`bi ${item.isDone ? 'bi-check-square' : 'bi-square'}`}></i>
+                                <i
+                                  className={`bi ${
+                                    item.isDone
+                                      ? "bi-check-square"
+                                      : "bi-square"
+                                  }`}
+                                ></i>
                               </div>
-                              <span className={styles.todoItemText}>{item.name}</span>
+                              <span className={styles.todoItemText}>
+                                {item.name}
+                              </span>
                             </li>
                           ))
                         ) : (
-                          <li className={styles.emptyListMessage}>Brak zadań na liście</li>
+                          <li className={styles.emptyListMessage}>
+                            Brak zadań na liście
+                          </li>
                         )}
                       </ul>
                     </div>

@@ -10,6 +10,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import styles from "./TaskModal.module.scss";
 import ToDoList from "../ToDoList/ToDoList";
 import { useParams } from "react-router-dom";
+import formatDateForInput from "../../helpers/FormatDate";
 
 interface TaskModalProps {
   taskId: string;
@@ -22,6 +23,7 @@ interface TaskModalProps {
     name: string;
     users: IUser[];
     status?: IStatus;
+    deadline?: Date;
   }) => void;
   statuses?: IStatus[];
 }
@@ -85,7 +87,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         name: taskText,
         users: users || [],
       };
-
+      fetchTaskData();
       setTaskData(updatedTaskData);
       setAllStatuses(statuses);
     }
@@ -105,6 +107,21 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }
   };
 
+  const fetchTaskData = async () => {
+    try {
+      const response = await api.get<ApiResponse<ITask>>(`tasks/${taskId}`);
+      const task = response.data.data;
+      if (task) {
+        setTaskData({ ...taskData, deadline: new Date(task.deadline) });
+      } else {
+      }
+    } catch (error: any) {
+      toast.error(
+        error.response?.data.message || "Nie udało się pobrać danych"
+      );
+    }
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -118,6 +135,16 @@ const TaskModal: React.FC<TaskModalProps> = ({
         ...prevState,
         status: selectedStatus || { color: "", name: "" },
       }));
+      return;
+    }
+
+    if (name === "deadline") {
+      const date = new Date(value);
+      setTaskData((prevState) => ({
+        ...prevState,
+        deadline: date,
+      }));
+
       return;
     }
 
@@ -173,7 +200,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     setShowNewStatusForm(false);
 
     toast.success("Dodano nowy status");
-
   };
 
   // Handle delete status with window.confirm
@@ -245,6 +271,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
           name: taskData.name,
           users: taskData.users,
           status: taskData.status,
+          deadline: taskData.deadline,
         });
       }
 
@@ -294,6 +321,18 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 id="taskName"
                 name="name"
                 value={taskData.name}
+                onChange={handleInputChange}
+                className={styles.formControl}
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="deadline">Wybierz deadline:</label>
+              <input
+                type="date"
+                id="deadline"
+                name="deadline"
+                value={formatDateForInput(taskData.deadline)}
                 onChange={handleInputChange}
                 className={styles.formControl}
               />
