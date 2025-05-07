@@ -75,6 +75,9 @@ export class TasksService {
       task.column = column;
       task.row = row;
 
+      task.lastColumnName = column.name;
+      task.lastMovedToColumnAt = new Date();
+
       const savedTask = await this.taskRepository.save(task);
 
       kanban.tasks.push(savedTask);
@@ -155,6 +158,8 @@ export class TasksService {
       where: { id: data.columnId },
     });
 
+    task.lastColumnName = column.name;
+    task.lastMovedToColumnAt = new Date();
     task.column = column;
 
     return await this.taskRepository.save(task);
@@ -176,6 +181,9 @@ export class TasksService {
 
     task.row = row;
     task.column = column;
+
+    task.lastColumnName = column.name;
+    task.lastMovedToColumnAt = new Date();
 
     return await this.taskRepository.save(task);
   }
