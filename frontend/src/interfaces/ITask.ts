@@ -15,7 +15,9 @@ export interface ITask extends IBaseEntity {
   order: number;
   users: IUser[];
   column: IColumnEntity;
-  row: IRow;  
+  row: IRow;
   toDoLists: IToDoList[];
   kanbans: IKanban[];
+  lastColumnName?: string;
+  lastMovedToColumnAt?: Date;
 }

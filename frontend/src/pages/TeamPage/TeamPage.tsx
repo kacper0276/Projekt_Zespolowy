@@ -5,12 +5,12 @@ import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 import { useApiJson } from "../../config/api";
 import { useUser } from "../../context/UserContext";
 import { ApiResponse } from "../../types/api.types";
-import { Spinner } from "react-bootstrap";
 import PopUp from "../../components/PopUp/PopUp";
 import { IUser } from "../../interfaces/IUser";
 import Multiselect from "multiselect-react-dropdown";
 import { ITeamInvite } from "../../interfaces/ITeamInvite";
 import { toast } from "react-toastify";
+import Spinner from "../../components/Spinner/Spinner";
 
 const TeamPage: React.FC = () => {
   useWebsiteTitle("Twoje zespoły");
@@ -40,20 +40,67 @@ const TeamPage: React.FC = () => {
     setTeam({ ...team, users: selectedList });
   };
 
-  const handleAddTeam = async () => {
-    if (!team.teamName.trim()) {
-      return;
-    }
-    
+  const fetchTeams = async () => {
     setLoading(true);
     try {
-      await api.post<ApiResponse<ITeam>>("teams", team);
-      
       const response = await api.get<ApiResponse<ITeam[]>>(
         `teams/user/${userContext?.user?.id}`
       );
       setTeams(response.data.data ?? []);
-      
+    } catch (error) {
+      toast.error(`Error fetching teams`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAcceptInvite = async (
+    inviteId: number,
+    action: "accept" | "reject"
+  ) => {
+    if (inviteId === -1) return;
+
+    setLoading(true);
+    try {
+      await api.post<ApiResponse<ITeamInvite>>(
+        `teams/invites/${inviteId}/respond`,
+        {
+          userId: userContext?.user?.id,
+          action,
+        }
+      );
+
+      const response = await api.get<ApiResponse<ITeamInvite[]>>(
+        `teams/invites/${userContext?.user?.id}`
+      );
+      setTeamInvites(response.data.data ?? []);
+      fetchTeams();
+
+      toast.success(
+        `Zaproszenie ${action === "accept" ? "zaakceptowane" : "odrzucone"}`
+      );
+    } catch (error) {
+      toast.error("Error accepting/rejecting invite");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddTeam = async () => {
+    if (!team.teamName.trim()) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await api.post<ApiResponse<ITeam>>("teams", team);
+
+      // Refresh teams list after adding a new team
+      const response = await api.get<ApiResponse<ITeam[]>>(
+        `teams/user/${userContext?.user?.id}`
+      );
+      setTeams(response.data.data ?? []);
+
       setShowAddTeamModal(false);
     } catch (error) {
       toast.error("Error adding team");
@@ -64,20 +111,6 @@ const TeamPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchTeams = async () => {
-      setLoading(true);
-      try {
-        const response = await api.get<ApiResponse<ITeam[]>>(
-          `teams/user/${userContext?.user?.id}`
-        );
-        setTeams(response.data.data ?? []);
-      } catch (error) {
-        toast.error(`Error fetching teams`);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const fetchUsers = async () => {
       setLoading(true);
       try {
@@ -114,18 +147,24 @@ const TeamPage: React.FC = () => {
   return (
     <div className={styles.teamPage}>
       <div className={styles.tabsContainer}>
-        <button 
-          className={`${styles.tabButton} ${activeTab === "teams" ? styles.activeTab : ""}`}
+        <button
+          className={`${styles.tabButton} ${
+            activeTab === "teams" ? styles.activeTab : ""
+          }`}
           onClick={() => setActiveTab("teams")}
         >
           Zespoły
         </button>
-        <button 
-          className={`${styles.tabButton} ${activeTab === "invites" ? styles.activeTab : ""}`}
+        <button
+          className={`${styles.tabButton} ${
+            activeTab === "invites" ? styles.activeTab : ""
+          }`}
           onClick={() => setActiveTab("invites")}
         >
           Zaproszenia
-          {teamInvites.length > 0 && <span className={styles.badgeCount}>{teamInvites.length}</span>}
+          {teamInvites.length > 0 && (
+            <span className={styles.badgeCount}>{teamInvites.length}</span>
+          )}
         </button>
       </div>
 
@@ -134,12 +173,10 @@ const TeamPage: React.FC = () => {
           <div className={styles.sectionHeaderContainer}>
             <h2>Twoje zaproszenia</h2>
           </div>
-          
+
           {loading ? (
             <div className={styles.spinnerContainer}>
-              <Spinner animation="border" role="status" variant="light">
-                <span className="sr-only">Ładowanie...</span>
-              </Spinner>
+              <Spinner />
             </div>
           ) : (
             <div className={styles.itemsList}>
@@ -149,13 +186,29 @@ const TeamPage: React.FC = () => {
                     <p>Zaprosił: {invite.invitedByUser?.email}</p>
                     <p>Do zespołu: {invite.team.name}</p>
                     <div className={styles.inviteActions}>
-                      <button className={styles.acceptButton}>Akceptuj</button>
-                      <button className={styles.rejectButton}>Odrzuć</button>
+                      <button
+                        className={styles.acceptButton}
+                        onClick={() =>
+                          handleAcceptInvite(invite.id ?? -1, "accept")
+                        }
+                      >
+                        Akceptuj
+                      </button>
+                      <button
+                        className={styles.rejectButton}
+                        onClick={() =>
+                          handleAcceptInvite(invite.id ?? -1, "reject")
+                        }
+                      >
+                        Odrzuć
+                      </button>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className={styles.emptyMessage}>Nie masz żadnych zaproszeń.</p>
+                <p className={styles.emptyMessage}>
+                  Nie masz żadnych zaproszeń.
+                </p>
               )}
             </div>
           )}
@@ -166,20 +219,18 @@ const TeamPage: React.FC = () => {
         <div className={styles.contentSection}>
           <div className={styles.headerContainer}>
             <h1>Twoje zespoły</h1>
-            <button 
-              className={styles.addTeamButton} 
+            <button
+              className={styles.addTeamButton}
               onClick={toggleAddTeamClick}
               aria-label="Dodaj nowy zespół"
             >
               +
             </button>
           </div>
-          
+
           {loading ? (
             <div className={styles.spinnerContainer}>
-              <Spinner animation="border" role="status" variant="light">
-                <span className="sr-only">Ładowanie...</span>
-              </Spinner>
+              <Spinner />
             </div>
           ) : (
             <div className={styles.itemsList}>
@@ -191,7 +242,9 @@ const TeamPage: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <p className={styles.emptyMessage}>Nie masz jeszcze żadnych zespołów.</p>
+                <p className={styles.emptyMessage}>
+                  Nie masz jeszcze żadnych zespołów.
+                </p>
               )}
             </div>
           )}
@@ -202,7 +255,12 @@ const TeamPage: React.FC = () => {
         <PopUp
           header={<h2>Dodaj nowy zespół</h2>}
           body={
-            <form onSubmit={(e) => { e.preventDefault(); handleAddTeam(); }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleAddTeam();
+              }}
+            >
               <div className={styles.formGroup}>
                 <label htmlFor="teamName">Nazwa zespołu</label>
                 <input

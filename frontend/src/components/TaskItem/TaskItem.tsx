@@ -19,6 +19,8 @@ interface ItemProps {
     priority?: string;
     deadline?: Date;
     statusId?: number;
+    lastColumnName?: string;
+    lastMovedToColumnAt?: Date;
   };
   index: number;
   columnId: string;
@@ -244,6 +246,23 @@ const TaskItem: React.FC<ItemProps> = ({
                   month: "2-digit",
                   day: "2-digit",
                 })}
+              </div>
+            )}
+            {task.lastColumnName && task.lastMovedToColumnAt && (
+              <div className={styles.lastMovedBadge}>
+                <i className="bi bi-clock" style={{ marginRight: "20px" }}></i>
+                <span className={styles.lastMovedDate}>
+                  {new Date(task.lastMovedToColumnAt)
+                    .toLocaleString("pl-PL", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })
+                    .replace(",", "")}
+                </span>
               </div>
             )}
             <div className={styles.taskContent}>
