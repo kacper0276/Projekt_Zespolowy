@@ -307,12 +307,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
         </div>
         <div className={styles.modalBody}>
           <div className={styles.taskInfo}>
-            <p>
-              <strong>ID zadania:</strong> {taskId}
-            </p>
-            <p>
-              <strong>Kolumna:</strong> {columnId}
-            </p>
 
             <div className={styles.formGroup}>
               <label htmlFor="taskName">Treść zadania:</label>
