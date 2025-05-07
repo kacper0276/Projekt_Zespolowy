@@ -8,4 +8,5 @@ export interface ITeamInvite extends IBaseEntity {
   team: ITeam;
   status: InviteStatus;
   invitedBy: number;
+  invitedByUser?: IUser;
 }
