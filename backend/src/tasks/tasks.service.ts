@@ -31,6 +31,19 @@ export class TasksService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  async getTaskById(taskId: string) {
+    const task = await this.taskRepository.findOne({
+      where: { id: +taskId },
+      relations: ['users', 'column', 'row'],
+    });
+
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+
+    return task;
+  }
+
   async createNewTask(data: CreateNewTaskDto) {
     try {
       if (!data.name.trim()) {
@@ -167,7 +180,7 @@ export class TasksService {
     return await this.taskRepository.save(task);
   }
 
-  async changeTaskDeadline(taskId: string, deadline: Date) {
+  async changeTaskDeadline(taskId: string, deadline: string) {
     const task = await this.taskRepository.findOne({
       where: { id: +taskId },
     });
@@ -176,7 +189,7 @@ export class TasksService {
       throw new NotFoundException('Task not found');
     }
 
-    task.deadline = deadline;
+    task.deadline = new Date(deadline);
     const updatedTask = await this.taskRepository.save(task);
     return updatedTask;
   }

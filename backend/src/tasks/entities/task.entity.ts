@@ -21,6 +21,8 @@ export class Task extends BaseEntity {
   @Column({ nullable: true, default: null })
   deadline: Date;
 
+  // TODO: Dodać counter dla tego ile czasu spędził w ostatniej kolumnie
+
   @Column({ default: -1 })
   order: number;
 

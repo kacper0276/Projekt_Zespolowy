@@ -1,7 +1,7 @@
-import { IsDate, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class ChangeTaskDeadlineDto {
   @IsNotEmpty()
-  @IsDate()
-  deadline: Date;
+  @IsString()
+  deadline: string;
 }

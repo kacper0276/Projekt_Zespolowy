@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpStatus,
   NotFoundException,
   Param,
@@ -25,6 +26,30 @@ import { ChangeTaskDeadlineDto } from './dto/change-task-deadline.dto';
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
+
+  @Get(':taskId')
+  async getTaskById(
+    @Param('taskId') taskId: string,
+    @Res() response: Response,
+  ) {
+    try {
+      const task = await this.tasksService.getTaskById(taskId);
+      response.status(HttpStatus.OK).send({
+        message: 'task-found',
+        data: task,
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        response.status(HttpStatus.NOT_FOUND).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'internal-server-error',
+        });
+      }
+    }
+  }
 
   @Post('create-new')
   async createNewTask(
@@ -205,6 +230,8 @@ export class TasksController {
     @Res() response: Response,
   ) {
     try {
+      console.log(data);
+
       const res = await this.tasksService.changeTaskDeadline(
         taskId,
         data.deadline,
