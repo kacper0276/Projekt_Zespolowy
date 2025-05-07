@@ -42,6 +42,9 @@ const TaskItem: React.FC<ItemProps> = ({
   const [taskStatus, setTaskStatus] = useState<IStatus | undefined>(
     task.status
   );
+  const [taskDeadline, setTaskDeadline] = useState<Date | null>(
+    task.deadline || null
+  );
   const [isDropTargetActive, setIsDropTargetActive] = useState(false);
 
   // TODO Lists state
@@ -117,6 +120,7 @@ const TaskItem: React.FC<ItemProps> = ({
       api.patch(`tasks/${taskId}/change-deadline`, {
         deadline: updatedTask.deadline,
       });
+      setTaskDeadline(updatedTask.deadline);
     }
 
     // Call the parent's onTaskUpdate with the updated task data
@@ -227,6 +231,19 @@ const TaskItem: React.FC<ItemProps> = ({
                 style={{ backgroundColor: getStatusColor() }}
               >
                 {taskStatus.name}
+              </div>
+            )}
+            {taskDeadline && (
+              <div className={styles.deadlineBadge}>
+                <i
+                  className="bi bi-calendar"
+                  style={{ marginRight: "20px" }}
+                ></i>
+                {new Date(taskDeadline).toLocaleDateString("pl-PL", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                })}
               </div>
             )}
             <div className={styles.taskContent}>
