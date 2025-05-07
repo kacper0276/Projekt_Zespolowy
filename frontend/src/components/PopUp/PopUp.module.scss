@@ -10,35 +10,144 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.75);
   z-index: 1000;
-  color: #000;
+  color: $textColor;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .popup_inner {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: $backgroundColor;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   width: 800px;
   max-width: 90%;
   min-height: 400px;
   display: flex;
   flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  animation: slideUp 0.4s ease-out;
+  transform-origin: bottom;
 }
 
 .header {
   @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
-  margin-bottom: 20px;
-  padding: 5px;
-  border-radius: 8px 8px 0 0;
+  padding: 18px 24px;
+  border-radius: 12px 12px 0 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      rgba(255,255,255,0.05), 
+      rgba(255,255,255,0.2), 
+      rgba(255,255,255,0.05));
+  }
 }
 
 .body {
   flex: 1;
-  margin-bottom: 20px;
+  padding: 24px;
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: darken($textColor, 10%);
+  }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: $textColor;
+    transition: all 0.2s ease;
+    
+    &:focus {
+      outline: none;
+      border-color: $blue-400;
+      box-shadow: 0 0 0 2px rgba($blue-400, 0.25);
+    }
+  }
 }
 
 .footer {
   display: flex;
   justify-content: flex-end;
+  padding: 16px 24px 24px;
+  gap: 12px;
+  
+  button {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    
+    &:first-child {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: $textColor;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+      }
+    }
+    
+    &:last-child {
+      @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
+      color: white;
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  
+  &:hover {
+    color: white;
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

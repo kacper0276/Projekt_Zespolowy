@@ -20,7 +20,7 @@
   position: fixed;
   left: 0;
   /* Position below header */
-  top: 94px; 
+  top: 94px;
   transition: all 0.3s ease;
  
   &.minimized {
@@ -82,6 +82,12 @@
       border-radius: 1px;
     }
   }
+
+  .dragHint {
+    font-size: 0.8rem;
+    color: color.adjust($textColor, $alpha: -0.3);
+    margin-top: 0.5rem;
+  }
 }
 
 .usersSection {
@@ -90,7 +96,7 @@
   gap: 1rem;
   margin-bottom: 2rem;
   overflow-y: auto;
-  max-height: calc(100vh - 180px); 
+  max-height: calc(100vh - 180px);
  
   /* Scrollbar styling */
   &::-webkit-scrollbar {
@@ -112,21 +118,30 @@
  
   .userCircle {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
-    padding: 0.5rem;
+    padding: 0.75rem;
     border-radius: 8px;
     transition: all 0.3s ease;
    
     &:hover {
       background: rgba(255, 255, 255, 0.1);
     }
+
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      
+      &:hover {
+        background: transparent;
+      }
+    }
    
     .avatarCircle {
-      min-width: 40px; 
+      min-width: 40px;
       width: 40px;
       height: 40px;
-      min-height: 40px; 
+      min-height: 40px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -137,10 +152,20 @@
       border: 2px solid $inProgressColor;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       transition: all 0.3s ease;
-      flex-shrink: 0; 
+      flex-shrink: 0;
      
       &:hover {
         transform: scale(1.1);
+      }
+      
+      &.limitReached {
+        border-color: #999;
+        background-color: #444;
+        color: #999;
+        
+        &:hover {
+          transform: none;
+        }
       }
      
       /* Assign different colors to avatars based on index */
@@ -164,20 +189,154 @@
         border-color: $successColor;
       }
     }
-   
-    .userName {
-      color: $textColor;
-      font-size: 0.9rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+
+    .userDetails {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+
+      .userName {
+        color: $textColor;
+        font-size: 0.95rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 0.35rem;
+        padding-bottom: 0.2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .wipDisplay {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        
+        .wipValue {
+          font-size: 0.8rem;
+          color: color.adjust($textColor, $alpha: -0.2);
+          
+          strong {
+            color: $textColor;
+          }
+        }
+
+        .editButton {
+          background: none;
+          border: none;
+          color: color.adjust($textColor, $alpha: -0.3);
+          font-size: 0.75rem;
+          cursor: pointer;
+          padding: 2px 5px;
+          border-radius: 3px;
+          transition: all 0.2s ease;
+          
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: $textColor;
+          }
+        }
+      }
+
+      .wipEditor {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+        padding: 0.5rem;
+        margin-top: 0.2rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        
+        .wipLabel {
+          font-size: 0.8rem;
+          color: color.adjust($textColor, $alpha: -0.1);
+          flex: 0 0 auto;
+        }
+
+        .wipInput {
+          width: 50px;
+          background-color: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 3px;
+          color: $textColor;
+          padding: 0.25rem;
+          font-size: 0.8rem;
+          text-align: center;
+          
+          &:focus {
+            outline: none;
+            border-color: $formGradientEnd;
+            box-shadow: 0 0 0 2px rgba($formGradientEnd, 0.3);
+          }
+
+          /* Remove spin buttons */
+          &::-webkit-outer-spin-button,
+          &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
+          &[type=number] {
+            appearance: textfield;       /* Standard */
+            -moz-appearance: textfield;  /* Firefox */
+          }
+        }
+
+        .wipActions {
+          display: flex;
+          gap: 0.5rem;
+          margin-left: auto;
+          
+          .wipButton {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            
+            &.saveButton {
+              background-color: rgba($successColor, 0.2);
+              color: $successColor;
+              
+              &:hover {
+                background-color: rgba($successColor, 0.3);
+              }
+            }
+            
+            &.cancelButton {
+              background-color: rgba($dangerColor, 0.2);
+              color: $dangerColor;
+              
+              &:hover {
+                background-color: rgba($dangerColor, 0.3);
+              }
+            }
+
+            &:disabled {
+              opacity: 0.5;
+              cursor: not-allowed;
+            }
+          }
+        }
+      }
     }
   }
 }
 
-/* Keep the sidebarTitle visible when minimized but with adjusted style */
-.minimized .sidebarTitle {
-  text-align: center;
-  font-size: 1rem;
-  padding: 0.3rem 0;
+.dragImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: $textColor;
+  background-color: $backgroundColor;
+  border: 2px solid $inProgressColor;
+  opacity: 0.7;
 }

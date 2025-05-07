@@ -37,9 +37,21 @@ const TeamPage: React.FC = () => {
   };
 
   const handleAddTeam = async () => {
+    if (!team.teamName.trim()) {
+      // Could add validation message here
+      return;
+    }
+    
     setLoading(true);
     try {
       await api.post<ApiResponse<ITeam>>("teams", team);
+      
+      // Refresh teams list after adding a new team
+      const response = await api.get<ApiResponse<ITeam[]>>(
+        `teams/user/${userContext?.user?.id}`
+      );
+      setTeams(response.data.data ?? []);
+      
       setShowAddTeamModal(false);
     } catch (error) {
       console.error("Error adding team:", error);
@@ -84,9 +96,23 @@ const TeamPage: React.FC = () => {
 
   return (
     <div className={styles.teamPage}>
-      <h1>Twoje zespoły</h1>
+      <div className={styles.headerContainer}>
+        <h1>Twoje zespoły</h1>
+        <button 
+          className={styles.addTeamButton} 
+          onClick={toggleAddTeamClick}
+          aria-label="Dodaj nowy zespół"
+        >
+          +
+        </button>
+      </div>
+      
       {loading ? (
-        <Spinner />
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '50px 0' }}>
+          <Spinner animation="border" role="status" variant="light">
+            <span className="sr-only">Ładowanie...</span>
+          </Spinner>
+        </div>
       ) : (
         <div className={styles.teamsList}>
           {teams.length > 0 ? (
@@ -104,9 +130,9 @@ const TeamPage: React.FC = () => {
 
       {showAddTeamModal && (
         <PopUp
-          header={<></>}
+          header={<h2>Dodaj nowy zespół</h2>}
           body={
-            <form>
+            <form onSubmit={(e) => { e.preventDefault(); handleAddTeam(); }}>
               <div className={styles.formGroup}>
                 <label htmlFor="teamName">Nazwa zespołu</label>
                 <input
@@ -116,6 +142,8 @@ const TeamPage: React.FC = () => {
                   onChange={(e) =>
                     setTeam({ ...team, teamName: e.target.value })
                   }
+                  placeholder="Wpisz nazwę zespołu"
+                  required
                 />
               </div>
               <div className={styles.formGroup}>
@@ -134,16 +162,13 @@ const TeamPage: React.FC = () => {
           }
           footer={
             <>
-              <button onClick={toggleAddTeamClick}>Zamknij</button>
-              <button onClick={handleAddTeam}>Dodaj</button>
+              <button onClick={toggleAddTeamClick}>Anuluj</button>
+              <button onClick={handleAddTeam}>Dodaj zespół</button>
             </>
           }
+          onClose={toggleAddTeamClick}
         />
       )}
-
-      <button className={styles.addTeamButton} onClick={toggleAddTeamClick}>
-        +
-      </button>
     </div>
   );
 };

@@ -1,14 +1,233 @@
-.teamPage {
-  width: 100%;
-  min-height: 100vh;
-  padding: 2rem;
-  overflow: auto;
-  position: relative;
+@use "../../styles/mixins" as *;
+@use "../../styles/variables" as *;
 
-  .addTeamButton {
+.teamPage {
+  min-height: 100vh;
+  padding: 40px 20px;
+  color: $textColor;
+  background-color: #0a0a0a; 
+  @include multiple-radial-gradients(
+    top left,
+    rgba(11, 11, 11, 0.9),
+    rgba(15, 15, 18, 0.926),
+    0%,
+    70%,
+    bottom right,
+    rgb(14, 14, 14),
+    rgba(12, 12, 15, 0.3),
+    0%,
+    70%
+  );
+}
+
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 40px;
+  position: relative;
+  
+  h1 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 12px;
+    margin-bottom: 0;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(to right, $formGradientStart, $formGradientEnd);
+      border-radius: 3px;
+    }
+  }
+}
+
+.teamsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+  
+  p {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 18px;
+    opacity: 0.7;
+    padding: 48px 0;
+  }
+}
+
+.teamCard {
+  background-color: $cardBackground;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
     position: absolute;
-    top: 2rem;
-    right: 2rem;
-    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
+  }
+  
+  h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  
+  p {
+    color: darken($textColor, 20%);
+    font-size: 14px;
+    text-align: left;
+    padding: 0;
+  }
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.1);
+    
+    h2 {
+      background: linear-gradient(to right, $blue-300, $blue-500);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+}
+
+.addTeamButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  @include linear-gradient(to bottom right, $formGradientStart, $formGradientEnd);
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.formGroup {
+  margin-bottom: 24px;
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: $textColor;
+    
+    &:focus {
+      outline: none;
+      border-color: $blue-400;
+      box-shadow: 0 0 0 2px rgba($blue-400, 0.25);
+    }
+  }
+}
+
+// Multiselect custom styling
+:global {
+  .multiSelectContainer {
+    width: 100%;
+    margin-top: 8px;
+    
+    .searchWrapper {
+      background-color: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 4px 8px;
+      min-height: 46px;
+      
+      &:focus-within {
+        border-color: $blue-400;
+        box-shadow: 0 0 0 2px rgba($blue-400, 0.25);
+      }
+      
+      input {
+        background: transparent;
+        color: $textColor;
+        margin-top: 0;
+        margin-bottom: 0;
+        border: none !important;
+        height: auto;
+        
+        &::placeholder {
+          color: rgba($textColor, 0.5);
+        }
+      }
+    }
+    
+    .optionListContainer {
+      background-color: $cardBackground;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      margin-top: 4px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      
+      .optionContainer {
+        li:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .option {
+          color: $textColor;
+          padding: 10px 16px;
+          
+          &.selected {
+            background-color: rgba($blue-500, 0.2);
+          }
+        }
+      }
+    }
+    
+    .chip {
+      background-color: rgba($blue-500, 0.2);
+      border: 1px solid rgba($blue-500, 0.3);
+      color: $blue-200;
+      margin: 3px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      
+      &:hover {
+        background-color: rgba($blue-500, 0.3);
+      }
+    }
   }
 }
