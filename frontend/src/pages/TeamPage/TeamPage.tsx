@@ -9,6 +9,8 @@ import { Spinner } from "react-bootstrap";
 import PopUp from "../../components/PopUp/PopUp";
 import { IUser } from "../../interfaces/IUser";
 import Multiselect from "multiselect-react-dropdown";
+import { ITeamInvite } from "../../interfaces/ITeamInvite";
+import { toast } from "react-toastify";
 
 const TeamPage: React.FC = () => {
   useWebsiteTitle("Twoje zespoły");
@@ -23,6 +25,7 @@ const TeamPage: React.FC = () => {
     users: IUser[];
     invitedBy: IUser | null;
   }>({ users: [], teamName: "", invitedBy: null });
+  const [teamInvites, setTeamInvites] = useState<ITeamInvite[]>([]);
 
   const toggleAddTeamClick = () => {
     setShowAddTeamModal(!showAddTeamModal);
@@ -42,7 +45,7 @@ const TeamPage: React.FC = () => {
       await api.post<ApiResponse<ITeam>>("teams", team);
       setShowAddTeamModal(false);
     } catch (error) {
-      console.error("Error adding team:", error);
+      toast.error("Error adding team");
     } finally {
       setTeam({ ...team, users: [], teamName: "" });
       setLoading(false);
@@ -58,7 +61,7 @@ const TeamPage: React.FC = () => {
         );
         setTeams(response.data.data ?? []);
       } catch (error) {
-        console.error("Error fetching teams:", error);
+        toast.error(`Error fetching teams`);
       } finally {
         setLoading(false);
       }
@@ -70,7 +73,21 @@ const TeamPage: React.FC = () => {
         const response = await api.get<ApiResponse<IUser[]>>(`users/all`);
         setUsers(response.data.data ?? []);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        toast.error("Error fetching users:");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchTeamInvites = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get<ApiResponse<ITeamInvite[]>>(
+          `teams/invites/${userContext?.user?.id}`
+        );
+        setTeamInvites(response.data.data ?? []);
+      } catch (error) {
+        toast.error("Error fetching team invites:");
       } finally {
         setLoading(false);
       }
@@ -80,11 +97,33 @@ const TeamPage: React.FC = () => {
 
     fetchTeams();
     fetchUsers();
+    fetchTeamInvites();
   }, []);
 
   return (
     <div className={styles.teamPage}>
-      <h1>Twoje zespoły</h1>
+      <h2>Twoje zaproszenia</h2>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <div className={styles.teamsList}>
+          {teamInvites.length > 0 ? (
+            teamInvites.map((invite) => (
+              <div key={invite.id} className={styles.teamCard}>
+                <p>Zaprosił: {invite.invitedByUser?.email}</p>
+                <p>Do zespołu: {invite.team.name}</p>
+                <button>Akceptuj</button>
+                <button>Odrzuć</button>
+              </div>
+            ))
+          ) : (
+            <p>Nie masz żadnych zaproszeń.</p>
+          )}
+        </div>
+      )}
+      <hr />
+
+      <h2>Twoje zespoły</h2>
       {loading ? (
         <Spinner />
       ) : (
