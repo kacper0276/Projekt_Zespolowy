@@ -52,5 +52,19 @@
   "not-found": "404 - Not found",
   "sorry-the-page-you-are-looking-for-does-not-exist": "Sorry, the page you are looking for does not exist.",
 
-  "my-teams": "My teams"
+  "my-teams": "My teams",
+
+  "drag-hint": "Drag users to tasks to assign them",
+  "error-fetching-users": "error-fetching-users",
+  "WIP-limit-cannot-be-negative": "WIP limit cannot be negative",
+  "WIP-limit-updated-successfully": "WIP limit updated successfully",
+  "failed-to-update-WIP-limit": "Failed to update WIP limit",
+  "open-chat": "Open Chat",
+  "WIP-limit": "WIP limit",
+  "has-reached-WIP-limit": "has reached WIP limit",
+  "drag-to-assign": "Drag to assign",
+  "to-a-task": "to a task",
+  "tasks": "Tasks",
+  "left": "left",
+  "WIP-limit-unlimited": "WIP limit: Unlimited"
 }

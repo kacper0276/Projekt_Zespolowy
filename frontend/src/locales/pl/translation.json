@@ -53,5 +53,18 @@
   "not-found": "404 - Nie znaleziono",
   "sorry-the-page-you-are-looking-for-does-not-exist": "Przepraszamy, strona której szukasz nie istnieje.",
 
-  "my-teams": "Moje zespoły"
+  "my-teams": "Moje zespoły",
+  "drag-hint": "Przeciągnij użytkownika na zadanie aby je przypisać",
+  "error-fetching-users": "błąd w pozyskiwaniu użytkowników",
+  "WIP-limit-cannot-be-negative": "Limit WIP nie może być ujemny",
+  "WIP-limit-updated-successfully": "Limit WIP zatkualizowany poprawnie",
+  "failed-to-update-WIP-limit": "Błąd przy aktualizacji limitu WIP",
+  "open-chat": "Otwórz czat",
+  "WIP-limit": "Limit WIP",
+  "has-reached-WIP-limit": "osiągnął Limit WIP",
+  "drag-to-assign": "Przeciągnij by przypisać",
+  "to-a-task": "do zadania",
+  "tasks": "Zadania",
+  "left": "pozostało",
+  "WIP-limit-unlimited": "Limit WIP: Nieograniczony"
 }
