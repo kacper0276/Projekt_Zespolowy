@@ -257,7 +257,7 @@ const Sidebar = () => {
       <div className={styles.sidebar}>
         {/* Title Section */}
         <div className={styles.sidebarHeader}>
-          <h3 className={styles.sidebarTitle}>Kanban Board</h3>
+          <h3 className={styles.sidebarTitle}>{t("kanban-board")}</h3>
         </div>
 
         {/* ChatButton */}
@@ -269,7 +269,7 @@ const Sidebar = () => {
         {/* Users Section Header */}
         <div className={styles.sectionHeader} onClick={toggleUsersSection}>
           <div className={styles.sectionTitleRow}>
-            <h4 className={styles.sectionTitle}>Users</h4>
+            <h4 className={styles.sectionTitle}>{t("users")}</h4>
             <i
               className={`bi ${
                 isUsersSectionCollapsed ? "bi-chevron-down" : "bi-chevron-up"

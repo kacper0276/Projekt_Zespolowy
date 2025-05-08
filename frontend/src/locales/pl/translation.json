@@ -238,5 +238,6 @@
   "to-a-task": "do zadania",
   "tasks": "Zadania",
   "left": "pozostało",
-  "WIP-limit-unlimited": "Limit WIP: Nieograniczony"
+  "WIP-limit-unlimited": "Limit WIP: Nieograniczony",
+  "open": "Otwórz"
 }

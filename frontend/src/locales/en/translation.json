@@ -237,6 +237,6 @@
   "to-a-task": "to a task",
   "tasks": "Tasks",
   "left": "left",
-  "WIP-limit-unlimited": "WIP limit: Unlimited"
-
+  "WIP-limit-unlimited": "WIP limit: Unlimited",
+  "open": "Open"
 }
