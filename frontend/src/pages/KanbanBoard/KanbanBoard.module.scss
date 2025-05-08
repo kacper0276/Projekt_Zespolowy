@@ -199,6 +199,21 @@
   gap: 8px;
 }
 
+.headerContainer {
+  display: flex;
+  width: 70%;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+
+  .chatButton {
+    margin-top: 70px;
+    border-radius: 50%;
+    width: 75px;
+    height: 75px;
+  }
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
   .gridContainer {

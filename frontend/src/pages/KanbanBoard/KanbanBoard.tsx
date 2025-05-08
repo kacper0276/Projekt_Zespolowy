@@ -25,14 +25,15 @@ function KanbanBoard() {
   const subscriptionRef = useRef<any>(null);
 
   const [initColumns, setInitColumns] = useState<IColumnEntity[]>([]);
-  const [newRowName, setNewRowName] = useState("");
-  const [isAddingRow, setIsAddingRow] = useState(false);
+  const [newRowName, setNewRowName] = useState<string>("");
+  const [isAddingRow, setIsAddingRow] = useState<boolean>(false);
   const [isAddingTaskMap, setIsAddingTaskMap] = useState<{
     [key: string]: boolean;
   }>({});
   const [newTaskTitleMap, setNewTaskTitleMap] = useState<{
     [key: string]: string;
   }>({});
+  const [showChatModal, setShowChatModal] = useState<boolean>(false);
 
   // Stan dla edycji limitów WIP
   const [isEditingWipLimitMap, setIsEditingWipLimitMap] = useState<{
@@ -680,6 +681,10 @@ function KanbanBoard() {
     }
   };
 
+  const toggleChatModal = () => {
+    setShowChatModal((prev) => !prev);
+  };
+
   useEffect(() => {
     subscriptionRef.current = columnChangeSubject.subscribe(
       ({ sourceColumnName, destinationColumnName }) => {
@@ -707,12 +712,18 @@ function KanbanBoard() {
         backgroundAttachment: "fixed",
       }}
     >
-      <BoardHeader
-        boardData={headerBoardData}
-        setBoardData={handleSetBoardData}
-        api={api}
-        params={{ id: params.id || "" }}
-      />
+      <div className={styles.headerContainer}>
+        <BoardHeader
+          boardData={headerBoardData}
+          setBoardData={handleSetBoardData}
+          api={api}
+          params={{ id: params.id || "" }}
+        />
+
+        <button className={styles.chatButton} onClick={toggleChatModal}>
+          <i className="bi bi-chat"></i>
+        </button>
+      </div>
 
       <div id={`${styles.bars}`} ref={bars}>
         <div className={`${styles.strength}`} ref={strengthDiv}></div>
