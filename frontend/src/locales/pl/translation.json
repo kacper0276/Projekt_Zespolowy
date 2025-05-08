@@ -222,9 +222,6 @@
   "task-has-been-updated": "Zadanie zostało zaktualizowane",
   "error-during-task-update": "Wystąpił błąd podczas aktualizacji zadania",
 
-
-
-
   "drag-hint": "Przeciągnij użytkownika na zadanie aby je przypisać",
   "WIP-limit-cannot-be-negative": "Limit WIP nie może być ujemny",
   "WIP-limit-updated-successfully": "Limit WIP zatkualizowany poprawnie",
@@ -250,5 +247,7 @@
   "none": "Brak",
   "more-users": "{{count}} więcej użytkowników",
   "add-task": "Dodaj zadanie",
-  "failed-adding-row-try-again-later": "Nie udało się dodać wiersza. Spróbuj ponownie później"
+  "failed-adding-row-try-again-later": "Nie udało się dodać wiersza. Spróbuj ponownie później",
+
+  "boards": "Tablice"
 }

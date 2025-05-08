@@ -82,12 +82,11 @@ const ProfilePage: React.FC = () => {
   }, [emailParam]);
 
   const fetchKanbanBoards = async () => {
-    if (!currentUser) return;
-
     try {
       const { data } = await api.get<ApiResponse<IKanban[]>>("kanban/user", {
-        params: { email: currentUser.email },
+        params: { email: emailParam },
       });
+      console.log(data);
       setKanbanBoards(data.data ?? []);
     } catch (error) {
       console.error(t("failed-to-fetch-kanban-boards"), error);
@@ -138,10 +137,10 @@ const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {isOwnProfile && (
-        <div className={styles.contentContainer}>
-          <div className={styles.boardsTab}>
-            <h2>{t("my-boards")}</h2>
+      <div className={styles.contentContainer}>
+        <div className={styles.boardsTab}>
+          <h2>{isOwnProfile ? t("my-boards") : t("boards")}</h2>
+          {isOwnProfile && (
             <div className={styles.newBoardOption}>
               <button
                 className={styles.newBoardBtn}
@@ -150,31 +149,33 @@ const ProfilePage: React.FC = () => {
                 + {t("create-new-table")}
               </button>
             </div>
-            <div className={styles.boardsGrid}>
-              {kanbanBoards.length > 0 ? (
-                kanbanBoards.map((board) => (
-                  <div key={board.id} className={styles.boardCard}>
-                    <h3>{board.tableName}</h3>
-                    <div className={styles.boardMeta}>
-                      <span>
-                        {board.users?.length || 0} {t("members")}
-                      </span>
+          )}
+          <div className={styles.boardsGrid}>
+            {kanbanBoards.length > 0 ? (
+              kanbanBoards.map((board) => (
+                <div key={board.id} className={styles.boardCard}>
+                  <h3>{board.tableName}</h3>
+                  <div className={styles.boardMeta}>
+                    <span>
+                      {board.users?.length || 0} {t("members")}
+                    </span>
+                    {isOwnProfile && (
                       <a
                         href={`/boards/${board.id}`}
                         className={styles.viewBoardBtn}
                       >
                         {t("open")}
                       </a>
-                    </div>
+                    )}
                   </div>
-                ))
-              ) : (
-                <p className={styles.noBoards}>{t("no-boards-found")}</p>
-              )}
-            </div>
+                </div>
+              ))
+            ) : (
+              <p className={styles.noBoards}>{t("no-boards-found")}</p>
+            )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

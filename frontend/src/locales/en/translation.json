@@ -223,7 +223,6 @@
   "task-has-been-updated": "Task has been updated",
   "error-during-task-update": "An error occurred while updating the task",
 
-
   "drag-hint": "Drag users to tasks to assign them",
   "WIP-limit-cannot-be-negative": "WIP limit cannot be negative",
   "WIP-limit-updated-successfully": "WIP limit updated successfully",
@@ -249,5 +248,7 @@
   "none": "None",
   "more-users": "{{count}} more users",
   "add-task": "Add task",
-  "failed-adding-row-try-again-later": "Failed to add row. Try again later."
+  "failed-adding-row-try-again-later": "Failed to add row. Try again later.",
+
+  "boards": "Boards"
 }
