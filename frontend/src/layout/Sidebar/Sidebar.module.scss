@@ -19,7 +19,6 @@
   flex-direction: column;
   position: fixed;
   left: 0;
-  /* Position below header */
   top: 94px;
   transition: all 0.3s ease;
  
@@ -254,7 +253,6 @@
         }
       }
      
-      /* Assign different colors to avatars based on index */
       &:nth-child(5n+1) {
         border-color: $blue-300;
       }
@@ -355,8 +353,6 @@
             border-color: $formGradientEnd;
             box-shadow: 0 0 0 2px rgba($formGradientEnd, 0.3);
           }
-
-          /* Remove spin buttons */
           &::-webkit-outer-spin-button,
           &::-webkit-inner-spin-button {
             -webkit-appearance: none;
