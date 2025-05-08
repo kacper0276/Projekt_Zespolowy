@@ -1,0 +1,219 @@
+@use "../../styles/mixins" as *;
+@use "../../styles/variables" as *;
+
+.settingsContainer {
+  padding-top: 100px;
+  min-height: 100vh;
+  background-color: $backgroundColor;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 50px;
+}
+
+.settingsCard {
+  background-color: $cardBackground;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.headerSection {
+  padding: 25px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
+  
+  h2 {
+    color: $textColor;
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    font-size: 1.8rem;
+  }
+  
+  .subtitle {
+    color: rgba(224, 224, 224, 0.7);
+    margin: 10px 0 0 0;
+    font-size: 1rem;
+  }
+}
+
+.settingSection {
+  padding: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  h3 {
+    color: $textColor;
+    font-size: 1.3rem;
+    margin: 0 0 20px 0;
+    font-weight: 500;
+    position: relative;
+    padding-left: 15px;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      @include linear-gradient(to bottom, $formGradientEnd, $formGradientStart);
+      border-radius: 4px;
+    }
+  }
+}
+
+.passwordForm {
+  max-width: 500px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: $textColor;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+}
+
+.formControl {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: $textColor;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+  }
+  
+  &::placeholder {
+    color: rgba(224, 224, 224, 0.4);
+  }
+}
+
+.submitButton {
+  padding: 12px 25px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
+    transition: opacity 0.3s ease;
+  }
+  
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0;
+    @include linear-gradient(to right, $formGradientEnd, $formGradientStart);
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    
+    &::before {
+      opacity: 0;
+    }
+    
+    &::after {
+      opacity: 1;
+    }
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.errorMessage, .successMessage {
+  margin-bottom: 20px;
+  padding: 12px 15px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+.errorMessage {
+  background-color: rgba(255, 77, 77, 0.1);
+  border: 1px solid rgba(255, 77, 77, 0.2);
+  color: rgba(255, 77, 77, 0.9);
+}
+
+.successMessage {
+  background-color: rgba(2, 166, 118, 0.1);
+  border: 1px solid rgba(2, 166, 118, 0.2);
+  color: rgba(2, 166, 118, 0.9);
+}
+
+.errorIcon, .successIcon {
+  margin-right: 8px;
+  font-size: 1.1rem;
+}
+
+.accountInfo {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.infoRow {
+  display: flex;
+  margin-bottom: 15px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.infoLabel {
+  min-width: 140px;
+  color: rgba(224, 224, 224, 0.6);
+  font-weight: 500;
+}
+
+.infoValue {
+  color: $textColor;
+  font-weight: 400;
+}

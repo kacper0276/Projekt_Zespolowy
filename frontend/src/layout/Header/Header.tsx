@@ -134,6 +134,14 @@ const Header: React.FC = () => {
                     </Link>
                   </li>
                   <li className="nav-item">
+                    <Link
+                      className={`nav-link ${styles.navLink}`}
+                      to="/settings"
+                    >
+                      {t("settings")}
+                    </Link>
+                  </li>
+                  <li className="nav-item">
                     <button
                       className={`nav-link ${styles.navLink}`}
                       onClick={logout}

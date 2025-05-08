@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound/NotFound";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import Sidebar from "./layout/Sidebar/Sidebar";
+import Settings from "./pages/Settings/Settings";
 import { UserProvider } from "./context/UserContext";
 import ActivateAccount from "./pages/ActivateAccount/ActivateAccount";
 import BoardsNew from "./pages/BoardsNew/BoardsNew";
@@ -39,6 +40,14 @@ function App() {
         }
       />
       <Route path="/boards/:id" element={<KanbanBoard />} />
+      <Route
+        path="/settings"
+        element={
+          <AuthenticatedRoute>
+            <Settings />
+          </AuthenticatedRoute>
+        }
+      />
       <Route
         path="/profile"
         element={
