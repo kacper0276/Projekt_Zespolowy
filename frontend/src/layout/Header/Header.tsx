@@ -6,7 +6,7 @@ import { IKanban } from "../../interfaces/IKanban";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ITeamInvite } from "../../interfaces/ITeamInvite";
 import { IUser } from "../../interfaces/IUser";
 import PolishFlag from "../../assets/TranslationImages/polish.webp";
@@ -15,12 +15,13 @@ import EnglishFlag from "../../assets/TranslationImages/english.webp";
 const Header: React.FC = () => {
   const api = useApiJson();
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout } = useUser();
   const isAuthenticated = !!user;
+  const { t, i18n } = useTranslation();
   const [showBoardsModal, setShowBoardsModal] = useState(false);
   const [kanbanBoards, setKanbanBoards] = useState<IKanban[]>([]);
   const [teamInvites, setTeamInvites] = useState<ITeamInvite[]>([]);
-  const { t, i18n } = useTranslation();
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const languageDropdownRef = useRef<HTMLDivElement>(null);
   const [showUserSearchModal, setShowUserSearchModal] = useState(false);
@@ -34,7 +35,6 @@ const Header: React.FC = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [pageSize] = useState(5); // Liczba użytkowników na stronę
-
 
   const toggleBoardsModal = () => {
     setShowBoardsModal(!showBoardsModal);
@@ -68,28 +68,28 @@ const Header: React.FC = () => {
   // Zmodyfikowana funkcja do pobierania użytkowników z paginacją
   const fetchUsers = async (pageNum: number, term: string = "") => {
     if (!hasMore && pageNum > 1) return;
-    
+
     setIsLoading(true);
     try {
       // Dodaj parametry paginacji do zapytania API
-      const { data } = await api.get<ApiResponse<IUser[]>>("users/all", {
+      const { data } = await api.get<ApiResponse<IUser[]>>("users/search", {
         params: {
           page: pageNum,
           pageSize: pageSize,
-          search: term
-        }
+          search: term,
+        },
       });
-      
+
       const newUsers = data.data || [];
-      
+
       if (pageNum === 1) {
         setUsers(newUsers);
         setFilteredUsers(newUsers);
       } else {
-        setUsers(prev => [...prev, ...newUsers]);
-        setFilteredUsers(prev => [...prev, ...newUsers]);
+        setUsers((prev) => [...prev, ...newUsers]);
+        setFilteredUsers((prev) => [...prev, ...newUsers]);
       }
-      
+
       setHasMore(newUsers.length === pageSize);
       setPage(pageNum);
     } catch (error) {
@@ -103,13 +103,13 @@ const Header: React.FC = () => {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
     setSearchTerm(term);
-    
+
     // Resetuj stan i pobierz nową listę użytkowników po wprowadzeniu tekstu do wyszukiwania
     setUsers([]);
     setFilteredUsers([]);
     setPage(1);
     setHasMore(true);
-    
+
     // Użyj setTimeout do dodania efektu debounce
     setTimeout(() => {
       fetchUsers(1, term);
@@ -119,9 +119,9 @@ const Header: React.FC = () => {
   // Funkcja do wykrywania przewijania i ładowania kolejnych danych
   const handleScroll = useCallback(() => {
     if (isLoading || !hasMore || !userListRef.current) return;
-    
+
     const { scrollTop, scrollHeight, clientHeight } = userListRef.current;
-    
+
     // Jeśli użytkownik przewinął prawie do końca, załaduj więcej danych
     if (scrollTop + clientHeight >= scrollHeight - 100) {
       fetchUsers(page + 1, searchTerm);
@@ -132,15 +132,15 @@ const Header: React.FC = () => {
   useEffect(() => {
     const currentUserListRef = userListRef.current;
     if (currentUserListRef) {
-      currentUserListRef.addEventListener('scroll', handleScroll);
+      currentUserListRef.addEventListener("scroll", handleScroll);
       return () => {
-        currentUserListRef.removeEventListener('scroll', handleScroll);
+        currentUserListRef.removeEventListener("scroll", handleScroll);
       };
     }
   }, [handleScroll]);
 
-  const handleUserClick = (userId: number) => {
-    console.log(`User clicked: ${userId}`);
+  const handleUserClick = (userEmail: string) => {
+    navigate(`/profile?email=${userEmail}`);
     toggleUserSearchModal();
   };
 
@@ -308,38 +308,61 @@ const Header: React.FC = () => {
                   </li>
                 </>
               )}
-              
+
               {/* Language Selector */}
               <li className="nav-item">
-                <div className={styles.languageSelector} ref={languageDropdownRef}>
+                <div
+                  className={styles.languageSelector}
+                  ref={languageDropdownRef}
+                >
                   <button
                     className={`${styles.languageButton} ${styles.navLink}`}
                     onClick={toggleLanguageDropdown}
                   >
                     {i18n.language === "pl" ? (
-                      <img src={PolishFlag} alt="Polski" className={styles.flagIcon} />
+                      <img
+                        src={PolishFlag}
+                        alt="Polski"
+                        className={styles.flagIcon}
+                      />
                     ) : (
-                      <img src={EnglishFlag} alt="English" className={styles.flagIcon} />
+                      <img
+                        src={EnglishFlag}
+                        alt="English"
+                        className={styles.flagIcon}
+                      />
                     )}
                     <span className={styles.currentLanguage}>
                       {i18n.language === "pl" ? "PL" : "EN"}
                     </span>
                     <span className={styles.dropdownArrow}>▼</span>
                   </button>
-                  
-                  <div className={`${styles.languageDropdown} ${showLanguageDropdown ? styles.show : ""}`}>
+
+                  <div
+                    className={`${styles.languageDropdown} ${
+                      showLanguageDropdown ? styles.show : ""
+                    }`}
+                  >
                     <button
                       className={styles.languageOption}
                       onClick={() => changeLanguage("pl")}
                     >
-                      <img src={PolishFlag} alt="Polski" className={styles.flagIcon} />
+                      <img
+                        src={PolishFlag}
+                        alt="Polski"
+                        className={styles.flagIcon}
+                      />
                       <span>Polski</span>
                     </button>
                     <button
                       className={styles.languageOption}
                       onClick={() => changeLanguage("en")}
                     >
-                      <img src={EnglishFlag} alt="English" className={styles.flagIcon} />
+                      <img
+                        src={EnglishFlag}
+                        alt="English"
+                        className={styles.flagIcon}
+                      />
                       <span>English</span>
                     </button>
                   </div>
@@ -376,7 +399,9 @@ const Header: React.FC = () => {
                       {/* <p>{board.description}</p> */}
                     </div>
                     <div className={styles.boardMeta}>
-                      <span>{board.users?.length} {t("participants")}</span>
+                      <span>
+                        {board.users?.length} {t("participants")}
+                      </span>
                       <Link
                         to={`/boards/${board.id}`}
                         className={styles.viewBoardBtn}
@@ -420,40 +445,47 @@ const Header: React.FC = () => {
                 <input
                   type="text"
                   className={styles.searchInput}
-                  placeholder={t("search-by-name-email") || "Search by name, email..."}
+                  placeholder={
+                    t("search-by-name-email") || "Search by name, email..."
+                  }
                   value={searchTerm}
                   onChange={handleSearch}
                   ref={searchInputRef}
                 />
                 <span className={styles.searchIcon}>🔍</span>
               </div>
-              
+
               {/* Kontener listy użytkowników z referencją dla lazy loading */}
-              <div 
-                className={styles.userResultsContainer} 
-                ref={userListRef}
-              >
+              <div className={styles.userResultsContainer} ref={userListRef}>
                 {filteredUsers.length > 0 ? (
                   <div className={styles.usersList}>
                     {filteredUsers.map((user) => (
-                      <div 
-                        key={user.id} 
+                      <div
+                        key={user.id}
                         className={styles.userCard}
-                        onClick={() => handleUserClick(user.id)}
+                        onClick={() => handleUserClick(user.email)}
                       >
                         <div className={styles.userAvatar}>
-                          {user.firstName?.[0] || user.login?.[0] || user.email?.[0]}
+                          {user.firstName?.[0] ||
+                            user.login?.[0] ||
+                            user.email?.[0]}
                         </div>
                         <div className={styles.userInfo}>
-                          <h6>{user.firstName} {user.lastName}</h6>
+                          <h6>
+                            {user.firstName} {user.lastName}
+                          </h6>
                           <p>{user.email}</p>
-                          <span className={`${styles.userStatus} ${user.isOnline ? styles.online : ""}`}>
+                          <span
+                            className={`${styles.userStatus} ${
+                              user.isOnline ? styles.online : ""
+                            }`}
+                          >
                             {user.isOnline ? t("online") : t("offline")}
                           </span>
                         </div>
                       </div>
                     ))}
-                    
+
                     {/* Wskaźnik ładowania na dole listy */}
                     {isLoading && (
                       <div className={styles.loadingIndicator}>
@@ -471,7 +503,7 @@ const Header: React.FC = () => {
                     <p>{t("no-users-found")}</p>
                   </div>
                 )}
-                
+
                 {/* Wiadomość "End of results" gdy nie ma więcej danych */}
                 {!hasMore && filteredUsers.length > 0 && !isLoading && (
                   <div className={styles.endMessage}>

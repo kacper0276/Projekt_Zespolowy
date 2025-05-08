@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { RegisterData } from './dto/register-data.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginData } from './dto/login-data.dto';
@@ -221,5 +221,17 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async getUsers(
+    page: number,
+    pageSize: number,
+    search: string,
+  ): Promise<User[]> {
+    const [data, _total] = await this.userRepository.findAndCount({
+      where: [{ email: Like(`%${search}%`) }, { login: Like(`%${search}%`) }],
+    });
+
+    return data;
   }
 }

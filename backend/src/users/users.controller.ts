@@ -121,4 +121,30 @@ export class UsersController {
       }
     }
   }
+
+  @Get('search')
+  async getUsers(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+    @Query('search') search: string = '',
+    @Res() response: Response,
+  ) {
+    try {
+      const users = await this.usersService.getUsers(page, pageSize, search);
+      response.status(HttpStatus.OK).send({
+        message: 'users-found',
+        data: users,
+      });
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        response.status(HttpStatus.BAD_REQUEST).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'a-server-error-occurred',
+        });
+      }
+    }
+  }
 }
