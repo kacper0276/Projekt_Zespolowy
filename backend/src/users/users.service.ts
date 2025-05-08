@@ -10,6 +10,7 @@ import { RegisterData } from './dto/register-data.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginData } from './dto/login-data.dto';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class UsersService {
@@ -224,8 +225,8 @@ export class UsersService {
   }
 
   async getUsers(
-    page: number,
-    pageSize: number,
+    _page: number,
+    _pageSize: number,
     search: string,
   ): Promise<User[]> {
     const [data, _total] = await this.userRepository.findAndCount({
@@ -233,5 +234,32 @@ export class UsersService {
     });
 
     return data;
+  }
+
+  async changePassword(data: ChangePasswordDto): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { email: data.email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isOldPasswordValid = await bcrypt.compare(
+      data.oldPassword,
+      user.password,
+    );
+
+    if (!isOldPasswordValid) {
+      throw new BadRequestException('invalid-old-password');
+    }
+
+    if (data.newPassword !== data.confirmNewPassword) {
+      throw new BadRequestException('passwords-do-not-match');
+    }
+
+    const hashedNewPassword = await this.hashPassword(data.newPassword);
+    user.password = hashedNewPassword;
+    await this.userRepository.save(user);
   }
 }

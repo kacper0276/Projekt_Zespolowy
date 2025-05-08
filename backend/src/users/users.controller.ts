@@ -14,6 +14,7 @@ import { UsersService } from './users.service';
 import { Response } from 'express';
 import { RegisterData } from './dto/register-data.dto';
 import { LoginData } from './dto/login-data.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -134,6 +135,30 @@ export class UsersController {
       response.status(HttpStatus.OK).send({
         message: 'users-found',
         data: users,
+      });
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        response.status(HttpStatus.BAD_REQUEST).send({
+          message: error.message,
+        });
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: 'a-server-error-occurred',
+        });
+      }
+    }
+  }
+
+  @Patch('change-password')
+  async changePassword(
+    @Body() changePasswordData: ChangePasswordDto,
+    @Res() response: Response,
+  ) {
+    try {
+      const res = await this.usersService.changePassword(changePasswordData);
+      response.status(HttpStatus.OK).send({
+        message: 'password-changed-successfully',
+        data: res,
       });
     } catch (error) {
       if (error instanceof BadRequestException) {
