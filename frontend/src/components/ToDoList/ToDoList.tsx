@@ -36,7 +36,7 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
         setActiveListId(lists[0].id || null);
       }
     } catch (error) {
-      console.error("Error fetching TODO lists:", error);
+      console.error(t("error-fetching-todo-lists"), error);
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +63,7 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
       
       setNewListName("");
     } catch (error) {
-      console.error("Error creating todo list:", error);
+      console.error(t("error-creating-todo-list"), error);
     } finally {
       setIsLoading(false);
     }
@@ -101,7 +101,7 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
       
       setNewItemName("");
     } catch (error) {
-      console.error("Error adding todo item:", error);
+      console.error(t("error-adding-todo-item"), error);
     } finally {
       setIsLoading(false);
     }
@@ -149,7 +149,7 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
       
       setTodoLists(updatedLists);
     } catch (error) {
-      console.error("Error deleting item:", error);
+      console.error(t("error-deleting-item"), error);
     }
   };
 
@@ -170,7 +170,7 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
         setActiveListId(updatedLists.length > 0 ? updatedLists[0].id || null : null);
       }
     } catch (error) {
-      console.error("Error deleting list:", error);
+      console.error(t("error-deleting-list"), error);
     }
   };
 

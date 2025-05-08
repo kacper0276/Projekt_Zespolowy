@@ -241,5 +241,11 @@
 
   "open": "Open",
   "my-kanban-boards": "My Kanban boards",
-  "rows-columns": "Rows / columns"
+  "rows-columns": "Rows / columns",
+  "error-fetching-todo-lists": "Error fetching ToDo lists",
+  "error-creating-todo-list": "Error creating ToDo list",
+  "error-adding-todo-item": "Error adding item to a ToDo list",
+  "error-deleting-item": "Error deleting item",
+  "error-deleting-list": "Error deleting list",
+  "save-changes": "Save changes"
 }

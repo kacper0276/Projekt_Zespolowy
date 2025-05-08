@@ -41,7 +41,7 @@
   "confirm4": "Ta operacja jest nieodwracalna",
   "confirm5": "Czy na pewno chcesz usunąć wiersz",
   "task-name": "Nazwa zadania",
-  "remove-row":"Usuń wiersz",
+  "remove-row": "Usuń wiersz",
 
   "remove-task": "Usuń zadanie",
   "tasks-list": "Lista zadań",
@@ -242,5 +242,11 @@
 
   "open": "Otwórz",
   "my-kanban-boards": "Moje tablice Kanban",
-  "rows-columns": "Wiersze / kolumny"
+  "rows-columns": "Wiersze / kolumny",
+  "error-fetching-todo-lists": "Błąd podczas pobierania list ToDo:",
+  "error-creating-todo-list": "Błąd podczas tworzenia listy ToDo:",
+  "error-adding-todo-item": "Błąd podczas dodawania elementu do listy ToDo:",
+  "error-deleting-item": "Błąd podczas usuwania elementu:",
+  "error-deleting-list": "Błąd podczas usuwania listy:",
+  "save-changes": "Zapisz zmiany"
 }
