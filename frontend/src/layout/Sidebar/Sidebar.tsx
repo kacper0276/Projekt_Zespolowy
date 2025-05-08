@@ -9,6 +9,7 @@ import Spinner from "../../components/Spinner/Spinner";
 import { toast } from "react-toastify";
 import { IKanbanSettings } from "../../interfaces/IKanbanSettings";
 import ChatModal from "../../components/ChatModal/ChatModal";
+import { useTranslation } from "react-i18next";
 
 import React, { createContext, useContext } from "react";
 
@@ -29,6 +30,7 @@ export const AssignedUsersContext = createContext<{
 export const useAssignedUsers = () => useContext(AssignedUsersContext);
 
 const Sidebar = () => {
+  const { t } = useTranslation();
   const params = useParams();
   const api = useApiJson();
   const [users, setUsers] = useState<IUser[]>([]);
@@ -125,7 +127,7 @@ const Sidebar = () => {
         setRemainingAssignments(initialRemaining);
       })
       .catch((_err) => {
-        toast.error("error-fetching-users");
+        toast.error(t("error-fetching-users"));
       })
       .finally(() => {
         setLoading(false);
@@ -176,7 +178,7 @@ const Sidebar = () => {
 
   const saveWipLimit = (userId: number) => {
     if (editWipValue < 0) {
-      toast.error("WIP limit cannot be negative");
+      toast.error(t("WIP-limit-cannot-be-negative"));
       return;
     }
 
@@ -198,11 +200,11 @@ const Sidebar = () => {
         // Update remaining assignments based on new WIP limit
         updateRemainingAssignments(userId);
         
-        toast.success("WIP limit updated successfully");
+        toast.success(t("WIP-limit-updated-successfully"));
         cancelEditing();
       })
       .catch(() => {
-        toast.error("Failed to update WIP limit");
+        toast.error(t("failed-to-update-WIP-limit"));
       })
       .finally(() => {
         setUpdatingWip(false);
@@ -239,7 +241,7 @@ const Sidebar = () => {
         {/* ChatButton */}
         <button className={styles.chatButton} onClick={openChatModal}>
           <i className="bi bi-chat-dots"></i>
-          <span>Open Chat</span>
+          <span>{t("open-chat")}</span>
         </button>
         
         {/* Users Section Header */}
@@ -250,7 +252,7 @@ const Sidebar = () => {
           </div>
           {!isUsersSectionCollapsed && (
             <p className={styles.dragHint}>
-              Drag users to tasks to assign them
+              {t("drag-hint")}
             </p>
           )}
         </div>
@@ -274,8 +276,8 @@ const Sidebar = () => {
                     draggable={!noRemaining}
                     onDragStart={(e) => handleDragStart(e, user)}
                     title={noRemaining 
-                      ? `${user.firstName} ${user.lastName} has reached WIP limit (${wipLimit})`
-                      : `Drag to assign ${user.firstName} ${user.lastName} to a task`
+                      ? `${user.firstName} ${user.lastName} ${t("has-reached-WIP-limit")} (${wipLimit})`
+                      : `${t("drag-to-assign")} ${user.firstName} ${user.lastName} ${t("to-a-task")}`
                     }
                   >
                     <div className={`${styles.avatarCircle} ${noRemaining ? styles.limitReached : ""}`}>
@@ -288,7 +290,7 @@ const Sidebar = () => {
                       
                       {editingUserId === user.id ? (
                         <div className={styles.wipEditor}>
-                          <label className={styles.wipLabel}>WIP Limit:</label>
+                          <label className={styles.wipLabel}>{t("WIP-limit")}:</label>
                           <input
                             type="number"
                             className={styles.wipInput}
@@ -324,11 +326,11 @@ const Sidebar = () => {
                           <span className={styles.wipValue}>
                             {wipLimit > 0 ? (
                               <span>
-                                Tasks: <strong>{taskCount} / {wipLimit}</strong>
+                               {t("tasks")}: <strong>{taskCount} / {wipLimit}</strong>
                                 {remaining > 0 && <span className={styles.remainingBadge}> ({remaining} left)</span>}
                               </span>
                             ) : (
-                              <span>WIP Limit: Unlimited</span>
+                              <span>{t("WIP-limit-unlimited")}</span>
                             )}
                           </span>
                           <button 
