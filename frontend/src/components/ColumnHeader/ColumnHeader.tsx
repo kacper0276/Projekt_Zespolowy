@@ -72,7 +72,7 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
 
   return (
     <div className={styles.headerRow}>
-      <div className={styles.rowLabel}>Wiersze / Kolumny</div>
+      <div className={styles.rowLabel}>{t("rows-columns")}</div>
       <Droppable
         droppableId="columnHeaders"
         type="COLUMN"

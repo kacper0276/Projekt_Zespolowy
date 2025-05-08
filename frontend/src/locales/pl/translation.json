@@ -239,5 +239,8 @@
   "tasks": "Zadania",
   "left": "pozostało",
   "WIP-limit-unlimited": "Limit WIP: Nieograniczony",
-  "open": "Otwórz"
+
+  "open": "Otwórz",
+  "my-kanban-boards": "Moje tablice Kanban",
+  "rows-columns": "Wiersze / kolumny"
 }
