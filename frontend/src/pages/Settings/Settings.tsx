@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useUser } from "../../context/UserContext";
-import { useApiJson } from "../../config/api";
 import styles from "./Settings.module.scss";
 
 const Settings: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useUser();
-  const api = useApiJson();
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");

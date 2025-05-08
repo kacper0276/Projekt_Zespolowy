@@ -23,21 +23,18 @@ const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const languageDropdownRef = useRef<HTMLDivElement>(null);
-
-  // Stany dla wyszukiwarki użytkowników z lazy loading
   const [showUserSearchModal, setShowUserSearchModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [users, setUsers] = useState<IUser[]>([]);
+  const [, setUsers] = useState<IUser[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const userSearchModalRef = useRef<HTMLDivElement>(null);
   const userListRef = useRef<HTMLDivElement>(null);
-  
-  // Parametry dla lazy loading
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [pageSize] = useState(5); // Liczba użytkowników na stronę
+
 
   const toggleBoardsModal = () => {
     setShowBoardsModal(!showBoardsModal);
@@ -61,7 +58,6 @@ const Header: React.FC = () => {
       setFilteredUsers([]);
       setPage(1);
       setHasMore(true);
-      // Pobierz pierwszą stronę użytkowników przy otwarciu modalu
       setTimeout(() => {
         fetchUsers(1);
         if (searchInputRef.current) searchInputRef.current.focus();
@@ -86,7 +82,6 @@ const Header: React.FC = () => {
       
       const newUsers = data.data || [];
       
-      // Jeśli to pierwsza strona, zastąp listę użytkowników, w przeciwnym razie dodaj do istniejącej listy
       if (pageNum === 1) {
         setUsers(newUsers);
         setFilteredUsers(newUsers);
@@ -95,7 +90,6 @@ const Header: React.FC = () => {
         setFilteredUsers(prev => [...prev, ...newUsers]);
       }
       
-      // Sprawdź, czy są jeszcze dane do pobrania
       setHasMore(newUsers.length === pageSize);
       setPage(pageNum);
     } catch (error) {
