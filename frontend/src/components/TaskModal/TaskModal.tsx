@@ -11,6 +11,7 @@ import styles from "./TaskModal.module.scss";
 import ToDoList from "../ToDoList/ToDoList";
 import { useParams } from "react-router-dom";
 import formatDateForInput from "../../helpers/FormatDate";
+import { useTranslation } from "react-i18next";
 
 interface TaskModalProps {
   taskId: string;
@@ -38,6 +39,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   onTaskUpdate,
   statuses = [],
 }) => {
+  const { t } = useTranslation();
   const params = useParams();
   const [taskData, setTaskData] = useState<ITask>({
     name: taskText,
@@ -100,7 +102,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       setAllUsers(response.data.data || []);
     } catch (error: any) {
       toast.error(
-        error.response?.data.message || "Nie udało się pobrać użytkowników"
+        error.response?.data.message || t("failed-fetching-users")
       );
     } finally {
       setIsLoading(false);
@@ -117,7 +119,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       }
     } catch (error: any) {
       toast.error(
-        error.response?.data.message || "Nie udało się pobrać danych"
+        error.response?.data.message || t("failed-fetching-data")
       );
     }
   };
@@ -166,13 +168,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
   // Add new status
   const handleAddStatus = async () => {
     if (!newStatus.name.trim()) {
-      toast.error("Nazwa statusu nie może być pusta");
+      toast.error(t("status-name-can-not-be-empty"));
       return;
     }
 
     // Check if status with the same name already exists
     if (allStatuses.some((status) => status.name === newStatus.name)) {
-      toast.error("Status o takiej nazwie już istnieje");
+      toast.error(t("status-with-this-name-already-exists"));
       return;
     }
 
@@ -199,17 +201,17 @@ const TaskModal: React.FC<TaskModalProps> = ({
     setNewStatus({ name: "", color: "#3394dc" });
     setShowNewStatusForm(false);
 
-    toast.success("Dodano nowy status");
+    toast.success(t("added-new-status"));
   };
 
   // Handle delete status with window.confirm
   const handleDeleteStatus = (statusName: string) => {
     const confirmDelete = window.confirm(
-      `Czy na pewno chcesz usunąć status "${statusName}"?`
+        t('confirm-delete-status', { status: statusName })
     );
 
     if (confirmDelete) {
-      console.log(`Deleting status: ${statusName}`);
+      console.log(t('deleting-status', { status: statusName }));
 
       // Remove the status from the list
       const updatedStatuses = allStatuses.filter(
@@ -226,7 +228,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         }));
       }
 
-      toast.success(`Status "${statusName}" został usunięty`);
+      toast.success(t('status-deleted', { status: statusName }));
     }
   };
 
@@ -236,7 +238,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       ...prevState,
       status: { color: "", name: "" },
     }));
-    toast.info("Status zadania został wyczyszczony");
+    toast.info(t("task-status-has-been-cleared"));
   };
 
   // Toggle status list visibility
@@ -275,13 +277,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
         });
       }
 
-      toast.success("Zadanie zostało zaktualizowane");
+      toast.success(t("task-has-been-updated"));
       onClose();
     } catch (error: any) {
       console.log(error);
       toast.error(
         error.response?.data.message ||
-          "Wystąpił błąd podczas aktualizacji zadania"
+          t("error-during-task-update")
       );
     } finally {
       setIsLoading(false);
@@ -300,7 +302,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     <div className={styles.modalBackdrop} onClick={handleBackdropClick}>
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
-          <h3>Szczegóły zadania</h3>
+          <h3>{t("task-details")}</h3>
           <button className={styles.closeButton} onClick={onClose}>
             <i className="bi bi-x"></i>
           </button>
@@ -309,7 +311,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
           <div className={styles.taskInfo}>
 
             <div className={styles.formGroup}>
-              <label htmlFor="taskName">Nazwa zadania:</label>
+              <label htmlFor="taskName">{t("task-name")}</label>
               <input
                 type="text"
                 id="taskName"
@@ -321,7 +323,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="deadline">Wybierz deadline:</label>
+              <label htmlFor="deadline">{t("choose-deadline")}</label>
               <input
                 type="date"
                 id="deadline"
@@ -335,7 +337,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             {/* Status section with status creation and management options */}
             <div className={styles.formGroup}>
               <div className={styles.statusHeader}>
-                <label htmlFor="status">Status zadania:</label>
+                <label htmlFor="status">{t("task-status")}</label>
                 <div className={styles.statusActions}>
                   <button
                     className={styles.manageStatusButton}
@@ -343,11 +345,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   >
                     {showStatusList ? (
                       <>
-                        <i className="bi bi-x-circle"></i> Ukryj statusy
+                        <i className="bi bi-x-circle"></i> {t("hide-statuses")}
                       </>
                     ) : (
                       <>
-                        <i className="bi bi-trash"></i> Usuń status
+                        <i className="bi bi-trash"></i> {t("delete-status")}
                       </>
                     )}
                   </button>
@@ -362,11 +364,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   >
                     {showNewStatusForm ? (
                       <>
-                        <i className="bi bi-x-circle"></i> Anuluj
+                        <i className="bi bi-x-circle"></i> {t("cancel")}
                       </>
                     ) : (
                       <>
-                        <i className="bi bi-plus-circle"></i> Nowy status
+                        <i className="bi bi-plus-circle"></i>{t("new-status")}
                       </>
                     )}
                   </button>
@@ -377,7 +379,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
               {showStatusList && (
                 <div className={styles.statusListContainer}>
                   <h4 className={styles.statusListTitle}>
-                    Zarządzanie statusami
+                    {t("manage-statuses")}
                   </h4>
                   <div className={styles.statusList}>
                     {allStatuses.length > 0 ? (
@@ -393,7 +395,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                           <button
                             className={styles.closeButtonAnimated}
                             onClick={() => handleDeleteStatus(status.name)}
-                            title="Usuń status"
+                            title={t("delete-status")}
                           >
                             <i className="bi bi-x"></i>
                           </button>
@@ -401,7 +403,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                       ))
                     ) : (
                       <p className={styles.noStatusMessage}>
-                        Brak zdefiniowanych statusów
+                        {t("no-defined-statuses")}
                       </p>
                     )}
                   </div>
@@ -413,7 +415,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 <div className={styles.newStatusForm}>
                   <div className={styles.formRow}>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="statusName">Nazwa:</label>
+                      <label htmlFor="statusName">{t("name")}</label>
                       <input
                         type="text"
                         id="statusName"
@@ -421,11 +423,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                         value={newStatus.name}
                         onChange={handleNewStatusChange}
                         className={styles.formControl}
-                        placeholder="Nazwa statusu"
+                        placeholder={t("status-name")}
                       />
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="statusColor">Kolor:</label>
+                      <label htmlFor="statusColor">{t("color")}</label>
                       <div className={styles.colorPickerWrapper}>
                         <input
                           type="color"
@@ -446,7 +448,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     className={styles.addButton}
                     onClick={handleAddStatus}
                   >
-                    Dodaj status
+                    {t("add-status")}
                   </button>
                 </div>
               )}
@@ -459,7 +461,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 onChange={handleInputChange}
                 className={styles.formControl}
               >
-                <option value="">Wybierz status</option>
+                <option value="">{t("choose-status")}</option>
                 {allStatuses.map((status, index) => (
                   <option key={index} value={status.name}>
                     {status.name}
@@ -482,7 +484,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   <button
                     className={styles.closeButtonAnimated}
                     onClick={handleClearSelectedStatus}
-                    title="Wyczyść wybrany status"
+                    title={t("clear-chosen-status")}
                   >
                     <i className="bi bi-x"></i>
                   </button>
@@ -491,7 +493,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             </div>
 
             <div className={styles.formGroup}>
-              <label>Przypisani użytkownicy:</label>
+              <label>{t("assigned-users")}</label>
               <div className={styles.multiselectContainer}>
                 {/* Custom selected users wrapper */}
                 <div className={styles.selectedUsersWrapper}>
@@ -515,8 +517,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   displayValue="email"
                   onSelect={onSelect}
                   onRemove={onRemove}
-                  placeholder="Wybierz użytkowników"
-                  emptyRecordMsg="Brak użytkowników"
+                  placeholder={t("choose-users")}
+                  emptyRecordMsg={t("no-users")}
                   loading={isLoading}
                   hidePlaceholder={taskData.users.length > 0}
                   hideSelectedList={true}
@@ -541,7 +543,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             </div>
 
             <div className={styles.formGroup}>
-              <label>Listy zadań:</label>
+              <label>{t("task-lists")}</label>
               <ToDoList taskId={+taskId} />
             </div>
 
@@ -551,7 +553,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 onClick={handleSaveTask}
                 disabled={isLoading}
               >
-                {isLoading ? "Zapisywanie..." : "Zapisz zmiany"}
+                {isLoading ? t("saving") : t("save-changes")}
               </button>
             </div>
           </div>

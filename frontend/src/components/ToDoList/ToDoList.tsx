@@ -4,12 +4,13 @@ import { IToDoList } from "../../interfaces/IToDoList";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import styles from "./ToDoList.module.scss";
-
+import { useTranslation } from "react-i18next";
 interface ItemProps {
   taskId: number | string;
 }
 
 const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
+  const { t } = useTranslation();
   const api = useApiJson();
   const [todoLists, setTodoLists] = useState<IToDoList[]>([]);
   const [newListName, setNewListName] = useState<string>("");
@@ -153,7 +154,7 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
   };
 
   const deleteList = async (listId: number) => {
-    if (!window.confirm("Are you sure you want to delete this list?")) {
+    if (!window.confirm(t('confirm-delete-list'))) {
       return;
     }
     
@@ -176,12 +177,12 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
   return (
     <div className={styles.todoListContainer}>
       <div className={styles.todoListHeader}>
-        <h3>Listy zadań ({todoLists.length})</h3>
+        <h3>{t("task-list")} ({todoLists.length})</h3>
         
         <div className={styles.createListForm}>
           <input
             type="text"
-            placeholder="Nazwa nowej listy"
+            placeholder={t("new-list-name")}
             value={newListName}
             onChange={(e) => setNewListName(e.target.value)}
             className={styles.inputField}
@@ -191,7 +192,7 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
             disabled={isLoading || !newListName.trim()}
             className={styles.actionButton}
           >
-            <i className="bi bi-plus-circle"></i> Utwórz
+            <i className="bi bi-plus-circle"></i> {t("create")}
           </button>
         </div>
       </div>
@@ -207,7 +208,7 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
               >
                 <span>{list.name}</span>
                 <span className={styles.itemCount}>
-                  {(list.items || []).length} zadań
+                  {(list.items || []).length} {t("tasks-countable")}
                 </span>
                 <button 
                   className={styles.deleteListButton}
@@ -227,7 +228,7 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
               <div className={styles.addItemForm}>
                 <input
                   type="text"
-                  placeholder="Nowe zadanie"
+                  placeholder={t("new-task")}
                   value={newItemName}
                   onChange={(e) => setNewItemName(e.target.value)}
                   className={styles.inputField}
@@ -237,7 +238,7 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
                   disabled={isLoading || !newItemName.trim()}
                   className={styles.actionButton}
                 >
-                  <i className="bi bi-plus"></i> Dodaj
+                  <i className="bi bi-plus"></i> {t("add")}
                 </button>
               </div>
               
@@ -264,7 +265,7 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
                     </li>
                   )) || (
                     <li className={styles.emptyMessage}>
-                      Ta lista nie zawiera jeszcze żadnych zadań
+                      {t("this-list-contains-no-tasks-yet")}
                     </li>
                   )
                 }
@@ -274,8 +275,8 @@ const ToDoList: React.FC<ItemProps> = ({ taskId }) => {
         </div>
       ) : (
         <div className={styles.emptyState}>
-          <p>Brak list zadań dla tego zadania</p>
-          <p>Utwórz pierwszą listę używając formularza powyżej</p>
+          <p>{t("no-task-list-for-this-task")}</p>
+          <p>{t("create-first-list-using-the-form-above")}</p>
         </div>
       )}
     </div>

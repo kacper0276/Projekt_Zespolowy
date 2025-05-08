@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ActionButton from '../ActionButton/ActionButton';
-
+import { useTranslation } from "react-i18next";
 interface WipLimitEditorProps {
   currentLimit: number;
   onSave: (newLimit: number) => void;
@@ -13,7 +13,7 @@ const WipLimitEditor: React.FC<WipLimitEditorProps> = ({
   onCancel,
 }) => {
   const [limit, setLimit] = useState(currentLimit);
-
+  const { t } = useTranslation();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
     setLimit(isNaN(value) ? 0 : value);
@@ -28,7 +28,7 @@ const WipLimitEditor: React.FC<WipLimitEditorProps> = ({
           value={limit}
           onChange={handleChange}
           className="form-control"
-          placeholder="WIP Limit"
+          placeholder={t("WIP-limit")}
         />
       </div>
       <div className="d-flex gap-2">
@@ -36,13 +36,13 @@ const WipLimitEditor: React.FC<WipLimitEditorProps> = ({
           onClick={() => onSave(limit)}
           variant="success"
         >
-          Zapisz
+          {t("save")}
         </ActionButton>
         <ActionButton
           onClick={onCancel}
           variant="default"
         >
-          Anuluj
+          {t("cancel")}
         </ActionButton>
       </div>
     </div>
