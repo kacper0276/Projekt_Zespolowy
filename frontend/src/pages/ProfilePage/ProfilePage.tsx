@@ -8,7 +8,8 @@ import { IKanban } from "../../interfaces/IKanban";
 import { toast } from "react-toastify";
 import PlaceholderPfP from "../../assets/PlaceholderPictures/PlaceholderPfP.png";
 import styles from "./ProfilePage.module.scss";
-
+import { useTranslation } from "react-i18next";
+import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 interface Board {
   id: number;
   title: string;
@@ -17,6 +18,8 @@ interface Board {
 }
 
 const ProfilePage: React.FC = () => {
+  const { t } = useTranslation();
+  useWebsiteTitle(t("my-profile"));
   const { user: currentUser } = useUser();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -71,7 +74,7 @@ const ProfilePage: React.FC = () => {
           fetchKanbanBoards();
         }
       } catch (error: any) {
-        toast.error("Failed to fetch users list");
+        toast.error(t("failed-to-fetch-users-list"));
       }
     };
 
@@ -87,15 +90,15 @@ const ProfilePage: React.FC = () => {
       });
       setKanbanBoards(data.data ?? []);
     } catch (error) {
-      console.error("Failed to fetch kanban boards:", error);
-      toast.error("Failed to fetch kanban boards");
+      console.error(t("failed-to-fetch-kanban-boards"), error);
+      toast.error("toast-failed-to-fetch-kanban-boards");
     }
   };
 
   // Handle creating a new board
   const handleCreateBoard = () => {
     navigate("/boards/new");
-    toast.info("Creating a new board...");
+    toast.info(t("creating-a-new-board"));
   };
 
   if (!profileUser) {
@@ -113,7 +116,7 @@ const ProfilePage: React.FC = () => {
         <div className={styles.profileImage}>
           <img
             src={PlaceholderPfP}
-            alt="Profile"
+            alt={t("profile")}
             onError={(e) => (e.currentTarget.src = PlaceholderPfP)}
           />
         </div>
@@ -125,11 +128,11 @@ const ProfilePage: React.FC = () => {
           <p className={styles.username}>@{profileUser.login}</p>
           <p className={styles.email}>{profileUser.email}</p>
           <p className={styles.userStatus}>
-            Status:{" "}
+            {t("user-status")}{" "}
             {profileUser.isOnline ? (
-              <span className={styles.activeStatus}>Active</span>
+              <span className={styles.activeStatus}>{t("active")}</span>
             ) : (
-              <span className={styles.inactiveStatus}>Inactive</span>
+              <span className={styles.inactiveStatus}>{t("inactive")}</span>
             )}
           </p>
         </div>
@@ -138,13 +141,13 @@ const ProfilePage: React.FC = () => {
       {isOwnProfile && (
         <div className={styles.contentContainer}>
           <div className={styles.boardsTab}>
-            <h2>Moje Tablice</h2>
+            <h2>{t("my-boards")}</h2>
             <div className={styles.newBoardOption}>
               <button
                 className={styles.newBoardBtn}
                 onClick={handleCreateBoard}
               >
-                + Utwórz nową tablicę
+                + {t("create-new-table")}
               </button>
             </div>
             <div className={styles.boardsGrid}>
@@ -153,18 +156,18 @@ const ProfilePage: React.FC = () => {
                   <div key={board.id} className={styles.boardCard}>
                     <h3>{board.tableName}</h3>
                     <div className={styles.boardMeta}>
-                      <span>{board.users?.length || 0} uczestników</span>
+                      <span>{board.users?.length || 0} {t("members")}</span>
                       <a
                         href={`/boards/${board.id}`}
                         className={styles.viewBoardBtn}
                       >
-                        Otwórz
+                        {t("open")}
                       </a>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className={styles.noBoards}>Nie znaleziono tablic</p>
+                <p className={styles.noBoards}>{t("no-boards-found")}</p>
               )}
             </div>
           </div>

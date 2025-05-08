@@ -19,6 +19,12 @@
   "contact": "Kontakt",
   "copyright-disclaimer": "© 2025 KanbanPro. Wszelkie prawa zastrzeżone.",
 
+  "search-users": "Wyszukaj użytkowników",
+  "search-by-name-email": "Wyszukaj za pomocą nazwy, E-mailu...",
+  "end-of-results": "Koniec wyników",
+  "no-users-found": "Nie znaleziono użytkowników",
+
+  "my-teams": "Moje zespoły",
   "my-boards": "Moje tablice",
   "profile": "Profil",
   "sign-in": "Zaloguj się",
@@ -55,7 +61,6 @@
   "not-found": "404 - Nie znaleziono",
   "sorry-the-page-you-are-looking-for-does-not-exist": "Przepraszamy, strona której szukasz nie istnieje.",
 
-  "my-teams": "Moje zespoły",
   "your-teams": "Twoje zespoły",
   "teams": "Zespoły",
   "you-do-not-have-any-teams-yet": "Nie masz jeszcze żadnych zespołów",
@@ -134,6 +139,18 @@
   "creating": "Tworzenie...",
   "add-board": "Dodaj tablicę",
   "background-photo": "Zdjęcie w tle",
+
+  "my-profile": "Mój profil",
+  "failed-to-fetch-users-list": "Nie udało się pobrać listy użytkowników",
+  "failed-to-fetch-kanban-boards": "Nie udało się pobrać tablic Kanban:",
+  "toast-failed-to-fetch-kanban-boards": "Nie udało się pobrać tablic Kanban",
+  "creating-a-new-board": "Tworzenie nowej tablicy...",
+  "user-status": "Status:",
+  "active": "Aktywny",
+  "inactive": "Nieaktywny",
+  "create-new-table": "Stwórz nową tablicę",
+  "members": "członków",
+  
 
   "drag-hint": "Przeciągnij użytkownika na zadanie aby je przypisać",
   "WIP-limit-cannot-be-negative": "Limit WIP nie może być ujemny",

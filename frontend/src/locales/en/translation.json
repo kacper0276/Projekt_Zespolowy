@@ -19,6 +19,12 @@
   "contact": "Contact",
   "copyright-disclaimer": "© 2025 KanbanPro. All rights reserved.",
 
+  "search-users": "Search users",
+  "search-by-name-email": "Search by name, email...",
+  "end-of-results": "End of results",
+  "no-users-found": "No users found",
+
+  "my-teams": "My teams",
   "my-boards": "My boards",
   "profile": "Profile",
   "sign-in": "Sign in",
@@ -55,7 +61,6 @@
   "not-found": "404 - Not found",
   "sorry-the-page-you-are-looking-for-does-not-exist": "Sorry, the page you are looking for does not exist.",
 
-  "my-teams": "My teams",
   "your-teams": "Your teams",
   "teams": "Teams",
   "you-do-not-have-any-teams-yet": "You don't have any teams yet",
@@ -136,7 +141,16 @@
   "add-board": "Add board",
   "background-photo": "Background photo",
 
-
+  "my-profile": "My profile",
+  "failed-to-fetch-users-list": "Failed to fetch users list",
+  "failed-to-fetch-kanban-boards": "Failed to fetch Kanban boards:",
+  "toast-failed-to-fetch-kanban-boards": "Failed to fetch Kanban boards",
+  "creating-a-new-board": "Creating a new board...",
+  "user-status": "Status:",
+  "active": "Active",
+  "inactive": "Inactive",
+  "create-new-table": "Create new board",
+  "members": "members",
 
   "drag-hint": "Drag users to tasks to assign them",
   "WIP-limit-cannot-be-negative": "WIP limit cannot be negative",
