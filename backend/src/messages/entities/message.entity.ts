@@ -8,7 +8,7 @@ export class Message extends BaseEntity {
   @ManyToOne(() => Conversation, (conversation) => conversation.messages)
   conversation: Conversation;
 
-  @ManyToOne(() => User, (user) => user.messages)
+  @ManyToOne(() => User, { eager: true })
   sender: User;
 
   @Column()
