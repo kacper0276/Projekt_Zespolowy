@@ -248,6 +248,7 @@
   "error-deleting-list": "Błąd podczas usuwania listy:",
   "save-changes": "Zapisz zmiany",
   "none": "Brak",
-  "more-users": "{{count}} more users",
-  "add-task": "Dodaj zadanie"
+  "more-users": "{{count}} więcej użytkowników",
+  "add-task": "Dodaj zadanie",
+  "failed-adding-row-try-again-later": "Nie udało się dodać wiersza. Spróbuj ponownie później"
 }

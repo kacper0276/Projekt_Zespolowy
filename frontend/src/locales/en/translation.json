@@ -187,7 +187,6 @@
   "create-new-table": "Create new board",
   "members": "members",
 
-  "save": "Save",
   "task-list": "Task list",
   "new-list-name": "New list name",
   "new-task": "New task",
@@ -198,7 +197,6 @@
   "create-first-list-using-the-form-above": "Create the first list using the form above",
 
   "task-details": "Task details",
-  "task-name": "Task name",
   "choose-deadline": "Choose deadline",
   "task-status": "Task status",
   "hide-statuses": "Hide statuses",
@@ -249,5 +247,7 @@
   "error-deleting-list": "Error deleting list",
   "save-changes": "Save changes",
   "none": "None",
-  "more-users": "{{count}} więcej użytkowników"
+  "more-users": "{{count}} more users",
+  "add-task": "Add task",
+  "failed-adding-row-try-again-later": "Failed to add row. Try again later."
 }

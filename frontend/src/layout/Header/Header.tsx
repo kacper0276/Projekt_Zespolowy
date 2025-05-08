@@ -400,7 +400,7 @@ const Header: React.FC = () => {
                     </div>
                     <div className={styles.boardMeta}>
                       <span>
-                        {board.users?.length} {t("participants")}
+                        {board.users?.length} {t("members")}
                       </span>
                       <Link
                         to={`/boards/${board.id}`}
