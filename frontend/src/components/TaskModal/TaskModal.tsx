@@ -309,7 +309,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
           <div className={styles.taskInfo}>
 
             <div className={styles.formGroup}>
-              <label htmlFor="taskName">Treść zadania:</label>
+              <label htmlFor="taskName">Nazwa zadania:</label>
               <input
                 type="text"
                 id="taskName"

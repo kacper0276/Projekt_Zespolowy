@@ -24,15 +24,11 @@ const ProfilePage: React.FC = () => {
 
   const [profileUser, setProfileUser] = useState<IUser | null>(null);
   const [isOwnProfile, setIsOwnProfile] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<"info" | "boards">("info");
-  const [userBoards, setUserBoards] = useState<Board[]>([]);
+  const [, setUserBoards] = useState<Board[]>([]);
   const [kanbanBoards, setKanbanBoards] = useState<IKanban[]>([]);
-  const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const api = useApiJson();
 
   // Dummy data for demonstration
-  const dummyBio =
-    "Passionate about design and creativity. I love to create new boards and share ideas with others.";
   const dummyBoards: Board[] = [
     {
       id: 1,
@@ -57,8 +53,6 @@ const ProfilePage: React.FC = () => {
   // Fetch all users only once when the component mounts
   useEffect(() => {
     const fetchUserData = async () => {
-      // if (usersLoaded) return; // Prevent fetching if already loaded
-
       try {
         const response = await api.get<ApiResponse<IUser>>(
           `users/by-email?userEmail=${emailParam}`
@@ -98,24 +92,11 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleFollowToggle = () => {
-    setIsFollowing(!isFollowing);
-    toast.success(
-      isFollowing ? "Unfollowed successfully" : "Followed successfully"
-    );
-  };
-
   // Handle creating a new board
   const handleCreateBoard = () => {
     navigate("/boards/new");
     toast.info("Creating a new board...");
   };
-
-  useEffect(() => {
-    if (!isOwnProfile && activeTab === "boards") {
-      setActiveTab("info");
-    }
-  }, [isOwnProfile, activeTab]);
 
   if (!profileUser) {
     return (
@@ -154,60 +135,8 @@ const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      <div className={styles.tabsContainer}>
-        <button
-          className={`${styles.tabButton} ${
-            activeTab === "info" ? styles.active : ""
-          }`}
-          onClick={() => setActiveTab("info")}
-        >
-          Information
-        </button>
-        {isOwnProfile && (
-          <button
-            className={`${styles.tabButton} ${
-              activeTab === "boards" ? styles.active : ""
-            }`}
-            onClick={() => setActiveTab("boards")}
-          >
-            Moje Tablice
-          </button>
-        )}
-      </div>
-
-      <div className={styles.contentContainer}>
-        {activeTab === "info" && (
-          <div className={styles.infoTab}>
-            <h2>About</h2>
-            <p className={styles.bio}>{dummyBio}</p>
-            <div className={styles.statsContainer}>
-              <div className={styles.statItem}>
-                <span className={styles.statValue}>
-                  {kanbanBoards.length || userBoards.length}
-                </span>
-                <span className={styles.statLabel}>Boards</span>
-              </div>
-              <div className={styles.statItem}>
-                <span className={styles.statValue}>{100}</span>
-                <span className={styles.statLabel}>Followers</span>
-              </div>
-              <div className={styles.statItem}>
-                <span className={styles.statValue}>{20}</span>
-                <span className={styles.statLabel}>Following</span>
-              </div>
-            </div>
-            {!isOwnProfile && (
-              <button
-                className={styles.followButton}
-                onClick={handleFollowToggle}
-              >
-                {isFollowing ? "Unfollow" : "Follow"}
-              </button>
-            )}
-          </div>
-        )}
-
-        {activeTab === "boards" && isOwnProfile && (
+      {isOwnProfile && (
+        <div className={styles.contentContainer}>
           <div className={styles.boardsTab}>
             <h2>Moje Tablice</h2>
             <div className={styles.newBoardOption}>
@@ -239,8 +168,8 @@ const ProfilePage: React.FC = () => {
               )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

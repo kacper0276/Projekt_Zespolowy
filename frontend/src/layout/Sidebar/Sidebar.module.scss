@@ -62,7 +62,7 @@
 }
 
 .sidebarHeader {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
  
   .sidebarTitle {
     color: $textColor;
@@ -82,11 +82,89 @@
       border-radius: 1px;
     }
   }
+}
 
+/* Chat Button */
+.chatButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 6px;
+  color: $textColor;
+  padding: 0.75rem;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
+    border-radius: 1px;
+  }
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+  
+  i {
+    color: $formGradientEnd;
+    font-size: 1.2rem;
+  }
+  
+  span {
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+}
+
+/* Section Header */
+.sectionHeader {
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    .sectionTitleRow i {
+      color: $formGradientEnd;
+    }
+  }
+  
+  .sectionTitleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    .sectionTitle {
+      color: $textColor;
+      font-size: 1rem;
+      margin: 0;
+      padding: 0.25rem 0;
+    }
+    
+    i {
+      color: color.adjust($textColor, $alpha: -0.3);
+      transition: all 0.2s ease;
+    }
+  }
+  
   .dragHint {
     font-size: 0.8rem;
     color: color.adjust($textColor, $alpha: -0.3);
     margin-top: 0.5rem;
+    margin-bottom: 0;
   }
 }
 
@@ -96,7 +174,15 @@
   gap: 1rem;
   margin-bottom: 2rem;
   overflow-y: auto;
-  max-height: calc(100vh - 180px);
+  max-height: calc(100vh - 270px);
+  transition: all 0.3s ease;
+  
+  &.collapsed {
+    max-height: 0;
+    overflow: hidden;
+    margin: 0;
+    opacity: 0;
+  }
  
   /* Scrollbar styling */
   &::-webkit-scrollbar {

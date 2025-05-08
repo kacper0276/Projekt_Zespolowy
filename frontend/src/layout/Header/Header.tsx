@@ -67,17 +67,6 @@ const Header: React.FC = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className={`navbar-nav ms-auto ${styles.navItems}`}>
-              <li className="nav-item">
-                <Link className={`nav-link ${styles.navLink}`} to="/features">
-                  {t("features")}
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className={`nav-link ${styles.navLink}`} to="/pricing">
-                  {t("pricing")}
-                </Link>
-              </li>
-
               {isAuthenticated ? (
                 // Opcje dla zalogowanego użytkownika
                 <>
@@ -106,14 +95,6 @@ const Header: React.FC = () => {
                     >
                       {t("my-boards")}
                     </button>
-                  </li>
-                  <li className="nav-item">
-                    <Link
-                      className={`nav-link ${styles.navLink}`}
-                      to="/dashboard"
-                    >
-                      Panel
-                    </Link>
                   </li>
                   <li className="nav-item">
                     <Link

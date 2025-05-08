@@ -8,6 +8,7 @@ import { IKanban } from "../../interfaces/IKanban";
 import Spinner from "../../components/Spinner/Spinner";
 import { toast } from "react-toastify";
 import { IKanbanSettings } from "../../interfaces/IKanbanSettings";
+import ChatModal from "../../components/ChatModal/ChatModal";
 
 import React, { createContext, useContext } from "react";
 
@@ -41,9 +42,25 @@ const Sidebar = () => {
   const [userTaskCounts, setUserTaskCounts] = useState<Record<number, number>>({});
   // Track how many more assignments each user can have
   const [remainingAssignments, setRemainingAssignments] = useState<Record<number, number>>({});
+  // State for chat modal
+  const [isChatModalOpen, setIsChatModalOpen] = useState<boolean>(false);
+  // State for users section collapsed/expanded
+  const [isUsersSectionCollapsed, setIsUsersSectionCollapsed] = useState<boolean>(false);
 
   const toggleSidebar = () => {
     setIsMinimized(!isMinimized);
+  };
+
+  const toggleUsersSection = () => {
+    setIsUsersSectionCollapsed(!isUsersSectionCollapsed);
+  };
+
+  const openChatModal = () => {
+    setIsChatModalOpen(true);
+  };
+
+  const closeChatModal = () => {
+    setIsChatModalOpen(false);
   };
 
   // Function to get initials from first and last name
@@ -233,15 +250,37 @@ const Sidebar = () => {
             }`}
           ></i>
         </div>
-        {/* Header */}
+        
+        {/* Title Section */}
         <div className={styles.sidebarHeader}>
-          <h3 className={styles.sidebarTitle}>{isMinimized ? "" : "Users"}</h3>
-          <p className={styles.dragHint}>
-            {isMinimized ? "" : "Drag users to tasks to assign them"}
-          </p>
+          <h3 className={styles.sidebarTitle}>{isMinimized ? "" : "Kanban Board"}</h3>
         </div>
+        
+        {/* ChatButton */}
+        {!isMinimized && (
+          <button className={styles.chatButton} onClick={openChatModal}>
+            <i className="bi bi-chat-dots"></i>
+            <span>Open Chat</span>
+          </button>
+        )}
+        
+        {/* Users Section Header */}
+        <div className={styles.sectionHeader} onClick={toggleUsersSection}>
+          <div className={styles.sectionTitleRow}>
+            <h4 className={styles.sectionTitle}>{isMinimized ? "" : "Users"}</h4>
+            {!isMinimized && (
+              <i className={`bi ${isUsersSectionCollapsed ? "bi-chevron-down" : "bi-chevron-up"}`}></i>
+            )}
+          </div>
+          {!isMinimized && !isUsersSectionCollapsed && (
+            <p className={styles.dragHint}>
+              Drag users to tasks to assign them
+            </p>
+          )}
+        </div>
+        
         {/* Users Section */}
-        <div className={styles.usersSection}>
+        <div className={`${styles.usersSection} ${isUsersSectionCollapsed ? styles.collapsed : ""}`}>
           {loading ? (
             <Spinner />
           ) : (
@@ -334,6 +373,11 @@ const Sidebar = () => {
           )}
         </div>
       </div>
+      
+      {/* Chat Modal */}
+      {isChatModalOpen && (
+        <ChatModal onClose={closeChatModal} />
+      )}
       
       {/* Export context for other components to use */}
       <AssignedUsersContext.Provider
