@@ -15,6 +15,7 @@ import KanbanGrid from "../../components/KanbanGrid/KanbanGrid";
 import { IColumnEntity } from "../../interfaces/IColumnEntity";
 import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
+import Chat from "../../components/Chat/Chat";
 
 function KanbanBoard() {
   useWebsiteTitle("Kanban Board");
@@ -33,7 +34,7 @@ function KanbanBoard() {
   const [newTaskTitleMap, setNewTaskTitleMap] = useState<{
     [key: string]: string;
   }>({});
-  const [showChatModal, setShowChatModal] = useState<boolean>(false);
+  // const [showChatModal, setShowChatModal] = useState<boolean>(false);
 
   // Stan dla edycji limitów WIP
   const [isEditingWipLimitMap, setIsEditingWipLimitMap] = useState<{
@@ -681,9 +682,9 @@ function KanbanBoard() {
     }
   };
 
-  const toggleChatModal = () => {
-    setShowChatModal((prev) => !prev);
-  };
+  // const toggleChatModal = () => {
+  //   setShowChatModal((prev) => !prev);
+  // };
 
   useEffect(() => {
     subscriptionRef.current = columnChangeSubject.subscribe(
@@ -720,9 +721,9 @@ function KanbanBoard() {
           params={{ id: params.id || "" }}
         />
 
-        <button className={styles.chatButton} onClick={toggleChatModal}>
+        {/* <button className={styles.chatButton} onClick={toggleChatModal}>
           <i className="bi bi-chat"></i>
-        </button>
+        </button> */}
       </div>
 
       <div id={`${styles.bars}`} ref={bars}>
@@ -812,6 +813,8 @@ function KanbanBoard() {
           />
         </div>
       </DragDropContext>
+
+      {/* {showChatModal && <Chat />} */}
     </div>
   );
 }

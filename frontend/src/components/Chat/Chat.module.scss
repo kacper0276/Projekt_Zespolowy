@@ -1,0 +1,9 @@
+@use "../../styles/mixins" as *;
+@use "../../styles/variables" as *;
+
+.chat {
+  position: absolute;
+  top: 25%;
+  right: 30%;
+  background: $backgroundColor;
+}
