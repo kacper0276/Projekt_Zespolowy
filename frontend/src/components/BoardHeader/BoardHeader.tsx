@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { toast } from 'react-toastify';
-import styles from './BoardHeader.module.scss';
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import styles from "./BoardHeader.module.scss";
 import { useTranslation } from "react-i18next";
 
 interface BoardHeaderProps {
@@ -16,7 +16,12 @@ interface BoardHeaderProps {
   };
 }
 
-const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api, params }) => {
+const BoardHeader: React.FC<BoardHeaderProps> = ({
+  boardData,
+  setBoardData,
+  api,
+  params,
+}) => {
   const { t } = useTranslation();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTableName, setNewTableName] = useState(boardData?.tableName || "");
@@ -41,7 +46,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api,
         id: params.id,
         tableName: newTableName.trim(),
       });
-      
+
       if (res.data && res.data.data) {
         setBoardData({
           ...boardData,
@@ -69,7 +74,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api,
       {isEditingTitle ? (
         <div className={styles.editTitleContainer}>
           <input
-            type={("text")}
+            type={"text"}
             value={newTableName}
             onChange={(e) => setNewTableName(e.target.value)}
             onKeyDown={handleKeyPress}
@@ -91,7 +96,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api,
         </div>
       ) : (
         <div className={styles.boardTitle}>
-          <h1>{boardData?.tableName || {t("kanban-table")}}</h1>
+          <h1>{boardData?.tableName || t("kanban-table")}</h1>
           <i
             className="bi bi-pencil"
             onClick={handleEditTableName}

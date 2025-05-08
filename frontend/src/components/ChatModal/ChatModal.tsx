@@ -1,59 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./ChatModal.module.scss";
+import { IMessage } from "../../interfaces/IMessage";
+import { useUser } from "../../context/UserContext";
+import webSocketService from "../../services/webSocket.service";
 
 interface ChatModalProps {
   onClose: () => void;
+  kanbanId: string;
+  isOpen: boolean;
 }
 
-interface Message {
-  id: number;
-  sender: string;
-  content: string;
-  timestamp: string;
-  isCurrentUser: boolean;
-}
+// interface Message {
+//   id: number;
+//   sender: string;
+//   content: string;
+//   timestamp: string;
+//   isCurrentUser: boolean;
+// }
 
-const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      sender: "John Doe",
-      content: "Hi team, how's progress on the dashboard task?",
-      timestamp: "10:25 AM",
-      isCurrentUser: false,
-    },
-    {
-      id: 2,
-      sender: "Anna Smith",
-      content:
-        "I've completed the UI design and started on the implementation.",
-      timestamp: "10:27 AM",
-      isCurrentUser: false,
-    },
-    {
-      id: 3,
-      sender: "You",
-      content:
-        "Great! I'm working on the backend API. Should be ready by tomorrow.",
-      timestamp: "10:30 AM",
-      isCurrentUser: true,
-    },
-    {
-      id: 4,
-      sender: "Michael Johnson",
-      content:
-        "I'll start testing once both parts are ready. Let me know when I can begin.",
-      timestamp: "10:32 AM",
-      isCurrentUser: false,
-    },
-    {
-      id: 5,
-      sender: "John Doe",
-      content: "Perfect! Let's sync up tomorrow afternoon to review progress.",
-      timestamp: "10:35 AM",
-      isCurrentUser: false,
-    },
-  ]);
+const ChatModal: React.FC<ChatModalProps> = ({ onClose, kanbanId, isOpen }) => {
+  const user = useUser();
+
+  const [messages, setMessages] = useState<IMessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -66,27 +34,27 @@ const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSendMessage = (e: React.FormEvent): void => {
-    e.preventDefault();
-    if (newMessage.trim() === "") return;
+  // const handleSendMessage = (e: React.FormEvent): void => {
+  //   e.preventDefault();
+  //   if (newMessage.trim() === "") return;
 
-    const newMsg: Message = {
-      id: messages.length + 1,
-      sender: "You",
-      content: newMessage.trim(),
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      isCurrentUser: true,
-    };
+  //   const newMsg: IMessage = {
+  //     id: messages.length + 1,
+  //     senderName: "You",
+  //     content: newMessage.trim(),
+  //     createdAt: new Date(),
+  //     isCurrentUser: true,
+  //     isRead: true,
+  //     senderId: user.user?.id || -1,
+  //   };
 
-    setMessages([...messages, newMsg]);
-    setNewMessage("");
-  };
+  //   setMessages([...messages, newMsg]);
+  //   setNewMessage("");
+  // };
 
   // Get initials for the avatar
   const getInitials = (name: string): string => {
+    console.log(name);
     if (name === "You") return "YO";
 
     const parts = name.split(" ");
@@ -94,6 +62,44 @@ const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
       return `${parts[0].charAt(0)}${parts[1].charAt(0)}`;
     }
     return name.substring(0, 2).toUpperCase();
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      webSocketService.joinRoom(kanbanId);
+
+      webSocketService.sendMessage("loadMessages", kanbanId);
+
+      webSocketService.onMessage("loadMessages", (loadedMessages) => {
+        loadedMessages.forEach((message: IMessage) => {
+          message.createdAt = new Date(message.createdAt);
+        });
+        setMessages(loadedMessages);
+      });
+
+      webSocketService.onMessage("receiveMessage", (message) => {
+        message.createdAt = new Date(message.createdAt);
+        setMessages((prev) => [...prev, message]);
+      });
+
+      return () => {
+        webSocketService.offMessage("loadMessages");
+        webSocketService.offMessage("receiveMessage");
+      };
+    }
+  }, [isOpen, kanbanId]);
+
+  const sendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newMessage.trim()) {
+      webSocketService.sendMessage("sendMessage", {
+        kanbanId,
+        senderId: user.user?.id,
+        content: newMessage,
+        sender: user.user,
+      });
+      setNewMessage("");
+    }
   };
 
   return (
@@ -119,17 +125,31 @@ const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
             <div
               key={message.id}
               className={`${styles.messageContainer} ${
-                message.isCurrentUser ? styles.currentUser : ""
+                message.isCurrentUser || message.senderId === user.user?.id
+                  ? styles.currentUser
+                  : ""
               }`}
             >
               <div className={styles.avatarCircle}>
-                {getInitials(message.sender)}
+                {getInitials(
+                  `${message.sender?.firstName} ${message.sender?.lastName}` ||
+                    "You"
+                )}
               </div>
               <div className={styles.messageContent}>
                 <div className={styles.messageHeader}>
-                  <span className={styles.messageSender}>{message.sender}</span>
+                  <span className={styles.messageSender}>
+                    {message.sender?.firstName}
+                  </span>
                   <span className={styles.messageTime}>
-                    {message.timestamp}
+                    {message.createdAt.toLocaleTimeString([], {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
                   </span>
                 </div>
                 <p className={styles.messageText}>{message.content}</p>
@@ -140,7 +160,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
         </div>
 
         {/* Message input area */}
-        <form className={styles.chatInputArea} onSubmit={handleSendMessage}>
+        <form className={styles.chatInputArea} onSubmit={sendMessage}>
           <input
             type="text"
             className={styles.messageInput}

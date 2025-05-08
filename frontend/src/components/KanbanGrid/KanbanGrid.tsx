@@ -74,11 +74,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
     taskId: string,
     taskName: string
   ) => {
-    if (
-      window.confirm(
-        `${t("confirm3")} "${taskName}"? ${t("confirm4")}.`
-      )
-    ) {
+    if (window.confirm(`${t("confirm3")} "${taskName}"? ${t("confirm4")}.`)) {
       onDeleteTaskFromCell(rowId, columnId, taskId);
     }
   };
@@ -198,7 +194,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                               e.target.value
                             )
                           }
-                          placeholder={t("task-name)}
+                          placeholder={t("task-name")}
                           className={styles.taskInput}
                           autoFocus
                         />
