@@ -79,7 +79,7 @@ const ProfilePage: React.FC = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [emailParam]);
 
   const fetchKanbanBoards = async () => {
     if (!currentUser) return;
@@ -156,7 +156,9 @@ const ProfilePage: React.FC = () => {
                   <div key={board.id} className={styles.boardCard}>
                     <h3>{board.tableName}</h3>
                     <div className={styles.boardMeta}>
-                      <span>{board.users?.length || 0} {t("members")}</span>
+                      <span>
+                        {board.users?.length || 0} {t("members")}
+                      </span>
                       <a
                         href={`/boards/${board.id}`}
                         className={styles.viewBoardBtn}
