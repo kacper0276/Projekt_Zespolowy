@@ -326,7 +326,7 @@ const Sidebar = () => {
                           <span className={styles.wipValue}>
                             {wipLimit > 0 ? (
                               <span>
-                               {t("tasks")} <strong>{taskCount} / {wipLimit}</strong>
+                               {t("tasks")}: <strong>{taskCount} / {wipLimit}</strong>
                                 {remaining > 0 && <span className={styles.remainingBadge}> ({remaining} left)</span>}
                               </span>
                             ) : (
