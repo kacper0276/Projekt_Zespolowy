@@ -15,7 +15,6 @@ import KanbanGrid from "../../components/KanbanGrid/KanbanGrid";
 import { IColumnEntity } from "../../interfaces/IColumnEntity";
 import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
-import Chat from "../../components/Chat/Chat";
 import { useTranslation } from "react-i18next";
 
 function KanbanBoard() {
@@ -80,7 +79,6 @@ function KanbanBoard() {
         const res = await api.get<ApiResponse<IKanban>>(
           `kanban/board/${params.id}`
         );
-        console.log(res.data);
         if (isMounted && res.data && res.data.data) {
           initializeBoard(res.data.data);
 
@@ -109,10 +107,7 @@ function KanbanBoard() {
           }
         }
       } catch (error) {
-        console.error(t("error-fetching-board"), error);
-        toast.error(
-          t("failed-fetching-board-data-try-again-later")
-        );
+        toast.error(t("failed-fetching-board-data-try-again-later"));
       }
     };
 
@@ -251,7 +246,7 @@ function KanbanBoard() {
     if (rowExists) {
       if (
         !window.confirm(
-            t('duplicate-row-confirmation', { rowName: newRowName.trim() })
+          t("duplicate-row-confirmation", { rowName: newRowName.trim() })
         )
       ) {
         return;
@@ -300,7 +295,6 @@ function KanbanBoard() {
         toast.success(t("row-added-succesfully"));
       }
     } catch (error) {
-      console.error(t("error-adding-row"), error);
       toast.error(t("failed-adding-row-try-again-later"));
     }
   };
@@ -314,9 +308,7 @@ function KanbanBoard() {
     const rowDbId = rows[rowId]?.rowId;
 
     if (!rowDbId) {
-      toast.error(
-        t("can-not-delete-row-id-not-found")
-      );
+      toast.error(t("can-not-delete-row-id-not-found"));
       return;
     }
 
@@ -359,7 +351,6 @@ function KanbanBoard() {
 
       toast.success(t("row-deleted-succesfully"));
     } catch (error) {
-      console.error(t("error-deleting-row"), error);
       toast.error(t("failed-deleting-row-try-again-later"));
     }
   };
@@ -382,8 +373,8 @@ function KanbanBoard() {
     updateColumnWipLimit(columnId, limit);
     handleCancelEditingWipLimit(columnId);
     toast.success(
-      t('task-limit-updated', {
-        limit: limit === 0 ? t('no-limit') : limit
+      t("task-limit-updated", {
+        limit: limit === 0 ? t("no-limit") : limit,
       })
     );
   };
