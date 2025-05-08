@@ -439,7 +439,7 @@ function KanbanBoard() {
         destColumnTaskCount >= destColumn.wipLimit
       ) {
         toast.error(
-          `Nie można dodać więcej zadań do kolumny ${destColumn.title} - limit WIP osiągnięty!`
+          t("can-not-add-task-to-column-wip-limit-reached", { column: destColumn.title })
         );
         return;
       }
@@ -453,7 +453,7 @@ function KanbanBoard() {
           .length;
         if (tasksInDestRow >= row.wipLimit) {
           toast.error(
-            `Nie można dodać więcej zadań do wiersza ${row.title} - limit WIP osiągnięty!`
+            t("can-not-add-task-to-row-wip-limit-reached", { row: row.title })
           );
           return;
         }
@@ -541,7 +541,7 @@ function KanbanBoard() {
 
     if (column && column.wipLimit > 0 && currentTaskCount >= column.wipLimit) {
       toast.error(
-        `Nie można dodać więcej zadań do kolumny ${column.title} - limit WIP osiągnięty!`
+          t("can-not-add-task-to-column-wip-limit-reached", { column: column.title })
       );
       return;
     }
@@ -740,7 +740,7 @@ function KanbanBoard() {
                 type="text"
                 value={newRowName}
                 onChange={(e) => setNewRowName(e.target.value)}
-                placeholder="Nazwa nowego wiersza"
+                placeholder={t("new-row-name")}
                 className={styles.rowInput}
               />
               <div className={styles.rowActions}>
@@ -749,13 +749,13 @@ function KanbanBoard() {
                   variant="success"
                   disabled={!newRowName.trim()}
                 >
-                  Dodaj
+                  {t("add")}
                 </ActionButton>
                 <ActionButton
                   onClick={() => setIsAddingRow(false)}
                   variant="default"
                 >
-                  Anuluj
+                  {t("cancel")}
                 </ActionButton>
               </div>
             </div>
@@ -764,7 +764,7 @@ function KanbanBoard() {
               onClick={() => setIsAddingRow(true)}
               variant="primary"
             >
-              Dodaj nowy wiersz
+              {t("add-new-row")}
             </ActionButton>
           )}
         </div>
