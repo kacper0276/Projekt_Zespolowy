@@ -16,9 +16,11 @@ import { IColumnEntity } from "../../interfaces/IColumnEntity";
 import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
 import Chat from "../../components/Chat/Chat";
+import { useTranslation } from "react-i18next";
 
 function KanbanBoard() {
-  useWebsiteTitle("Kanban Board");
+  const { t } = useTranslation();
+  useWebsiteTitle(t("kanban-board"));
   const params = useParams<{ id: string }>();
   const api = useApiJson();
   const bars = useRef<HTMLDivElement>(null);
@@ -107,9 +109,9 @@ function KanbanBoard() {
           }
         }
       } catch (error) {
-        console.error("Błąd podczas pobierania danych tablicy:", error);
+        console.error(t("error-fetching-board"), error);
         toast.error(
-          "Nie udało się załadować tablicy. Spróbuj ponownie później."
+          t("failed-fetching-board-data-try-again-later")
         );
       }
     };
@@ -238,7 +240,7 @@ function KanbanBoard() {
 
   const handleAddRow = async () => {
     if (!newRowName.trim()) {
-      toast.error("Nazwa wiersza nie może być pusta!");
+      toast.error(t("row-name-can-not-be-empty"));
       return;
     }
 
@@ -249,7 +251,7 @@ function KanbanBoard() {
     if (rowExists) {
       if (
         !window.confirm(
-          `Wiersz o nazwie "${newRowName.trim()}" już istnieje. Czy na pewno chcesz utworzyć duplikat?`
+            t('duplicate-row-confirmation', { rowName: newRowName.trim() })
         )
       ) {
         return;
@@ -295,17 +297,17 @@ function KanbanBoard() {
         setTaskGrid(newTaskGrid);
         setNewRowName("");
         setIsAddingRow(false);
-        toast.success("Wiersz został dodany!");
+        toast.success(t("row-added-succesfully"));
       }
     } catch (error) {
-      console.error("Błąd podczas dodawania wiersza:", error);
-      toast.error("Nie udało się dodać wiersza. Spróbuj ponownie później.");
+      console.error(t("error-adding-row"), error);
+      toast.error(t("failed-adding-row-try-again-later"));
     }
   };
 
   const handleDeleteRow = async (rowId: string) => {
     if (rowId === "Default" || rows[rowId].title === "Default") {
-      toast.error("Nie można usunąć domyślnego wiersza!");
+      toast.error(t("can-not-delete-default-row"));
       return;
     }
 
@@ -313,7 +315,7 @@ function KanbanBoard() {
 
     if (!rowDbId) {
       toast.error(
-        "Nie można usunąć wiersza - brak identyfikatora w bazie danych!"
+        t("can-not-delete-row-id-not-found")
       );
       return;
     }
@@ -355,10 +357,10 @@ function KanbanBoard() {
       delete newTaskGrid[rowId];
       setTaskGrid(newTaskGrid);
 
-      toast.success("Wiersz został usunięty!");
+      toast.success(t("row-deleted-succesfully"));
     } catch (error) {
-      console.error("Błąd podczas usuwania wiersza:", error);
-      toast.error("Nie udało się usunąć wiersza. Spróbuj ponownie później.");
+      console.error(t("error-deleting-row"), error);
+      toast.error(t("failed-deleting-row-try-again-later"));
     }
   };
 
@@ -380,9 +382,9 @@ function KanbanBoard() {
     updateColumnWipLimit(columnId, limit);
     handleCancelEditingWipLimit(columnId);
     toast.success(
-      `Limit zadań dla kolumny został zaktualizowany na ${
-        limit === 0 ? "brak limitu" : limit
-      }!`
+      t('task-limit-updated', {
+        limit: limit === 0 ? t('no-limit') : limit
+      })
     );
   };
 

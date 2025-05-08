@@ -3,9 +3,11 @@ import { useTranslation } from "react-i18next";
 import { useUser } from "../../context/UserContext";
 import styles from "./Settings.module.scss";
 import { useApiJson } from "../../config/api";
+import useWebsiteTitle from "../../hooks/useWebsiteTitle";
 
 const Settings: React.FC = () => {
   const { t } = useTranslation();
+  useWebsiteTitle(t("settings"));
   const { user } = useUser();
   const api = useApiJson();
 

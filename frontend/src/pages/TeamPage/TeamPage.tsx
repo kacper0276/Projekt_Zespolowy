@@ -11,9 +11,12 @@ import Multiselect from "multiselect-react-dropdown";
 import { ITeamInvite } from "../../interfaces/ITeamInvite";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner/Spinner";
+import { useTranslation } from "react-i18next";
+
 
 const TeamPage: React.FC = () => {
-  useWebsiteTitle("Twoje zespoły");
+  const { t } = useTranslation();
+  useWebsiteTitle(t("your-teams"));
   const api = useApiJson();
   const userContext = useUser();
   const [loading, setLoading] = useState<boolean>(true);
@@ -48,7 +51,7 @@ const TeamPage: React.FC = () => {
       );
       setTeams(response.data.data ?? []);
     } catch (error) {
-      toast.error(`Error fetching teams`);
+      toast.error(t(`error-fetching-teams`));
     } finally {
       setLoading(false);
     }
@@ -77,10 +80,12 @@ const TeamPage: React.FC = () => {
       fetchTeams();
 
       toast.success(
-        `Zaproszenie ${action === "accept" ? "zaakceptowane" : "odrzucone"}`
+        t('inviteStatus', {
+          status: t(action === 'accept' ? 'accepted' : 'rejected')
+        })
       );
     } catch (error) {
-      toast.error("Error accepting/rejecting invite");
+      toast.error(t("error-accepting-or-rejecting-invite"));
     } finally {
       setLoading(false);
     }
@@ -103,7 +108,7 @@ const TeamPage: React.FC = () => {
 
       setShowAddTeamModal(false);
     } catch (error) {
-      toast.error("Error adding team");
+      toast.error(t("error-adding-team"));
     } finally {
       setTeam({ ...team, users: [], teamName: "" });
       setLoading(false);
@@ -117,7 +122,7 @@ const TeamPage: React.FC = () => {
         const response = await api.get<ApiResponse<IUser[]>>(`users/all`);
         setUsers(response.data.data ?? []);
       } catch (error) {
-        toast.error("Error fetching users:");
+        toast.error(t("error-fetching-users"));
       } finally {
         setLoading(false);
       }
@@ -131,7 +136,7 @@ const TeamPage: React.FC = () => {
         );
         setTeamInvites(response.data.data ?? []);
       } catch (error) {
-        toast.error("Error fetching team invites:");
+        toast.error(t("error-fetching-team-invites"));
       } finally {
         setLoading(false);
       }
@@ -153,7 +158,7 @@ const TeamPage: React.FC = () => {
           }`}
           onClick={() => setActiveTab("teams")}
         >
-          Zespoły
+          {t("teams")}
         </button>
         <button
           className={`${styles.tabButton} ${
@@ -161,7 +166,7 @@ const TeamPage: React.FC = () => {
           }`}
           onClick={() => setActiveTab("invites")}
         >
-          Zaproszenia
+          {t("invites")}
           {teamInvites.length > 0 && (
             <span className={styles.badgeCount}>{teamInvites.length}</span>
           )}
@@ -171,7 +176,7 @@ const TeamPage: React.FC = () => {
       {activeTab === "invites" && (
         <div className={styles.contentSection}>
           <div className={styles.sectionHeaderContainer}>
-            <h2>Twoje zaproszenia</h2>
+            <h2>{t("your-invites")}</h2>
           </div>
 
           {loading ? (
@@ -183,8 +188,8 @@ const TeamPage: React.FC = () => {
               {teamInvites.length > 0 ? (
                 teamInvites.map((invite) => (
                   <div key={invite.id} className={styles.teamCard}>
-                    <p>Zaprosił: {invite.invitedByUser?.email}</p>
-                    <p>Do zespołu: {invite.team.name}</p>
+                    <p>{t("invited-by")}{invite.invitedByUser?.email}</p>
+                    <p>{t("to-team")}{invite.team.name}</p>
                     <div className={styles.inviteActions}>
                       <button
                         className={styles.acceptButton}
@@ -192,7 +197,7 @@ const TeamPage: React.FC = () => {
                           handleAcceptInvite(invite.id ?? -1, "accept")
                         }
                       >
-                        Akceptuj
+                        {t("accept")}
                       </button>
                       <button
                         className={styles.rejectButton}
@@ -200,14 +205,14 @@ const TeamPage: React.FC = () => {
                           handleAcceptInvite(invite.id ?? -1, "reject")
                         }
                       >
-                        Odrzuć
+                        {t("reject")}
                       </button>
                     </div>
                   </div>
                 ))
               ) : (
                 <p className={styles.emptyMessage}>
-                  Nie masz żadnych zaproszeń.
+                  {t("you-do-not-have-any-invites")}
                 </p>
               )}
             </div>
@@ -218,11 +223,11 @@ const TeamPage: React.FC = () => {
       {activeTab === "teams" && (
         <div className={styles.contentSection}>
           <div className={styles.headerContainer}>
-            <h1>Twoje zespoły</h1>
+            <h1>{t("your-teams")}</h1>
             <button
               className={styles.addTeamButton}
               onClick={toggleAddTeamClick}
-              aria-label="Dodaj nowy zespół"
+              aria-label={t("add-a-new-team")}
             >
               +
             </button>
@@ -238,12 +243,12 @@ const TeamPage: React.FC = () => {
                 teams.map((team) => (
                   <div key={team.id} className={styles.teamCard}>
                     <h2>{team.name}</h2>
-                    <p>Ilość członków: {team.users.length}</p>
+                    <p>{t("member-count")} {team.users.length}</p>
                   </div>
                 ))
               ) : (
                 <p className={styles.emptyMessage}>
-                  Nie masz jeszcze żadnych zespołów.
+                  {t("you-do-not-have-any-teams-yet")}
                 </p>
               )}
             </div>
@@ -253,7 +258,7 @@ const TeamPage: React.FC = () => {
 
       {showAddTeamModal && (
         <PopUp
-          header={<h2>Dodaj nowy zespół</h2>}
+          header={<h2>{t("add-a-new-team")}</h2>}
           body={
             <form
               onSubmit={(e) => {
@@ -262,7 +267,7 @@ const TeamPage: React.FC = () => {
               }}
             >
               <div className={styles.formGroup}>
-                <label htmlFor="teamName">Nazwa zespołu</label>
+                <label htmlFor="teamName">{t("team-name")}</label>
                 <input
                   type="text"
                   id="teamName"
@@ -270,19 +275,19 @@ const TeamPage: React.FC = () => {
                   onChange={(e) =>
                     setTeam({ ...team, teamName: e.target.value })
                   }
-                  placeholder="Wpisz nazwę zespołu"
+                  placeholder={t("enter-team-name")}
                   required
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="users">Użytkownicy</label>
+                <label htmlFor="users">{t("users")}</label>
                 <Multiselect
                   options={users}
                   displayValue="email"
                   onSelect={onSelect}
                   onRemove={onRemove}
-                  placeholder="Wybierz użytkowników"
-                  emptyRecordMsg="Brak użytkowników"
+                  placeholder={t("choose-users")}
+                  emptyRecordMsg={t("no-users")}
                   loading={loading}
                 />
               </div>
@@ -290,8 +295,8 @@ const TeamPage: React.FC = () => {
           }
           footer={
             <>
-              <button onClick={toggleAddTeamClick}>Anuluj</button>
-              <button onClick={handleAddTeam}>Dodaj zespół</button>
+              <button onClick={toggleAddTeamClick}>{t("cancel")}</button>
+              <button onClick={handleAddTeam}>{t("add-team")}</button>
             </>
           }
           onClose={toggleAddTeamClick}

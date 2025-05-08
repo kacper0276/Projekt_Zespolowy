@@ -5,9 +5,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const ActivateAccount: React.FC = () => {
-  useWebsiteTitle("Activate Account");
+  const { t } = useTranslation();
+  useWebsiteTitle(t("activate-account"));
   const params = useParams();
   const navigate = useNavigate();
   const apiJson = useApiJson();
@@ -40,8 +42,8 @@ const ActivateAccount: React.FC = () => {
 
   return (
     <div className={styles.mainContainer}>
-      <h1>Activate Account</h1>
-      <p>Your account is currently activated.</p>
+      <h1>{t("activate-account")}</h1>
+      <p>{t("your-account-is-currently-activated")}</p>
     </div>
   );
 };
