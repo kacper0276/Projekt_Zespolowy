@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import styles from './BoardHeader.module.scss';
+import { useTranslation } from "react-i18next";
 
 interface BoardHeaderProps {
   boardData: {
@@ -16,6 +17,7 @@ interface BoardHeaderProps {
 }
 
 const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api, params }) => {
+  const { t } = useTranslation();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTableName, setNewTableName] = useState(boardData?.tableName || "");
 
@@ -30,7 +32,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api,
 
   const handleSaveTableName = async () => {
     if (!newTableName.trim()) {
-      toast.error("Nazwa tablicy nie może być pusta!");
+      toast.error(t("empty-table"));
       return;
     }
 
@@ -45,12 +47,12 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api,
           ...boardData,
           tableName: newTableName.trim(),
         });
-        toast.success("Nazwa tablicy została zaktualizowana!");
+        toast.success(t("table-name-update"));
       }
       setIsEditingTitle(false);
     } catch (error) {
       console.error("Error updating table name:", error);
-      toast.error("Nie udało się zaktualizować nazwy tablicy.");
+      toast.error(t("table-name-update-error"));
     }
   };
 
@@ -67,7 +69,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api,
       {isEditingTitle ? (
         <div className={styles.editTitleContainer}>
           <input
-            type="text"
+            type={("text")}
             value={newTableName}
             onChange={(e) => setNewTableName(e.target.value)}
             onKeyDown={handleKeyPress}
@@ -78,22 +80,22 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ boardData, setBoardData, api,
             <i
               className="bi bi-check-lg"
               onClick={handleSaveTableName}
-              title="Zapisz"
+              title={t("save")}
             ></i>
             <i
               className="bi bi-x-lg"
               onClick={handleCancelEdit}
-              title="Anuluj"
+              title={t("cancel")}
             ></i>
           </div>
         </div>
       ) : (
         <div className={styles.boardTitle}>
-          <h1>{boardData?.tableName || "Tablica Kanban"}</h1>
+          <h1>{boardData?.tableName || {t("kanban-table")}}</h1>
           <i
             className="bi bi-pencil"
             onClick={handleEditTableName}
-            title="Edytuj nazwę tablicy"
+            title={t("edit-table-name")}
           ></i>
         </div>
       )}

@@ -17,6 +17,7 @@ const PopUp: React.FC<PopUpProps> = ({ header, body, footer, onClose }) => {
       }
     };
 
+
     document.addEventListener('keydown', handleEscKey);
     return () => {
       document.removeEventListener('keydown', handleEscKey);

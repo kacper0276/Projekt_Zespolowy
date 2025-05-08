@@ -5,6 +5,7 @@ import TaskItem from "../../components/TaskItem/TaskItem";
 import ActionButton from "../../components/ActionButton/ActionButton";
 import RowHeader from "../../components/RowHeader/RowHeader";
 import { IStatus } from "../../interfaces/IStatus";
+import { useTranslation } from "react-i18next";
 
 interface KanbanGridProps {
   rows: Record<
@@ -66,6 +67,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
   handleTaskUpdate,
   handleRowWipLimitUpdate,
 }) => {
+  const { t } = useTranslation();
   const confirmDeleteTask = (
     rowId: string,
     columnId: string,
@@ -74,7 +76,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
   ) => {
     if (
       window.confirm(
-        `Czy na pewno chcesz usunąć zadanie "${taskName}"? Ta operacja jest nieodwracalna.`
+        `${t("confirm3")} "${taskName}"? ${t("confirm4")}.`
       )
     ) {
       onDeleteTaskFromCell(rowId, columnId, taskId);
@@ -196,7 +198,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                               e.target.value
                             )
                           }
-                          placeholder="Nazwa zadania"
+                          placeholder={t("task-name)}
                           className={styles.taskInput}
                           autoFocus
                         />

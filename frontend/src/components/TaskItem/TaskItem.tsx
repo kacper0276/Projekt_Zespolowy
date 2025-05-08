@@ -7,6 +7,7 @@ import { useApiJson } from "../../config/api";
 import { IStatus } from "../../interfaces/IStatus";
 import { IToDoList } from "../../interfaces/IToDoList";
 import { ApiResponse } from "../../types/api.types";
+import { useTranslation } from "react-i18next";
 
 interface ItemProps {
   task: {
@@ -37,6 +38,7 @@ const TaskItem: React.FC<ItemProps> = ({
   onTaskUpdate,
   statuses,
 }) => {
+  const { t } = useTranslation();
   const api = useApiJson();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskText, setTaskText] = useState(task.name || task.content || "");
@@ -305,7 +307,7 @@ const TaskItem: React.FC<ItemProps> = ({
                     onDeleteTask();
                   }}
                   className={styles.deleteTaskButton}
-                  title="Usuń zadanie"
+                  title={t("remove-task")}
                 >
                   <i className="bi bi-x-circle"></i>
                 </button>
@@ -321,7 +323,7 @@ const TaskItem: React.FC<ItemProps> = ({
                     }`}
                   ></i>
                   <span>
-                    Lista zadań (
+                    {t("tasks-list")} (
                     {todoLists.reduce(
                       (total, list) => total + list.items.length,
                       0
@@ -387,7 +389,7 @@ const TaskItem: React.FC<ItemProps> = ({
                           ))
                         ) : (
                           <li className={styles.emptyListMessage}>
-                            Brak zadań na liście
+                            {t("no-tasks-on-the-list")}
                           </li>
                         )}
                       </ul>

@@ -12,6 +12,41 @@
   "integrations": "Integracje",
   "connect-to-other-tools": "Połącz się z innymi narzędziami",
 
+  "empty-table": "Nazwa tablicy nie może być pusta!",
+  "table-name-update": "Nazwa tablicy została zaktualizowana!",
+  "table-name-update-error": "Nie udało się zaktualizować nazwy tablicy.",
+  "save": "Zapisz",
+  "kanban-table": "Tablica Kanban",
+  "edit-table-name": "Edytuj nazwę tablicy",
+
+  "chat": "czaty",
+  "chat-notif1": "To jest komponent czatu",
+  "chat-notif2": "Będzie on używany do wyświetlania wiadomości oraz wysyłania wiadomości",
+  "chat-notif3": "Będzie również używany do wyświetlania listy użytkowników na czacie",
+
+  "team-chat": "Czat grupowy",
+  "close": "Zamknij",
+  "text": "Tekst",
+  "type-your-message": "Napisz swoją wiadomość tutaj...",
+  "submit": "Wyślij",
+
+  "remove-column": "Usuń kolumnę",
+  "edit-limit": "Kliknij, aby edytować limit zadań",
+  "insert-title": "Wpisz tytuł zadania",
+  "null": "Brak",
+
+  "confirm1": "Czy na pewno chcesz usunąć kolumnę",
+  "confirm2": "Wszystkie zadania zostaną przeniesione do poprzedniej kolumny",
+  "confirm3": "Czy na pewno chcesz usunąć zadanie",
+  "confirm4": "Ta operacja jest nieodwracalna",
+  "confirm5": "Czy na pewno chcesz usunąć wiersz",
+  "task-name": "Nazwa zadania",
+  "remove-row":"Usuń wiersz",
+
+  "remove-task": "Usuń zadanie",
+  "tasks-list": "Lista zadań",
+  "no-tasks-on-the-list": "Brak zadań na liście",
+
   "professional-tool-for-managing-projects": "Profesjonalne narzędzie do zarządzania projektami",
   "quick-links": "Szybkie linki",
   "features": "Funkcje",

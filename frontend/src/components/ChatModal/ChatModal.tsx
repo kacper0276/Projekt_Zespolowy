@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./ChatModal.module.scss";
+import { useTranslation } from "react-i18next";
 
 interface ChatModalProps {
   onClose: () => void;
@@ -14,6 +15,7 @@ interface Message {
 }
 
 const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -95,12 +97,12 @@ const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
       <div className={styles.chatModal}>
         {/* Header */}
         <div className={styles.chatHeader}>
-          <h3>Team Chat</h3>
+          <h3>{t("team-chat")}</h3>
           <div className={styles.chatControls}>
             <button 
               className={styles.controlButton} 
               onClick={onClose}
-              aria-label="Close"
+              aria-label={t("close")}
             >
               <i className="bi bi-x"></i>
             </button>
@@ -132,14 +134,14 @@ const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
         {/* Message input area */}
         <form className={styles.chatInputArea} onSubmit={handleSendMessage}>
           <input
-            type="text"
+            type={t("text")}
             className={styles.messageInput}
-            placeholder="Type your message..."
+            placeholder={t("type-your-message")}
             value={newMessage}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value)}
           />
           <button 
-            type="submit" 
+            type={t("submit")} 
             className={styles.sendButton}
             disabled={!newMessage.trim()}
           >

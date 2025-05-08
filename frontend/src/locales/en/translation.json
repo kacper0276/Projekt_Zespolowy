@@ -12,6 +12,41 @@
   "integrations": "Integrations",
   "connect-to-other-tools": "Connect to other tools",
 
+  "empty-table": "Table name can't be empty!" ,
+  "table-name-update": "Table name has been updated",
+  "table-name-update-error": "Error updating table name",
+  "save": "Save",
+  "kanban-table": "Kanban Table",
+  "edit-table-name": "Edit table name",
+
+  "chat": "chat",
+  "chat-notif1":"This is the chat component",
+  "chat-notif2":"It will be used to display messages and allow users to send messages",
+  "chat-notif3": "It will also be used to display the list of users in the chat",
+
+  "team-chat": "Team chat",
+  "close": "Close",
+  "text": "Text",
+  "type-your-message":"Type your message...",
+  "submit": "Submit",
+
+  "remove-column": "Remove column",
+  "edit-limit": "Press to edit task limit",
+  "insert-title": "Insert task title",
+  "null": "null",
+
+  "confirm1": "Are you sure you want to delete this column",
+  "confirm2":"Every task will be moved to previous column",
+  "confirm3":"Are you sure you want to delete this task",
+  "confirm4":"This acction is irreversible",
+  "confirm5": "Are you sure you want to delete this row",
+  "task-name": "Task name",
+  "remove-row": "Remove row",
+
+  "remove-task": "Remove task",
+  "tasks-list": "Tasks list",
+  "no-tasks-on-the-list": "No tasks on the list",
+
   "professional-tool-for-managing-projects": "Professional tool for managing projects",
   "quick-links": "Quick links",
   "features": "Features",
@@ -118,4 +153,5 @@
   "tasks": "Tasks",
   "left": "left",
   "WIP-limit-unlimited": "WIP limit: Unlimited"
+
 }

@@ -4,6 +4,7 @@ import styles from './ColumnHeader.module.scss';
 import WipLimitEditor from '../../components/WipLimitEditor/WipLimitEditor';
 import ActionButton from '../../components/ActionButton/ActionButton';
 import { useApiJson } from "../../config/api";
+import { useTranslation } from "react-i18next";
 
 interface Column {
   id: string;
@@ -39,6 +40,7 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
   setNewColumnTitle,
   addColumn
 }) => {
+  const { t } = useTranslation();
   const api = useApiJson();
   
   const handleWipLimitSaveWithDb = (columnId: string, limit: number) => {
@@ -63,7 +65,7 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
 
   // Handle column delete with confirmation
   const handleDeleteColumn = async (columnId: string) => {
-    if (window.confirm(`Czy na pewno chcesz usunąć kolumnę ${columns[columnId].title}? Wszystkie zadania zostaną przeniesione do poprzedniej kolumny.`)) {
+    if (window.confirm(`${t("question")} ${columns[columnId].title}? ${t("consequences")}.`)) {
       await deleteColumn(columnId);
     }
   };
@@ -124,7 +126,7 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
                                 isLimitReached ? styles.limitReached : ""
                               }`}
                               onClick={() => handleStartEditingWipLimit(column.id)}
-                              title="Kliknij, aby edytować limit zadań"
+                              title={t("edit_limit")}
                             >
                               <span>WIP: {column.wipLimit === 0 ? "Brak" : column.wipLimit}</span>
                               <i className="bi bi-pencil-fill ms-2"></i>
@@ -136,7 +138,7 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
                           <button
                             onClick={() => handleDeleteColumn(column.id)}
                             className={styles.deleteColumnButton}
-                            title="Usuń kolumnę"
+                            title={t("remove_column")}
                           >
                             <i className="bi bi-x-circle-fill"></i>
                           </button>
@@ -154,7 +156,7 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
                   type="text"
                   value={newColumnTitle}
                   onChange={(e) => setNewColumnTitle(e.target.value)}
-                  placeholder="Nazwa nowej kolumny"
+                  placeholder={t("new-column-name")}
                   className={styles.columnInput}
                 />
                 <ActionButton
