@@ -13,7 +13,6 @@ import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner/Spinner";
 import { useTranslation } from "react-i18next";
 
-
 const TeamPage: React.FC = () => {
   const { t } = useTranslation();
   useWebsiteTitle(t("your-teams"));
@@ -80,8 +79,8 @@ const TeamPage: React.FC = () => {
       fetchTeams();
 
       toast.success(
-        t('inviteStatus', {
-          status: t(action === 'accept' ? 'accepted' : 'rejected')
+        t("inviteStatus", {
+          status: t(action === "accept" ? "accepted" : "rejected"),
         })
       );
     } catch (error) {
@@ -147,7 +146,7 @@ const TeamPage: React.FC = () => {
     fetchTeams();
     fetchUsers();
     fetchTeamInvites();
-  }, []);
+  }, [activeTab]);
 
   return (
     <div className={styles.teamPage}>
@@ -188,8 +187,14 @@ const TeamPage: React.FC = () => {
               {teamInvites.length > 0 ? (
                 teamInvites.map((invite) => (
                   <div key={invite.id} className={styles.teamCard}>
-                    <p>{t("invited-by")}{invite.invitedByUser?.email}</p>
-                    <p>{t("to-team")}{invite.team.name}</p>
+                    <p>
+                      {t("invited-by")}
+                      {invite.invitedByUser?.email}
+                    </p>
+                    <p>
+                      {t("to-team")}
+                      {invite.team.name}
+                    </p>
                     <div className={styles.inviteActions}>
                       <button
                         className={styles.acceptButton}
@@ -243,7 +248,9 @@ const TeamPage: React.FC = () => {
                 teams.map((team) => (
                   <div key={team.id} className={styles.teamCard}>
                     <h2>{team.name}</h2>
-                    <p>{t("member-count")} {team.users.length}</p>
+                    <p>
+                      {t("member-count")} {team.users.length}
+                    </p>
                   </div>
                 ))
               ) : (
