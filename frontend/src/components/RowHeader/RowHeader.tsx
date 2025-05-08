@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './RowHeader.module.scss';
 import WipLimitEditor from '../WipLimitEditor/WipLimitEditor';
 import { useApiJson } from "../../config/api";
+import { useTranslation } from "react-i18next";
 
 interface RowHeaderProps {
   rowId: string;
@@ -24,6 +25,7 @@ const RowHeader: React.FC<RowHeaderProps> = ({
   currentTaskCount = 0,
   rowDbId
 }) => {
+  const { t } = useTranslation();
   const [isEditingWipLimit, setIsEditingWipLimit] = useState(false);
   const api = useApiJson();
  
@@ -62,7 +64,7 @@ const RowHeader: React.FC<RowHeaderProps> = ({
  
   const confirmDeleteRow = () => {
     if (window.confirm(
-      `Czy na pewno chcesz usunąć wiersz "${rowTitle}"? Ta operacja jest nieodwracalna.`
+      `${t("confirm5")} "${rowTitle}"? ${t("confirm4")}.`
     )) {
       handleDeleteRow(rowId);
     }
@@ -92,7 +94,7 @@ const RowHeader: React.FC<RowHeaderProps> = ({
               isLimitReached ? styles.limitReached : ""
             }`}
             onClick={() => setIsEditingWipLimit(true)}
-            title="Kliknij, aby edytować limit zadań"
+            title={t("edit-limit")}
           >
             <span>WIP: {wipLimit === 0 ? "Brak" : wipLimit}</span>
             <i className="bi bi-pencil-fill ms-2"></i>
@@ -103,7 +105,7 @@ const RowHeader: React.FC<RowHeaderProps> = ({
           <button
             onClick={confirmDeleteRow}
             className={styles.deleteRowButton}
-            title="Usuń wiersz"
+            title={t("remove-row")}
           >
             <i className="bi bi-trash-fill"></i>
           </button>

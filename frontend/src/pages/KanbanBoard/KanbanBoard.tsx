@@ -15,7 +15,6 @@ import KanbanGrid from "../../components/KanbanGrid/KanbanGrid";
 import { IColumnEntity } from "../../interfaces/IColumnEntity";
 import { ApiResponse } from "../../types/api.types";
 import { IKanban } from "../../interfaces/IKanban";
-import Chat from "../../components/Chat/Chat";
 import { useTranslation } from "react-i18next";
 
 function KanbanBoard() {
@@ -80,7 +79,6 @@ function KanbanBoard() {
         const res = await api.get<ApiResponse<IKanban>>(
           `kanban/board/${params.id}`
         );
-        console.log(res.data);
         if (isMounted && res.data && res.data.data) {
           initializeBoard(res.data.data);
 
@@ -109,10 +107,7 @@ function KanbanBoard() {
           }
         }
       } catch (error) {
-        console.error(t("error-fetching-board"), error);
-        toast.error(
-          t("failed-fetching-board-data-try-again-later")
-        );
+        toast.error(t("failed-fetching-board-data-try-again-later"));
       }
     };
 
@@ -251,7 +246,7 @@ function KanbanBoard() {
     if (rowExists) {
       if (
         !window.confirm(
-            t('duplicate-row-confirmation', { rowName: newRowName.trim() })
+          t("duplicate-row-confirmation", { rowName: newRowName.trim() })
         )
       ) {
         return;
@@ -300,7 +295,6 @@ function KanbanBoard() {
         toast.success(t("row-added-succesfully"));
       }
     } catch (error) {
-      console.error(t("error-adding-row"), error);
       toast.error(t("failed-adding-row-try-again-later"));
     }
   };
@@ -314,9 +308,7 @@ function KanbanBoard() {
     const rowDbId = rows[rowId]?.rowId;
 
     if (!rowDbId) {
-      toast.error(
-        t("can-not-delete-row-id-not-found")
-      );
+      toast.error(t("can-not-delete-row-id-not-found"));
       return;
     }
 
@@ -359,7 +351,6 @@ function KanbanBoard() {
 
       toast.success(t("row-deleted-succesfully"));
     } catch (error) {
-      console.error(t("error-deleting-row"), error);
       toast.error(t("failed-deleting-row-try-again-later"));
     }
   };
@@ -382,8 +373,8 @@ function KanbanBoard() {
     updateColumnWipLimit(columnId, limit);
     handleCancelEditingWipLimit(columnId);
     toast.success(
-      t('task-limit-updated', {
-        limit: limit === 0 ? t('no-limit') : limit
+      t("task-limit-updated", {
+        limit: limit === 0 ? t("no-limit") : limit,
       })
     );
   };
@@ -439,7 +430,7 @@ function KanbanBoard() {
         destColumnTaskCount >= destColumn.wipLimit
       ) {
         toast.error(
-          `Nie można dodać więcej zadań do kolumny ${destColumn.title} - limit WIP osiągnięty!`
+          t("can-not-add-task-to-column-wip-limit-reached", { column: destColumn.title })
         );
         return;
       }
@@ -453,7 +444,7 @@ function KanbanBoard() {
           .length;
         if (tasksInDestRow >= row.wipLimit) {
           toast.error(
-            `Nie można dodać więcej zadań do wiersza ${row.title} - limit WIP osiągnięty!`
+            t("can-not-add-task-to-row-wip-limit-reached", { row: row.title })
           );
           return;
         }
@@ -541,7 +532,7 @@ function KanbanBoard() {
 
     if (column && column.wipLimit > 0 && currentTaskCount >= column.wipLimit) {
       toast.error(
-        `Nie można dodać więcej zadań do kolumny ${column.title} - limit WIP osiągnięty!`
+          t("can-not-add-task-to-column-wip-limit-reached", { column: column.title })
       );
       return;
     }
@@ -740,7 +731,7 @@ function KanbanBoard() {
                 type="text"
                 value={newRowName}
                 onChange={(e) => setNewRowName(e.target.value)}
-                placeholder="Nazwa nowego wiersza"
+                placeholder={t("new-row-name")}
                 className={styles.rowInput}
               />
               <div className={styles.rowActions}>
@@ -749,13 +740,13 @@ function KanbanBoard() {
                   variant="success"
                   disabled={!newRowName.trim()}
                 >
-                  Dodaj
+                  {t("add")}
                 </ActionButton>
                 <ActionButton
                   onClick={() => setIsAddingRow(false)}
                   variant="default"
                 >
-                  Anuluj
+                  {t("cancel")}
                 </ActionButton>
               </div>
             </div>
@@ -764,7 +755,7 @@ function KanbanBoard() {
               onClick={() => setIsAddingRow(true)}
               variant="primary"
             >
-              Dodaj nowy wiersz
+              {t("add-new-row")}
             </ActionButton>
           )}
         </div>

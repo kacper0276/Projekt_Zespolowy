@@ -1,15 +1,15 @@
 import React from "react";
 import styles from "./Chat.module.scss";
+import { useTranslation } from "react-i18next";
 
 const Chat: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <div className={styles.chat}>
-      <h1>Chat</h1>
-      <p>This is the chat component.</p>
-      <p>
-        It will be used to display messages and allow users to send messages.
-      </p>
-      <p>It will also be used to display the list of users in the chat.</p>
+      <h1>{t("chat")}</h1>
+      <p>{t("chat-notif1")}.</p>
+      <p>{t("chat-notif2")}.</p>
+      <p>{t("chat-notif3")}.</p>
     </div>
   );
 };

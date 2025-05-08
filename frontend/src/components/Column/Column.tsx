@@ -5,8 +5,10 @@ import { useKanbanColumn } from "../../hooks/useKanbanColumn";
 import ActionButton from "../ActionButton/ActionButton";
 import TaskItem from "../TaskItem/TaskItem";
 import WipLimitEditor from "../WipLimitEditor/WipLimitEditor";
+import { useTranslation } from "react-i18next";
 
 interface ColumnProps {
+  
   col: {
     id: string;
     title: string;
@@ -22,6 +24,7 @@ interface ColumnProps {
 }
 
 const Column: React.FC<ColumnProps> = ({
+  
   col,
   onAddTask,
   onDeleteTask,
@@ -30,6 +33,7 @@ const Column: React.FC<ColumnProps> = ({
   updateWipLimit,
   canAddTask,
 }) => {
+  const { t } = useTranslation();
   const {
     isAddingTask,
     setIsAddingTask,
@@ -59,7 +63,7 @@ const Column: React.FC<ColumnProps> = ({
             <button
               onClick={onDeleteColumn}
               className={styles.deleteColumnButton}
-              title="Usuń kolumnę"
+              title={t("remove-column")}
             >
               <i className="bi bi-x-circle-fill"></i>
             </button>
@@ -80,9 +84,9 @@ const Column: React.FC<ColumnProps> = ({
               isLimitReached ? styles.limitReached : ""
             }`}
             onClick={() => setIsEditingWipLimit(true)}
-            title="Kliknij, aby edytować limit zadań"
+            title={t("edit-limit")}
           >
-            <span>WIP Limit: {col.wipLimit === 0 ? "Brak" : col.wipLimit}</span>
+            <span>{t("WIP-limit")}: {col.wipLimit === 0 ? {t("null")} : col.wipLimit}</span>
             <i className="bi bi-pencil-fill ms-2"></i>
           </div>
         )}
@@ -105,7 +109,7 @@ const Column: React.FC<ColumnProps> = ({
             type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
-            placeholder="Wpisz tytuł zadania"
+            placeholder={t("insert-title")}
             className={`form-control ${styles.taskInput}`}
           />
           <div className={styles.confirmTaskActions}>

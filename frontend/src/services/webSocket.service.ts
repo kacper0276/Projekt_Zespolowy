@@ -34,6 +34,31 @@ class WebSocketService {
     }
   }
 
+  joinRoom(roomId: string): void {
+    if (this.socket) {
+      this.socket.emit("joinKanbanRoom", roomId);
+      console.log(`Joined room: ${roomId}`);
+    }
+  }
+
+  leaveRoom(roomId: string): void {
+    if (this.socket) {
+      this.socket.emit("leaveKanbanRoom", roomId);
+      console.log(`Left room: ${roomId}`);
+    }
+  }
+
+  onMessage(event: string, callback: (data: any) => void): void {
+    if (this.socket) {
+      this.socket.on(event, callback);
+    }
+  }
+
+  offMessage(event: string): void {
+    if (this.socket) {
+      this.socket.off(event);
+    }
+  }
   disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();

@@ -13,9 +13,11 @@ import { IColumnEntity } from "../../interfaces/IColumnEntity";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { IRow } from "../../interfaces/IRow";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const BoardsNew: React.FC = () => {
-  useWebsiteTitle("Create new Board");
+  const { t } = useTranslation();
+  useWebsiteTitle(t("create-new-board"));
   const api = useApiJson();
   const navigate = useNavigate();
   const [kanbanData, setKanbanData] = useState<IKanban>({
@@ -145,14 +147,14 @@ const BoardsNew: React.FC = () => {
       .post<ApiResponse<IKanban>>("kanban", kanbanData)
       .then((res) => {
         if (res.status === 201) {
-          toast.success("Tablica została utworzona!");
+          toast.success(t("board-created-successfully"));
           navigate(`/boards/${res.data.data?.id}`);
         } else {
           toast.error(res.data.message);
         }
       })
       .catch((_err) => {
-        toast.error("Nie udało się utworzyć tablicy.");
+        toast.error(t("failed-creating-board"));
         console.log(_err);
       })
       .finally(() => {
@@ -162,11 +164,11 @@ const BoardsNew: React.FC = () => {
 
   return (
     <div className={styles.mainContainer}>
-      <h1>Utwórz nową tablicę</h1>
+      <h1>{t("create-new-board")}</h1>
       <form className={styles.formContainer} onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Nazwa tabeli"
+          placeholder={t("board-name")}
           name="tableName"
           required
           onChange={handleInputChange}
@@ -175,7 +177,7 @@ const BoardsNew: React.FC = () => {
 
         <p>
           <i className="bi bi-people-fill"></i>
-          Wyślij zaproszenie użytkownikom do tablicy
+          {t("invite-users-to-board")}
         </p>
         <div className={styles.multiselect}>
           <Multiselect
@@ -183,20 +185,20 @@ const BoardsNew: React.FC = () => {
             displayValue="email"
             onSelect={onSelect}
             onRemove={onRemove}
-            placeholder="Wybierz użytkowników"
-            emptyRecordMsg="Brak użytkowników"
+            placeholder={t("choose-users")}
+            emptyRecordMsg={t("no-users")}
             loading={isLoading}
           />
         </div>
 
         <p>
           <i className="bi bi-tag-fill"></i>
-          Utwórz listę statusów
+          {t("create-status-list")}
         </p>
         <div className={styles.inputGroup}>
           <input
             type="text"
-            placeholder="Nazwa statusu"
+            placeholder={t("status-name")}
             value={statusInput.name}
             onChange={(e) =>
               setStatusInput({ ...statusInput, name: e.target.value })
@@ -235,12 +237,12 @@ const BoardsNew: React.FC = () => {
 
         <p>
           <i className="bi bi-columns-gap"></i>
-          Dodaj własne kolumny
+          {t("add-additional-columns")}
         </p>
         <div className={styles.inputGroup}>
           <input
             type="text"
-            placeholder="Nazwa kolumny"
+            placeholder={t("column-name")}
             value={columnInput.name}
             onChange={(e) =>
               setColumnInput({ ...columnInput, name: e.target.value })
@@ -248,7 +250,7 @@ const BoardsNew: React.FC = () => {
           />
           <input
             type="number"
-            placeholder="Kolejność"
+            placeholder={t("order")}
             value={columnInput.order || ""}
             onChange={(e) =>
               setColumnInput({
@@ -259,7 +261,7 @@ const BoardsNew: React.FC = () => {
           />
           <input
             type="number"
-            placeholder="Max. zadań"
+            placeholder={t("max-tasks")}
             value={columnInput.maxTasks || ""}
             onChange={(e) =>
               setColumnInput({
@@ -281,7 +283,7 @@ const BoardsNew: React.FC = () => {
                   <i className="bi bi-layout-three-columns mx-2"></i>
                   {column.name}{" "}
                   <span className="">
-                    (Kolejność: {column.order}, Max zadań: {column.maxTasks})
+                    {t("order")} :{column.order}, {t("max-tasks")} {column.maxTasks})
                   </span>
                 </div>
                 <button type="button" onClick={() => handleRemoveColumn(index)}>
@@ -294,18 +296,18 @@ const BoardsNew: React.FC = () => {
 
         <p>
           <i className="bi bi-columns-gap"></i>
-          Dodaj własne rzędy
+          {t("add-additional-rows")}
         </p>
         <div className={styles.inputGroup}>
           <input
             type="text"
-            placeholder="Nazwa rzędu"
+            placeholder={t("row-name")}
             value={rowInput.name}
             onChange={(e) => setRowInput({ ...rowInput, name: e.target.value })}
           />
           <input
             type="number"
-            placeholder="Kolejność"
+            placeholder={t("order")}
             value={rowInput.order || ""}
             onChange={(e) =>
               setRowInput({
@@ -316,7 +318,7 @@ const BoardsNew: React.FC = () => {
           />
           <input
             type="number"
-            placeholder="Max. zadań"
+            placeholder={t("max-tasks")}
             value={rowInput.maxTasks || ""}
             onChange={(e) =>
               setRowInput({
@@ -338,7 +340,7 @@ const BoardsNew: React.FC = () => {
                   <i className="bi bi-layout-three-columns mx-2"></i>
                   {row.name}{" "}
                   <span className="">
-                    (Kolejność: {row.order}, Max zadań: {row.maxTasks})
+                    {t("order")} {row.order}, {t("max-tasks")} {row.maxTasks})
                   </span>
                 </div>
                 <button type="button" onClick={() => handleRemoveColumn(index)}>
@@ -349,7 +351,7 @@ const BoardsNew: React.FC = () => {
           </ul>
         </div>
 
-        <p>Zdjęcie w tle</p>
+        <p>{t("background-photo")}</p>
         <div className={styles.inputGroup}>
           <input
             type="file"
@@ -367,12 +369,12 @@ const BoardsNew: React.FC = () => {
           {isLoading ? (
             <>
               <i className="bi bi-hourglass-split"></i>
-              Tworzenie...
+              {t("creating")}
             </>
           ) : (
             <>
               <i className="bi bi-plus-circle"></i>
-              Dodaj tablicę
+              {t("add-board")}
             </>
           )}
         </button>
