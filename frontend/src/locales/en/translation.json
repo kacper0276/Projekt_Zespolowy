@@ -247,5 +247,7 @@
   "error-adding-todo-item": "Error adding item to a ToDo list",
   "error-deleting-item": "Error deleting item",
   "error-deleting-list": "Error deleting list",
-  "save-changes": "Save changes"
+  "save-changes": "Save changes",
+  "none": "None",
+  "more-users": "{{count}} więcej użytkowników"
 }

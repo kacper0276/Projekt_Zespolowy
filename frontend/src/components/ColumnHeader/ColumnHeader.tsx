@@ -128,7 +128,7 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
                               onClick={() => handleStartEditingWipLimit(column.id)}
                               title={t("edit_limit")}
                             >
-                              <span>WIP: {column.wipLimit === 0 ? "Brak" : column.wipLimit}</span>
+                              WIP: {column.wipLimit === 0 ? t("none") : column.wipLimit}
                               <i className="bi bi-pencil-fill ms-2"></i>
                             </div>
                           )}
@@ -165,7 +165,7 @@ const ColumnHeader: React.FC<ColumnHeaderProps> = ({
                   fullWidth
                   disabled={!newColumnTitle.trim()}
                 >
-                  Dodaj kolumnę
+                  {t("add-column")}
                 </ActionButton>
               </div>
             </div>

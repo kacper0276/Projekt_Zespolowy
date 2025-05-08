@@ -186,7 +186,6 @@
   "create-new-table": "Stwórz nową tablicę",
   "members": "członków",
 
-  "save": "Zapisz",
   "task-list": "Lista zadań",
   "new-list-name": "Nazwa nowej listy",
   "new-task": "Nowe zadanie",
@@ -197,7 +196,6 @@
   "create-first-list-using-the-form-above": "Utwórz pierwszą listę za pomocą formularza powyżej",
 
   "task-details": "Szczegóły zadania",
-  "task-name": "Nazwa zadania",
   "choose-deadline": "Wybierz deadline",
   "task-status": "Status zadania",
   "hide-statuses": "Ukryj statusy",
@@ -248,5 +246,8 @@
   "error-adding-todo-item": "Błąd podczas dodawania elementu do listy ToDo:",
   "error-deleting-item": "Błąd podczas usuwania elementu:",
   "error-deleting-list": "Błąd podczas usuwania listy:",
-  "save-changes": "Zapisz zmiany"
+  "save-changes": "Zapisz zmiany",
+  "none": "Brak",
+  "more-users": "{{count}} more users",
+  "add-task": "Dodaj zadanie"
 }

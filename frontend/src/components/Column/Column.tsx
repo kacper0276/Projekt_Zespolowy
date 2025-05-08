@@ -99,7 +99,7 @@ const Column: React.FC<ColumnProps> = ({
           variant="primary"
           fullWidth
         >
-          Dodaj zadanie
+          {t("add-task")}
         </ActionButton>
       </div>
 
@@ -118,13 +118,13 @@ const Column: React.FC<ColumnProps> = ({
               variant="success"
               disabled={!newTaskTitle.trim()}
             >
-              Dodaj
+              {t("add")}
             </ActionButton>
             <ActionButton
               onClick={() => setIsAddingTask(false)}
               variant="default"
             >
-              Anuluj
+              {t("cancel")}
             </ActionButton>
           </div>
         </div>

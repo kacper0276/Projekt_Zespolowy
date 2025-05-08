@@ -291,14 +291,14 @@ const TaskItem: React.FC<ItemProps> = ({
                       {taskUsers.length > 3 && (
                         <div
                           className={styles.userAvatar}
-                          title={`${taskUsers.length - 3} more users`}
+                          title={t("more-users", { count: taskUsers.length - 3 })}
                         >
                           +{taskUsers.length - 3}
                         </div>
                       )}
                     </>
                   ) : (
-                    <div className={styles.noUsers}>No users</div>
+                    <div className={styles.noUsers}>{t("no-users")}</div>
                   )}
                 </div>
                 <button

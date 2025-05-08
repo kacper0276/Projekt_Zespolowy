@@ -204,7 +204,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                             variant="success"
                             disabled={!newTaskTitleForCell.trim()}
                           >
-                            Dodaj
+                            {t("add")}
                           </ActionButton>
                           <ActionButton
                             onClick={() =>
@@ -212,7 +212,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                             }
                             variant="default"
                           >
-                            Anuluj
+                            {t("cancel")}
                           </ActionButton>
                         </div>
                       </div>
@@ -222,7 +222,7 @@ const KanbanGrid: React.FC<KanbanGridProps> = ({
                           onClick={() => handleStartAddingTask(rowId, columnId)}
                           className={styles.addTaskButton}
                         >
-                          <i className="bi bi-plus-circle"></i> Dodaj zadanie
+                          <i className="bi bi-plus-circle"></i> {t("add-task")}
                         </button>
                       )
                     )}

@@ -96,7 +96,8 @@ const RowHeader: React.FC<RowHeaderProps> = ({
             onClick={() => setIsEditingWipLimit(true)}
             title={t("edit-limit")}
           >
-            <span>WIP: {wipLimit === 0 ? "Brak" : wipLimit}</span>
+            <span>WIP: {wipLimit === 0 ? t("none") : wipLimit}</span>
+            
             <i className="bi bi-pencil-fill ms-2"></i>
           </div>
         )}
