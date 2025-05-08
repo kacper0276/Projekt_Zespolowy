@@ -39,33 +39,37 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
+
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
     height: 1px;
-    background: linear-gradient(90deg, 
-      rgba(255,255,255,0.05), 
-      rgba(255,255,255,0.2), 
-      rgba(255,255,255,0.05));
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.2),
+      rgba(255, 255, 255, 0.05)
+    );
   }
 }
 
 .body {
   flex: 1;
   padding: 24px;
-  
+
   label {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: darken($textColor, 10%);
+    color: rgba($textColor, 0.9);
   }
-  
-  input, select, textarea {
+
+  input,
+  select,
+  textarea {
     width: 100%;
     padding: 12px 16px;
     background-color: rgba(255, 255, 255, 0.07);
@@ -73,7 +77,7 @@
     border-radius: 6px;
     color: $textColor;
     transition: all 0.2s ease;
-    
+
     &:focus {
       outline: none;
       border-color: $blue-400;
@@ -87,7 +91,7 @@
   justify-content: flex-end;
   padding: 16px 24px 24px;
   gap: 12px;
-  
+
   button {
     padding: 10px 20px;
     border-radius: 6px;
@@ -95,20 +99,20 @@
     transition: all 0.2s ease;
     border: none;
     cursor: pointer;
-    
+
     &:first-child {
       background-color: rgba(255, 255, 255, 0.1);
       color: $textColor;
-      
+
       &:hover {
         background-color: rgba(255, 255, 255, 0.15);
       }
     }
-    
+
     &:last-child {
       @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
       color: white;
-      
+
       &:hover {
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -129,7 +133,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  
+
   &:hover {
     color: white;
     transform: rotate(90deg);
@@ -137,16 +141,20 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(30px);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0);
   }
