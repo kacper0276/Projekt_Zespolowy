@@ -52,7 +52,6 @@ const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
     }
   ]);
   const [newMessage, setNewMessage] = useState<string>("");
-  const [isMinimized, setIsMinimized] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Auto-scroll to the bottom when new messages are added
@@ -80,10 +79,6 @@ const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
     setNewMessage("");
   };
 
-  const toggleMinimize = (): void => {
-    setIsMinimized(!isMinimized);
-  };
-
   // Get initials for the avatar
   const getInitials = (name: string): string => {
     if (name === "You") return "YO";
@@ -96,19 +91,12 @@ const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
   };
 
   return (
-    <div className={`${styles.chatModalOverlay} ${isMinimized ? styles.minimized : ""}`}>
+    <div className={styles.chatModalOverlay}>
       <div className={styles.chatModal}>
         {/* Header */}
         <div className={styles.chatHeader}>
           <h3>Team Chat</h3>
           <div className={styles.chatControls}>
-            <button 
-              className={styles.controlButton} 
-              onClick={toggleMinimize}
-              aria-label={isMinimized ? "Maximize" : "Minimize"}
-            >
-              <i className={`bi ${isMinimized ? "bi-arrows-angle-expand" : "bi-dash"}`}></i>
-            </button>
             <button 
               className={styles.controlButton} 
               onClick={onClose}
@@ -120,48 +108,44 @@ const ChatModal: React.FC<ChatModalProps> = ({ onClose }) => {
         </div>
 
         {/* Messages area */}
-        {!isMinimized && (
-          <div className={styles.chatMessages}>
-            {messages.map((message) => (
-              <div 
-                key={message.id} 
-                className={`${styles.messageContainer} ${message.isCurrentUser ? styles.currentUser : ''}`}
-              >
-                <div className={styles.avatarCircle}>
-                  {getInitials(message.sender)}
-                </div>
-                <div className={styles.messageContent}>
-                  <div className={styles.messageHeader}>
-                    <span className={styles.messageSender}>{message.sender}</span>
-                    <span className={styles.messageTime}>{message.timestamp}</span>
-                  </div>
-                  <p className={styles.messageText}>{message.content}</p>
-                </div>
+        <div className={styles.chatMessages}>
+          {messages.map((message) => (
+            <div 
+              key={message.id} 
+              className={`${styles.messageContainer} ${message.isCurrentUser ? styles.currentUser : ''}`}
+            >
+              <div className={styles.avatarCircle}>
+                {getInitials(message.sender)}
               </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-        )}
+              <div className={styles.messageContent}>
+                <div className={styles.messageHeader}>
+                  <span className={styles.messageSender}>{message.sender}</span>
+                  <span className={styles.messageTime}>{message.timestamp}</span>
+                </div>
+                <p className={styles.messageText}>{message.content}</p>
+              </div>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
 
         {/* Message input area */}
-        {!isMinimized && (
-          <form className={styles.chatInputArea} onSubmit={handleSendMessage}>
-            <input
-              type="text"
-              className={styles.messageInput}
-              placeholder="Type your message..."
-              value={newMessage}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value)}
-            />
-            <button 
-              type="submit" 
-              className={styles.sendButton}
-              disabled={!newMessage.trim()}
-            >
-              <i className="bi bi-send-fill"></i>
-            </button>
-          </form>
-        )}
+        <form className={styles.chatInputArea} onSubmit={handleSendMessage}>
+          <input
+            type="text"
+            className={styles.messageInput}
+            placeholder="Type your message..."
+            value={newMessage}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value)}
+          />
+          <button 
+            type="submit" 
+            className={styles.sendButton}
+            disabled={!newMessage.trim()}
+          >
+            <i className="bi bi-send-fill"></i>
+          </button>
+        </form>
       </div>
     </div>
   );

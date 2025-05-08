@@ -10,7 +10,7 @@ const MainPage: React.FC = () => {
   useWebsiteTitle(t("main-page"));
   const navigate = useNavigate();
   const handleStartFree = () => {
-    navigate("/KanbanBoard"); 
+    navigate("/KanbanBoard");
   };
 
   return (
@@ -31,7 +31,11 @@ const MainPage: React.FC = () => {
               >
                 {t("start-for-free")}
               </button>
-              <button className={`btn ${styles.secondaryCta}`}>
+
+              <button
+                className={`btn ${styles.secondaryCta}`}
+                onClick={() => (window.location.href = "/boards/new")}
+              >
                 {t("create-a-new-board")}
               </button>
             </div>

@@ -31,25 +31,16 @@ export const useAssignedUsers = () => useContext(AssignedUsersContext);
 const Sidebar = () => {
   const params = useParams();
   const api = useApiJson();
-  const [isMinimized, setIsMinimized] = useState(false);
   const [users, setUsers] = useState<IUser[]>([]);
   const [settings, setSettings] = useState<IKanbanSettings[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
   const [editWipValue, setEditWipValue] = useState<number>(0);
   const [updatingWip, setUpdatingWip] = useState<boolean>(false);
-  // Track how many tasks each user is currently assigned to
   const [userTaskCounts, setUserTaskCounts] = useState<Record<number, number>>({});
-  // Track how many more assignments each user can have
   const [remainingAssignments, setRemainingAssignments] = useState<Record<number, number>>({});
-  // State for chat modal
   const [isChatModalOpen, setIsChatModalOpen] = useState<boolean>(false);
-  // State for users section collapsed/expanded
   const [isUsersSectionCollapsed, setIsUsersSectionCollapsed] = useState<boolean>(false);
-
-  const toggleSidebar = () => {
-    setIsMinimized(!isMinimized);
-  };
 
   const toggleUsersSection = () => {
     setIsUsersSectionCollapsed(!isUsersSectionCollapsed);
@@ -239,40 +230,25 @@ const Sidebar = () => {
   return (
     <div className={styles.container}>
       {/* Sidebar */}
-      <div
-        className={`${styles.sidebar} ${isMinimized ? styles.minimized : ""}`}
-      >
-        {/* Toggle Button */}
-        <div className={styles.toggleButton} onClick={toggleSidebar}>
-          <i
-            className={`bi ${
-              isMinimized ? "bi-chevron-right" : "bi-chevron-left"
-            }`}
-          ></i>
-        </div>
-        
+      <div className={styles.sidebar}>
         {/* Title Section */}
         <div className={styles.sidebarHeader}>
-          <h3 className={styles.sidebarTitle}>{isMinimized ? "" : "Kanban Board"}</h3>
+          <h3 className={styles.sidebarTitle}>Kanban Board</h3>
         </div>
         
         {/* ChatButton */}
-        {!isMinimized && (
-          <button className={styles.chatButton} onClick={openChatModal}>
-            <i className="bi bi-chat-dots"></i>
-            <span>Open Chat</span>
-          </button>
-        )}
+        <button className={styles.chatButton} onClick={openChatModal}>
+          <i className="bi bi-chat-dots"></i>
+          <span>Open Chat</span>
+        </button>
         
         {/* Users Section Header */}
         <div className={styles.sectionHeader} onClick={toggleUsersSection}>
           <div className={styles.sectionTitleRow}>
-            <h4 className={styles.sectionTitle}>{isMinimized ? "" : "Users"}</h4>
-            {!isMinimized && (
-              <i className={`bi ${isUsersSectionCollapsed ? "bi-chevron-down" : "bi-chevron-up"}`}></i>
-            )}
+            <h4 className={styles.sectionTitle}>Users</h4>
+            <i className={`bi ${isUsersSectionCollapsed ? "bi-chevron-down" : "bi-chevron-up"}`}></i>
           </div>
-          {!isMinimized && !isUsersSectionCollapsed && (
+          {!isUsersSectionCollapsed && (
             <p className={styles.dragHint}>
               Drag users to tasks to assign them
             </p>
@@ -305,67 +281,65 @@ const Sidebar = () => {
                     <div className={`${styles.avatarCircle} ${noRemaining ? styles.limitReached : ""}`}>
                       {getInitials(user.firstName ?? "", user.lastName ?? "")}
                     </div>
-                    {!isMinimized && (
-                      <div className={styles.userDetails}>
-                        <span className={styles.userName}>
-                          {user.firstName} {user.lastName}
-                        </span>
-                        
-                        {editingUserId === user.id ? (
-                          <div className={styles.wipEditor}>
-                            <label className={styles.wipLabel}>WIP Limit:</label>
-                            <input
-                              type="number"
-                              className={styles.wipInput}
-                              value={editWipValue || ""}
-                              onChange={(e) => {
-                                const newValue = e.target.value === "" ? 0 : parseInt(e.target.value);
-                                setEditWipValue(newValue);
-                              }}
-                              onKeyDown={(e) => handleWipInputKeyDown(e, user.id)}
-                              min="0"
-                              autoFocus
-                              placeholder="0"
-                            />
-                            <div className={styles.wipActions}>
-                              <button 
-                                className={`${styles.wipButton} ${styles.saveButton}`}
-                                onClick={() => saveWipLimit(user.id)}
-                                disabled={updatingWip}
-                              >
-                                {updatingWip ? <Spinner /> : <i className="bi bi-check"></i>}
-                              </button>
-                              <button 
-                                className={`${styles.wipButton} ${styles.cancelButton}`}
-                                onClick={cancelEditing}
-                                disabled={updatingWip}
-                              >
-                                <i className="bi bi-x"></i>
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className={styles.wipDisplay}>
-                            <span className={styles.wipValue}>
-                              {wipLimit > 0 ? (
-                                <span>
-                                  Tasks: <strong>{taskCount} / {wipLimit}</strong>
-                                  {remaining > 0 && <span className={styles.remainingBadge}> ({remaining} left)</span>}
-                                </span>
-                              ) : (
-                                <span>WIP Limit: Unlimited</span>
-                              )}
-                            </span>
+                    <div className={styles.userDetails}>
+                      <span className={styles.userName}>
+                        {user.firstName} {user.lastName}
+                      </span>
+                      
+                      {editingUserId === user.id ? (
+                        <div className={styles.wipEditor}>
+                          <label className={styles.wipLabel}>WIP Limit:</label>
+                          <input
+                            type="number"
+                            className={styles.wipInput}
+                            value={editWipValue || ""}
+                            onChange={(e) => {
+                              const newValue = e.target.value === "" ? 0 : parseInt(e.target.value);
+                              setEditWipValue(newValue);
+                            }}
+                            onKeyDown={(e) => handleWipInputKeyDown(e, user.id)}
+                            min="0"
+                            autoFocus
+                            placeholder="0"
+                          />
+                          <div className={styles.wipActions}>
                             <button 
-                              className={styles.editButton}
-                              onClick={() => startEditing(user.id)}
+                              className={`${styles.wipButton} ${styles.saveButton}`}
+                              onClick={() => saveWipLimit(user.id)}
+                              disabled={updatingWip}
                             >
-                              <i className="bi bi-pencil-fill"></i>
+                              {updatingWip ? <Spinner /> : <i className="bi bi-check"></i>}
+                            </button>
+                            <button 
+                              className={`${styles.wipButton} ${styles.cancelButton}`}
+                              onClick={cancelEditing}
+                              disabled={updatingWip}
+                            >
+                              <i className="bi bi-x"></i>
                             </button>
                           </div>
-                        )}
-                      </div>
-                    )}
+                        </div>
+                      ) : (
+                        <div className={styles.wipDisplay}>
+                          <span className={styles.wipValue}>
+                            {wipLimit > 0 ? (
+                              <span>
+                                Tasks: <strong>{taskCount} / {wipLimit}</strong>
+                                {remaining > 0 && <span className={styles.remainingBadge}> ({remaining} left)</span>}
+                              </span>
+                            ) : (
+                              <span>WIP Limit: Unlimited</span>
+                            )}
+                          </span>
+                          <button 
+                            className={styles.editButton}
+                            onClick={() => startEditing(user.id)}
+                          >
+                            <i className="bi bi-pencil-fill"></i>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })}
