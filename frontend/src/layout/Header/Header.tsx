@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import styles from "./Header.module.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useUser } from "../../context/UserContext";
@@ -8,6 +8,7 @@ import { ApiResponse } from "../../types/api.types";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { ITeamInvite } from "../../interfaces/ITeamInvite";
+import { IUser } from "../../interfaces/IUser";
 import PolishFlag from "../../assets/TranslationImages/polish.webp";
 import EnglishFlag from "../../assets/TranslationImages/english.webp";
 
@@ -23,6 +24,21 @@ const Header: React.FC = () => {
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const languageDropdownRef = useRef<HTMLDivElement>(null);
 
+  // Stany dla wyszukiwarki użytkowników z lazy loading
+  const [showUserSearchModal, setShowUserSearchModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const userSearchModalRef = useRef<HTMLDivElement>(null);
+  const userListRef = useRef<HTMLDivElement>(null);
+  
+  // Parametry dla lazy loading
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [pageSize] = useState(5); // Liczba użytkowników na stronę
+
   const toggleBoardsModal = () => {
     setShowBoardsModal(!showBoardsModal);
   };
@@ -36,6 +52,104 @@ const Header: React.FC = () => {
     setShowLanguageDropdown(false);
   };
 
+  // Resetowanie stanu wyszukiwania przy otwieraniu/zamykaniu modalu
+  const toggleUserSearchModal = () => {
+    setShowUserSearchModal(!showUserSearchModal);
+    if (!showUserSearchModal) {
+      setSearchTerm("");
+      setUsers([]);
+      setFilteredUsers([]);
+      setPage(1);
+      setHasMore(true);
+      // Pobierz pierwszą stronę użytkowników przy otwarciu modalu
+      setTimeout(() => {
+        fetchUsers(1);
+        if (searchInputRef.current) searchInputRef.current.focus();
+      }, 100);
+    }
+  };
+
+  // Zmodyfikowana funkcja do pobierania użytkowników z paginacją
+  const fetchUsers = async (pageNum: number, term: string = "") => {
+    if (!hasMore && pageNum > 1) return;
+    
+    setIsLoading(true);
+    try {
+      // Dodaj parametry paginacji do zapytania API
+      const { data } = await api.get<ApiResponse<IUser[]>>("users/all", {
+        params: {
+          page: pageNum,
+          pageSize: pageSize,
+          search: term
+        }
+      });
+      
+      const newUsers = data.data || [];
+      
+      // Jeśli to pierwsza strona, zastąp listę użytkowników, w przeciwnym razie dodaj do istniejącej listy
+      if (pageNum === 1) {
+        setUsers(newUsers);
+        setFilteredUsers(newUsers);
+      } else {
+        setUsers(prev => [...prev, ...newUsers]);
+        setFilteredUsers(prev => [...prev, ...newUsers]);
+      }
+      
+      // Sprawdź, czy są jeszcze dane do pobrania
+      setHasMore(newUsers.length === pageSize);
+      setPage(pageNum);
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Obsługa wyszukiwania z debounce
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+    
+    // Resetuj stan i pobierz nową listę użytkowników po wprowadzeniu tekstu do wyszukiwania
+    setUsers([]);
+    setFilteredUsers([]);
+    setPage(1);
+    setHasMore(true);
+    
+    // Użyj setTimeout do dodania efektu debounce
+    setTimeout(() => {
+      fetchUsers(1, term);
+    }, 300);
+  };
+
+  // Funkcja do wykrywania przewijania i ładowania kolejnych danych
+  const handleScroll = useCallback(() => {
+    if (isLoading || !hasMore || !userListRef.current) return;
+    
+    const { scrollTop, scrollHeight, clientHeight } = userListRef.current;
+    
+    // Jeśli użytkownik przewinął prawie do końca, załaduj więcej danych
+    if (scrollTop + clientHeight >= scrollHeight - 100) {
+      fetchUsers(page + 1, searchTerm);
+    }
+  }, [isLoading, hasMore, page, searchTerm, userListRef]);
+
+  // Dodaj obsługę zdarzenia scroll do kontenera listy użytkowników
+  useEffect(() => {
+    const currentUserListRef = userListRef.current;
+    if (currentUserListRef) {
+      currentUserListRef.addEventListener('scroll', handleScroll);
+      return () => {
+        currentUserListRef.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [handleScroll]);
+
+  const handleUserClick = (userId: number) => {
+    console.log(`User clicked: ${userId}`);
+    toggleUserSearchModal();
+  };
+
   const handleClickOutside = (event: MouseEvent) => {
     if (
       languageDropdownRef.current &&
@@ -44,6 +158,23 @@ const Header: React.FC = () => {
       setShowLanguageDropdown(false);
     }
   };
+
+  // Obsługa kliknięcia poza modalem wyszukiwania
+  useEffect(() => {
+    const handleClickOutsideUserSearch = (event: MouseEvent) => {
+      if (
+        userSearchModalRef.current &&
+        !userSearchModalRef.current.contains(event.target as Node)
+      ) {
+        setShowUserSearchModal(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutsideUserSearch);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideUserSearch);
+    };
+  }, []);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -99,6 +230,20 @@ const Header: React.FC = () => {
               {isAuthenticated ? (
                 // Opcje dla zalogowanego użytkownika
                 <>
+                  {/* Przycisk wyszukiwania użytkowników */}
+                  <li className="nav-item">
+                    <button
+                      className={`nav-link ${styles.navLink}`}
+                      onClick={toggleUserSearchModal}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {t("search-users")}
+                    </button>
+                  </li>
                   <li className="nav-item">
                     <Link
                       className={`nav-link ${styles.navLink}`}
@@ -170,7 +315,7 @@ const Header: React.FC = () => {
                 </>
               )}
               
-              {/* Language Selector - Fixed ref by moving it to the div inside */}
+              {/* Language Selector */}
               <li className="nav-item">
                 <div className={styles.languageSelector} ref={languageDropdownRef}>
                   <button
@@ -185,7 +330,6 @@ const Header: React.FC = () => {
                     <span className={styles.currentLanguage}>
                       {i18n.language === "pl" ? "PL" : "EN"}
                     </span>
-                    {/* Add dropdown arrow indicator */}
                     <span className={styles.dropdownArrow}>▼</span>
                   </button>
                   
@@ -253,6 +397,93 @@ const Header: React.FC = () => {
                 <Link to="/boards/new" className={styles.newBoardBtn}>
                   + {t("create-new-board")}
                 </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal dla wyszukiwania użytkowników z lazy loading */}
+      {showUserSearchModal && (
+        <div className={styles.modalBackdrop} onClick={toggleUserSearchModal}>
+          <div
+            className={`${styles.modalContent} ${styles.userSearchModal}`}
+            onClick={(e) => e.stopPropagation()}
+            ref={userSearchModalRef}
+          >
+            <div className={styles.modalHeader}>
+              <h5 className={styles.modalTitle}>{t("search-users")}</h5>
+              <button
+                type="button"
+                className={styles.closeButton}
+                onClick={toggleUserSearchModal}
+              >
+                &times;
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.searchInputContainer}>
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder={t("search-by-name-email") || "Search by name, email..."}
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  ref={searchInputRef}
+                />
+                <span className={styles.searchIcon}>🔍</span>
+              </div>
+              
+              {/* Kontener listy użytkowników z referencją dla lazy loading */}
+              <div 
+                className={styles.userResultsContainer} 
+                ref={userListRef}
+              >
+                {filteredUsers.length > 0 ? (
+                  <div className={styles.usersList}>
+                    {filteredUsers.map((user) => (
+                      <div 
+                        key={user.id} 
+                        className={styles.userCard}
+                        onClick={() => handleUserClick(user.id)}
+                      >
+                        <div className={styles.userAvatar}>
+                          {user.firstName?.[0] || user.login?.[0] || user.email?.[0]}
+                        </div>
+                        <div className={styles.userInfo}>
+                          <h6>{user.firstName} {user.lastName}</h6>
+                          <p>{user.email}</p>
+                          <span className={`${styles.userStatus} ${user.isOnline ? styles.online : ""}`}>
+                            {user.isOnline ? t("online") : t("offline")}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Wskaźnik ładowania na dole listy */}
+                    {isLoading && (
+                      <div className={styles.loadingIndicator}>
+                        <div className={styles.spinner}></div>
+                      </div>
+                    )}
+                  </div>
+                ) : isLoading && page === 1 ? (
+                  <div className={styles.loadingSpinner}>
+                    <div className={styles.spinner}></div>
+                    <p>{t("loading")}</p>
+                  </div>
+                ) : (
+                  <div className={styles.noResults}>
+                    <p>{t("no-users-found")}</p>
+                  </div>
+                )}
+                
+                {/* Wiadomość "End of results" gdy nie ma więcej danych */}
+                {!hasMore && filteredUsers.length > 0 && !isLoading && (
+                  <div className={styles.endMessage}>
+                    <p>{t("end-of-results")}</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
