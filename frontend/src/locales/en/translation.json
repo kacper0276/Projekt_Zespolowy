@@ -249,6 +249,9 @@
   "more-users": "{{count}} more users",
   "add-task": "Add task",
   "failed-adding-row-try-again-later": "Failed to add row. Try again later.",
+  "select-team-to-invite": "Select a team to invite {{user}} to",
+  "send-invite": "Send Invite",
 
+  "invite-to-team": "Invite to Team",
   "boards": "Boards"
 }

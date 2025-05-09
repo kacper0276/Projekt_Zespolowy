@@ -248,6 +248,9 @@
   "more-users": "{{count}} więcej użytkowników",
   "add-task": "Dodaj zadanie",
   "failed-adding-row-try-again-later": "Nie udało się dodać wiersza. Spróbuj ponownie później",
+  "send-invite": "Wyślij zaproszenie",
+"invite-to-team": "Zaproś do zespołu",
+ "select-team-to-invite": "Wybierz zespół, do którego chcesz zaprosić {{user}}",
 
   "boards": "Tablice"
 }

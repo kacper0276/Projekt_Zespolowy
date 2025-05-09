@@ -5,11 +5,14 @@ import { ApiResponse } from "../../types/api.types";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { IUser } from "../../interfaces/IUser";
 import { IKanban } from "../../interfaces/IKanban";
+import { ITeam } from "../../interfaces/ITeam";
 import { toast } from "react-toastify";
 import PlaceholderPfP from "../../assets/PlaceholderPictures/PlaceholderPfP.png";
 import styles from "./ProfilePage.module.scss";
 import { useTranslation } from "react-i18next";
 import useWebsiteTitle from "../../hooks/useWebsiteTitle";
+import PopUp from "../../components/PopUp/PopUp";
+
 interface Board {
   id: number;
   title: string;
@@ -30,6 +33,12 @@ const ProfilePage: React.FC = () => {
   const [, setUserBoards] = useState<Board[]>([]);
   const [kanbanBoards, setKanbanBoards] = useState<IKanban[]>([]);
   const api = useApiJson();
+
+  // Team invitation states
+  const [showInviteToTeamModal, setShowInviteToTeamModal] = useState<boolean>(false);
+  const [userTeams, setUserTeams] = useState<ITeam[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<ITeam | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Dummy data for demonstration
   const dummyBoards: Board[] = [
@@ -68,6 +77,8 @@ const ProfilePage: React.FC = () => {
             setIsOwnProfile(true);
           } else {
             setIsOwnProfile(false);
+            // If not own profile, fetch current user's teams for invitation
+            fetchUserTeams();
           }
 
           setUserBoards(dummyBoards);
@@ -98,6 +109,52 @@ const ProfilePage: React.FC = () => {
   const handleCreateBoard = () => {
     navigate("/boards/new");
     toast.info(t("creating-a-new-board"));
+  };
+
+  // Fetch teams that the current user belongs to
+  const fetchUserTeams = async () => {
+    if (!currentUser?.id) return;
+    
+    setLoading(true);
+    try {
+      const response = await api.get<ApiResponse<ITeam[]>>(
+        `teams/user/${currentUser.id}`
+      );
+      setUserTeams(response.data.data ?? []);
+    } catch (error) {
+      toast.error(t("error-fetching-teams"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Toggle team invitation modal
+  const toggleInviteToTeamModal = () => {
+    setShowInviteToTeamModal(!showInviteToTeamModal);
+    setSelectedTeam(null);
+  };
+
+  // Handle team selection
+  const handleTeamSelect = (team: ITeam) => {
+    if (selectedTeam?.id === team.id) {
+      setSelectedTeam(null);
+    } else {
+      setSelectedTeam(team);
+    }
+  };
+
+  // Check if user is already a member of the team
+  const isUserInTeam = (team: ITeam): boolean => {
+    return team.users.some(user => user.id === profileUser?.id);
+  };
+
+  //Dummy function to send invite
+  const handleSendInvite = () => {
+    if (!selectedTeam || !profileUser) return;
+    
+    // Show success message placeholder
+    toast.success(t("invite-sent-successfully"));
+    toggleInviteToTeamModal();
   };
 
   if (!profileUser) {
@@ -134,6 +191,15 @@ const ProfilePage: React.FC = () => {
               <span className={styles.inactiveStatus}>{t("inactive")}</span>
             )}
           </p>
+          
+          {!isOwnProfile && currentUser && (
+            <button 
+              className={styles.inviteToTeamBtn}
+              onClick={toggleInviteToTeamModal}
+            >
+              {t("invite-to-team")}
+            </button>
+          )}
         </div>
       </div>
 
@@ -176,6 +242,63 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Team Invitation Modal */}
+      {showInviteToTeamModal && (
+        <PopUp
+          header={<h2>{t("invite-to-team")}</h2>}
+          body={
+            <div className={styles.inviteModalBody}>
+              <p>{t("select-team-to-invite", { user: profileUser.login || profileUser.email })}</p>
+              
+              {loading ? (
+                <div className={styles.loadingContainer}>
+                  <div className={styles.loader}></div>
+                </div>
+              ) : userTeams.length > 0 ? (
+                <div className={styles.teamsList}>
+                  {userTeams.map((team) => (
+                    <div
+                      key={team.id}
+                      className={`${styles.teamItem} ${
+                        selectedTeam?.id === team.id ? styles.selectedTeam : ""
+                      }`}
+                      onClick={() => handleTeamSelect(team)}
+                    >
+                      <span className={styles.teamName}>{team.name}</span>
+                      <span className={styles.memberCount}>
+                        {team.users.length} {t("members")}
+                      </span>
+                      {isUserInTeam(team) && (
+                        <span className={styles.alreadyMember}>{t("already-member")}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className={styles.noTeamsMessage}>
+                  {t("you-do-not-have-any-teams-yet")}
+                </p>
+              )}
+            </div>
+          }
+          footer={
+            <>
+              <button className={styles.cancelButton} onClick={toggleInviteToTeamModal}>
+                {t("cancel")}
+              </button>
+              <button
+                className={styles.confirmButton}
+                onClick={handleSendInvite}
+                disabled={!selectedTeam || (selectedTeam && isUserInTeam(selectedTeam))}
+              >
+                {t("send-invite")}
+              </button>
+            </>
+          }
+          onClose={toggleInviteToTeamModal}
+        />
+      )}
     </div>
   );
 };
