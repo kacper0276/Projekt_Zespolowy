@@ -391,177 +391,184 @@ function KanbanBoard() {
     return count;
   };
 
-  const onDragEnd = async (result: DropResult) => {
-    const { source, destination, type, draggableId } = result;
-    if (!destination) return;
+// Modified onDragEnd function to allow exceeding WIP limits but show a warning
+const onDragEnd = async (result: DropResult) => {
+  const { source, destination, type, draggableId } = result;
+  if (!destination) return;
 
-    // Obsługa zmiany kolejności kolumn
-    if (type === "COLUMN") {
-      if (destination.index === source.index) return;
-      const newColumnOrder = Array.from(columnOrder);
-      const [reorderedColumn] = newColumnOrder.splice(source.index, 1);
-      newColumnOrder.splice(destination.index, 0, reorderedColumn);
-      setColumnOrder(newColumnOrder);
-      const newColumnOrderWithNames = newColumnOrder.map((columnId) => {
-        const column = columns[columnId];
-        return column ? column.title : columnId;
-      });
+  // Obsługa zmiany kolejności kolumn
+  if (type === "COLUMN") {
+    if (destination.index === source.index) return;
+    const newColumnOrder = Array.from(columnOrder);
+    const [reorderedColumn] = newColumnOrder.splice(source.index, 1);
+    newColumnOrder.splice(destination.index, 0, reorderedColumn);
+    setColumnOrder(newColumnOrder);
+    const newColumnOrderWithNames = newColumnOrder.map((columnId) => {
+      const column = columns[columnId];
+      return column ? column.title : columnId;
+    });
 
-      // Aktualizacja kolejności w bazie danych
-      await api.patch(`columns/edit-order/${params.id}`, {
-        columns: newColumnOrderWithNames,
-      });
-      return;
+    // Aktualizacja kolejności w bazie danych
+    await api.patch(`columns/edit-order/${params.id}`, {
+      columns: newColumnOrderWithNames,
+    });
+    return;
+  }
+
+  // Parsowanie ID elementu do upuszczenia
+  const sourceRowId = source.droppableId.split("-")[0];
+  const sourceColId = source.droppableId.split("-")[1];
+  const destRowId = destination.droppableId.split("-")[0];
+  const destColId = destination.droppableId.split("-")[1];
+
+  // Sprawdzenie limitów WIP przy przenoszeniu do innej kolumny lub wiersza
+  // Zmodyfikowane, aby ostrzegać zamiast blokować
+  if (sourceColId !== destColId) {
+    const destColumnTaskCount = countTasksInColumn(destColId);
+    const destColumn = columns[destColId];
+    if (
+      destColumn &&
+      destColumn.wipLimit > 0 &&
+      destColumnTaskCount >= destColumn.wipLimit
+    ) {
+      // Wyświetl ostrzeżenie zamiast błędu
+      toast.warning(
+        t("wip-limit-exceeded-for-column", { column: destColumn.title })
+      );
+      // Kontynuuj operację mimo przekroczenia limitu
     }
+  }
 
-    // Parsowanie ID elementu do upuszczenia
-    const sourceRowId = source.droppableId.split("-")[0];
-    const sourceColId = source.droppableId.split("-")[1];
-    const destRowId = destination.droppableId.split("-")[0];
-    const destColId = destination.droppableId.split("-")[1];
-
-    // Sprawdzenie limitów WIP przy przenoszeniu do innej kolumny lub wiersza
-    if (sourceColId !== destColId) {
-      const destColumnTaskCount = countTasksInColumn(destColId);
-      const destColumn = columns[destColId];
-      if (
-        destColumn &&
-        destColumn.wipLimit > 0 &&
-        destColumnTaskCount >= destColumn.wipLimit
-      ) {
-        toast.error(
-          t("can-not-add-task-to-column-wip-limit-reached", { column: destColumn.title })
+  // Sprawdzenie limitu WIP dla wiersza docelowego
+  // Również zmodyfikowane, aby ostrzegać zamiast blokować
+  if (sourceRowId !== destRowId) {
+    const row = rows[destRowId];
+    if (row && row.wipLimit > 0) {
+      const tasksInDestRow = Object.values(taskGrid[destRowId] || {}).flat().length;
+      if (tasksInDestRow >= row.wipLimit) {
+        // Wyświetl ostrzeżenie zamiast błędu
+        toast.warning(
+          t("wip-limit-exceeded-for-row", { row: row.title })
         );
-        return;
+        // Kontynuuj operację mimo przekroczenia limitu
       }
     }
+  }
 
-    // Sprawdzenie limitu WIP dla wiersza docelowego
-    if (sourceRowId !== destRowId) {
-      const row = rows[destRowId];
-      if (row && row.wipLimit > 0) {
-        const tasksInDestRow = Object.values(taskGrid[destRowId] || {}).flat()
-          .length;
-        if (tasksInDestRow >= row.wipLimit) {
-          toast.error(
-            t("can-not-add-task-to-row-wip-limit-reached", { row: row.title })
-          );
-          return;
-        }
-      }
+  const newTaskGrid = { ...taskGrid };
+
+  // Reszta funkcji pozostaje bez zmian...
+  // Przenoszenie zadania w tej samej komórce
+  if (sourceRowId === destRowId && sourceColId === destColId) {
+    const tasks = Array.from(newTaskGrid[sourceRowId][sourceColId]);
+    const [removed] = tasks.splice(source.index, 1);
+    tasks.splice(destination.index, 0, removed);
+    newTaskGrid[sourceRowId][sourceColId] = tasks;
+  } else {
+    // Przenoszenie do innej komórki
+    const sourceTasks = Array.from(newTaskGrid[sourceRowId][sourceColId]);
+    const [removed] = sourceTasks.splice(source.index, 1);
+
+    if (!newTaskGrid[destRowId]) {
+      newTaskGrid[destRowId] = {};
+    }
+    if (!newTaskGrid[destRowId][destColId]) {
+      newTaskGrid[destRowId][destColId] = [];
     }
 
-    const newTaskGrid = { ...taskGrid };
+    const destTasks = Array.from(newTaskGrid[destRowId][destColId]);
+    destTasks.splice(destination.index, 0, removed);
 
-    // Przenoszenie zadania w tej samej komórce
-    if (sourceRowId === destRowId && sourceColId === destColId) {
-      const tasks = Array.from(newTaskGrid[sourceRowId][sourceColId]);
-      const [removed] = tasks.splice(source.index, 1);
-      tasks.splice(destination.index, 0, removed);
-      newTaskGrid[sourceRowId][sourceColId] = tasks;
-    } else {
-      // Przenoszenie do innej komórki
-      const sourceTasks = Array.from(newTaskGrid[sourceRowId][sourceColId]);
-      const [removed] = sourceTasks.splice(source.index, 1);
+    newTaskGrid[sourceRowId][sourceColId] = sourceTasks;
+    newTaskGrid[destRowId][destColId] = destTasks;
 
-      if (!newTaskGrid[destRowId]) {
-        newTaskGrid[destRowId] = {};
-      }
-      if (!newTaskGrid[destRowId][destColId]) {
-        newTaskGrid[destRowId][destColId] = [];
-      }
+    // Aktualizacja pozycji w bazie danych przy zmianie kolumny lub wiersza
+    if (sourceColId !== destColId || sourceRowId !== destRowId) {
+      const taskIdParts = draggableId.split("-");
+      const taskId = taskIdParts.slice(1).join("-");
 
-      const destTasks = Array.from(newTaskGrid[destRowId][destColId]);
-      destTasks.splice(destination.index, 0, removed);
+      // Wywołanie zaktualizowanej funkcji z informacjami o wierszu
+      updateTaskPosition(
+        taskId,
+        sourceColId,
+        destColId,
+        sourceRowId,
+        destRowId
+      );
 
-      newTaskGrid[sourceRowId][sourceColId] = sourceTasks;
-      newTaskGrid[destRowId][destColId] = destTasks;
+      // Aktualizacja lokalnych stanów
+      const updatedColumns = { ...columns };
+      let movedTask = removed;
 
-      // Aktualizacja pozycji w bazie danych przy zmianie kolumny lub wiersza
-      if (sourceColId !== destColId || sourceRowId !== destRowId) {
-        const taskIdParts = draggableId.split("-");
-        const taskId = taskIdParts.slice(1).join("-");
+      if (movedTask) {
+        // Aktualizacja informacji o zadaniu - nowy rowId
+        movedTask = {
+          ...movedTask,
+          rowId: rows[destRowId].rowId, // Ustawienie nowego rowId
+        };
 
-        // Wywołanie zaktualizowanej funkcji z informacjami o wierszu
-        updateTaskPosition(
-          taskId,
-          sourceColId,
-          destColId,
-          sourceRowId,
-          destRowId
-        );
-
-        // Aktualizacja lokalnych stanów
-        const updatedColumns = { ...columns };
-        let movedTask = removed;
-
-        if (movedTask) {
-          // Aktualizacja informacji o zadaniu - nowy rowId
-          movedTask = {
-            ...movedTask,
-            rowId: rows[destRowId].rowId, // Ustawienie nowego rowId
+        // Tylko jeśli zmieniamy kolumnę, aktualizujemy stan kolumn
+        if (sourceColId !== destColId) {
+          updatedColumns[sourceColId] = {
+            ...updatedColumns[sourceColId],
+            tasks: updatedColumns[sourceColId].tasks.filter(
+              (t) => t.id !== movedTask.id
+            ),
           };
 
-          // Tylko jeśli zmieniamy kolumnę, aktualizujemy stan kolumn
-          if (sourceColId !== destColId) {
-            updatedColumns[sourceColId] = {
-              ...updatedColumns[sourceColId],
-              tasks: updatedColumns[sourceColId].tasks.filter(
-                (t) => t.id !== movedTask.id
-              ),
-            };
+          updatedColumns[destColId] = {
+            ...updatedColumns[destColId],
+            tasks: [...updatedColumns[destColId].tasks, movedTask],
+          };
 
-            updatedColumns[destColId] = {
-              ...updatedColumns[destColId],
-              tasks: [...updatedColumns[destColId].tasks, movedTask],
-            };
-
-            setColumns(updatedColumns);
-          }
+          setColumns(updatedColumns);
         }
       }
     }
+  }
+};
 
-    // setTaskGrid(newTaskGrid);
+// Zmodyfikowana funkcja onAddTaskToCell, aby pozwalać na przekraczanie limitów WIP
+const onAddTaskToCell = (rowId: string, colId: string, taskTitle: string) => {
+  // Sprawdzenie limitu WIP przed dodaniem zadania - zmienione na ostrzeżenie
+  const currentTaskCount = countTasksInColumn(colId);
+  const column = columns[colId];
+
+  if (column && column.wipLimit > 0 && currentTaskCount >= column.wipLimit) {
+    // Wyświetl ostrzeżenie zamiast błędu
+    toast.warning(
+      t("wip-limit-exceeded-for-column", { column: column.title })
+    );
+    // Kontynuuj dodawanie zadania mimo przekroczenia limitu
+  }
+
+  if (!taskTitle.trim()) return;
+
+  const newTaskId = `task-${Date.now()}`;
+  const newTask = {
+    id: newTaskId,
+    content: taskTitle,
+    name: taskTitle,
+    users: [],
   };
 
-  const onAddTaskToCell = (rowId: string, colId: string, taskTitle: string) => {
-    // Sprawdzenie limitu WIP przed dodaniem zadania
-    const currentTaskCount = countTasksInColumn(colId);
-    const column = columns[colId];
+  // Dodanie zadania do bazy danych
+  onAddTask(rowId, colId, taskTitle);
 
-    if (column && column.wipLimit > 0 && currentTaskCount >= column.wipLimit) {
-      toast.error(
-          t("can-not-add-task-to-column-wip-limit-reached", { column: column.title })
-      );
-      return;
-    }
+  // Dodanie zadania do lokalnej siatki
+  const newTaskGrid = { ...taskGrid };
+  if (!newTaskGrid[rowId]) {
+    newTaskGrid[rowId] = {};
+  }
+  if (!newTaskGrid[rowId][colId]) {
+    newTaskGrid[rowId][colId] = [];
+  }
 
-    if (!taskTitle.trim()) return;
+  newTaskGrid[rowId][colId] = [...newTaskGrid[rowId][colId], newTask];
+  setTaskGrid(newTaskGrid);
+};
 
-    const newTaskId = `task-${Date.now()}`;
-    const newTask = {
-      id: newTaskId,
-      content: taskTitle,
-      name: taskTitle,
-      users: [],
-    };
 
-    // Dodanie zadania do bazy danych
-    onAddTask(rowId, colId, taskTitle);
-
-    // Dodanie zadania do lokalnej siatki
-    const newTaskGrid = { ...taskGrid };
-    if (!newTaskGrid[rowId]) {
-      newTaskGrid[rowId] = {};
-    }
-    if (!newTaskGrid[rowId][colId]) {
-      newTaskGrid[rowId][colId] = [];
-    }
-
-    newTaskGrid[rowId][colId] = [...newTaskGrid[rowId][colId], newTask];
-    setTaskGrid(newTaskGrid);
-  };
 
   const onDeleteTaskFromCell = (
     rowId: string,
