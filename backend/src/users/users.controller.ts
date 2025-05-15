@@ -15,6 +15,7 @@ import { Response } from 'express';
 import { RegisterData } from './dto/register-data.dto';
 import { LoginData } from './dto/login-data.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateImagesDto } from './dto/update-images.dto';
 
 @Controller('users')
 export class UsersController {
@@ -170,6 +171,24 @@ export class UsersController {
           message: 'a-server-error-occurred',
         });
       }
+    }
+  }
+
+  @Patch('update-images')
+  async updateImages(
+    @Body() updateImagesDto: UpdateImagesDto,
+    @Res() response: Response,
+  ) {
+    try {
+      const user = await this.usersService.updateImages(updateImagesDto);
+      response.status(HttpStatus.OK).send({
+        message: 'images-updated-successfully',
+        data: user,
+      });
+    } catch (error) {
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: 'a-server-error-occurred',
+      });
     }
   }
 }

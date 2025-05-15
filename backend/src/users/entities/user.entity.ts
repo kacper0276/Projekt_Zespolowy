@@ -33,6 +33,12 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   lastName: string;
 
+  @Column({ type: 'longtext', nullable: true })
+  profileImage: string;
+
+  @Column({ type: 'longtext', nullable: true })
+  backgroundImage: string;
+
   @Column({ default: false })
   isActive: boolean;
 

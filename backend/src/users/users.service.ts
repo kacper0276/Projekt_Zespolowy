@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginData } from './dto/login-data.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateImagesDto } from './dto/update-images.dto';
 
 @Injectable()
 export class UsersService {
@@ -261,5 +262,16 @@ export class UsersService {
     const hashedNewPassword = await this.hashPassword(data.newPassword);
     user.password = hashedNewPassword;
     await this.userRepository.save(user);
+  }
+
+  async updateImages(dto: UpdateImagesDto) {
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
+    if (!user) throw new NotFoundException('User not found');
+    if (dto.profileImage) user.profileImage = dto.profileImage;
+    if (dto.backgroundImage) user.backgroundImage = dto.backgroundImage;
+    await this.userRepository.save(user);
+    return user;
   }
 }
