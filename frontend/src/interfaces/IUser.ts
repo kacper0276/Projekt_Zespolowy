@@ -11,6 +11,8 @@ export interface IUser {
   id: number;
   firstName: string | null;
   lastName: string | null;
+  profileImage?: string;
+  backgroundImage?: string;
   isOnline: boolean;
   maxTasks: number;
   kanbanSettings: IKanbanSettings[];

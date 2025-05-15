@@ -4,6 +4,7 @@ import { useUser } from "../../context/UserContext";
 import styles from "./Settings.module.scss";
 import { useApiJson } from "../../config/api";
 import useWebsiteTitle from "../../hooks/useWebsiteTitle";
+import { toast } from "react-toastify";
 
 const Settings: React.FC = () => {
   const { t } = useTranslation();
@@ -17,6 +18,12 @@ const Settings: React.FC = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const [backgroundPreview, setBackgroundPreview] = useState<string | null>(
+    null
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,6 +69,44 @@ const Settings: React.FC = () => {
       setError(t("failed-to-change-password"));
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "profile" | "background"
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === "string") {
+        if (type === "profile") {
+          setProfileImage(reader.result);
+          setProfilePreview(reader.result);
+        } else {
+          setBackgroundImage(reader.result);
+          setBackgroundPreview(reader.result);
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleImageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profileImage && !backgroundImage) {
+      return;
+    }
+    try {
+      await api.patch("/users/update-images", {
+        email: user?.email,
+        profileImage,
+        backgroundImage,
+      });
+      toast.success(t("images-updated-successfully"));
+    } catch {
+      toast.error(t("failed-to-update-images"));
     }
   };
 
@@ -133,6 +178,45 @@ const Settings: React.FC = () => {
               disabled={isSubmitting}
             >
               {isSubmitting ? t("changing") : t("change-password")}
+            </button>
+          </form>
+        </div>
+
+        <div className={styles.settingSection}>
+          <h3>{t("profile-and-background-image")}</h3>
+          <form onSubmit={handleImageSubmit} className={styles.imageForm}>
+            <div className={styles.imageGroup}>
+              <label>{t("profile-image")}</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, "profile")}
+              />
+              {profilePreview && (
+                <img
+                  src={profilePreview}
+                  alt="Profile preview"
+                  className={styles.imagePreview}
+                />
+              )}
+            </div>
+            <div className={styles.imageGroup}>
+              <label>{t("background-image")}</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, "background")}
+              />
+              {backgroundPreview && (
+                <img
+                  src={backgroundPreview}
+                  alt="Background preview"
+                  className={styles.imagePreview}
+                />
+              )}
+            </div>
+            <button type="submit" className={styles.submitButton}>
+              {t("save-images")}
             </button>
           </form>
         </div>

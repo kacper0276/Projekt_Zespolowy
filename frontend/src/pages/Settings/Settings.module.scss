@@ -20,11 +20,36 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.imageForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  color: #ccc;
+}
+
+.imageGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 300px;
+}
+
+.imagePreview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-top: 0.5rem;
+  background: #f8f8f8;
+}
+
 .headerSection {
   padding: 25px 30px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
-  
+
   h2 {
     color: $textColor;
     margin: 0;
@@ -32,7 +57,7 @@
     letter-spacing: 0.5px;
     font-size: 1.8rem;
   }
-  
+
   .subtitle {
     color: rgba(224, 224, 224, 0.7);
     margin: 10px 0 0 0;
@@ -43,11 +68,11 @@
 .settingSection {
   padding: 30px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  
+
   &:last-child {
     border-bottom: none;
   }
-  
+
   h3 {
     color: $textColor;
     font-size: 1.3rem;
@@ -55,9 +80,9 @@
     font-weight: 500;
     position: relative;
     padding-left: 15px;
-    
+
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       top: 0;
@@ -75,7 +100,7 @@
 
 .formGroup {
   margin-bottom: 20px;
-  
+
   label {
     display: block;
     margin-bottom: 8px;
@@ -94,13 +119,13 @@
   color: $textColor;
   font-size: 1rem;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  
+
   &:focus {
     outline: none;
     border-color: rgba(255, 255, 255, 0.3);
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
   }
-  
+
   &::placeholder {
     color: rgba(224, 224, 224, 0.4);
   }
@@ -119,7 +144,7 @@
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   z-index: 1;
-  
+
   &::before {
     content: "";
     position: absolute;
@@ -131,7 +156,7 @@
     @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
     transition: opacity 0.3s ease;
   }
-  
+
   &::after {
     content: "";
     position: absolute;
@@ -144,20 +169,20 @@
     @include linear-gradient(to right, $formGradientEnd, $formGradientStart);
     transition: opacity 0.3s ease;
   }
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    
+
     &::before {
       opacity: 0;
     }
-    
+
     &::after {
       opacity: 1;
     }
   }
-  
+
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -166,7 +191,8 @@
   }
 }
 
-.errorMessage, .successMessage {
+.errorMessage,
+.successMessage {
   margin-bottom: 20px;
   padding: 12px 15px;
   border-radius: 6px;
@@ -187,7 +213,8 @@
   color: rgba(2, 166, 118, 0.9);
 }
 
-.errorIcon, .successIcon {
+.errorIcon,
+.successIcon {
   margin-right: 8px;
   font-size: 1.1rem;
 }
@@ -201,7 +228,7 @@
 .infoRow {
   display: flex;
   margin-bottom: 15px;
-  
+
   &:last-child {
     margin-bottom: 0;
   }

@@ -35,7 +35,8 @@ const ProfilePage: React.FC = () => {
   const api = useApiJson();
 
   // Team invitation states
-  const [showInviteToTeamModal, setShowInviteToTeamModal] = useState<boolean>(false);
+  const [showInviteToTeamModal, setShowInviteToTeamModal] =
+    useState<boolean>(false);
   const [userTeams, setUserTeams] = useState<ITeam[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<ITeam | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -114,7 +115,7 @@ const ProfilePage: React.FC = () => {
   // Fetch teams that the current user belongs to
   const fetchUserTeams = async () => {
     if (!currentUser?.id) return;
-    
+
     setLoading(true);
     try {
       const response = await api.get<ApiResponse<ITeam[]>>(
@@ -145,13 +146,13 @@ const ProfilePage: React.FC = () => {
 
   // Check if user is already a member of the team
   const isUserInTeam = (team: ITeam): boolean => {
-    return team.users.some(user => user.id === profileUser?.id);
+    return team.users.some((user) => user.id === profileUser?.id);
   };
 
   //Dummy function to send invite
   const handleSendInvite = () => {
     if (!selectedTeam || !profileUser) return;
-    
+
     // Show success message placeholder
     toast.success(t("invite-sent-successfully"));
     toggleInviteToTeamModal();
@@ -167,11 +168,22 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className={styles.profileContainer}>
-      <div className={styles.profileHeader}>
+      <div
+        className={styles.profileHeader}
+        style={
+          profileUser.backgroundImage
+            ? { backgroundImage: `url(${profileUser.backgroundImage})` }
+            : {}
+        }
+      >
         {/* Placeholder profile image */}
         <div className={styles.profileImage}>
           <img
-            src={PlaceholderPfP}
+            src={
+              profileUser.profileImage
+                ? profileUser.profileImage
+                : PlaceholderPfP
+            }
             alt={t("profile")}
             onError={(e) => (e.currentTarget.src = PlaceholderPfP)}
           />
@@ -191,9 +203,9 @@ const ProfilePage: React.FC = () => {
               <span className={styles.inactiveStatus}>{t("inactive")}</span>
             )}
           </p>
-          
+
           {!isOwnProfile && currentUser && (
-            <button 
+            <button
               className={styles.inviteToTeamBtn}
               onClick={toggleInviteToTeamModal}
             >
@@ -249,8 +261,12 @@ const ProfilePage: React.FC = () => {
           header={<h2>{t("invite-to-team")}</h2>}
           body={
             <div className={styles.inviteModalBody}>
-              <p>{t("select-team-to-invite", { user: profileUser.login || profileUser.email })}</p>
-              
+              <p>
+                {t("select-team-to-invite", {
+                  user: profileUser.login || profileUser.email,
+                })}
+              </p>
+
               {loading ? (
                 <div className={styles.loadingContainer}>
                   <div className={styles.loader}></div>
@@ -270,7 +286,9 @@ const ProfilePage: React.FC = () => {
                         {team.users.length} {t("members")}
                       </span>
                       {isUserInTeam(team) && (
-                        <span className={styles.alreadyMember}>{t("already-member")}</span>
+                        <span className={styles.alreadyMember}>
+                          {t("already-member")}
+                        </span>
                       )}
                     </div>
                   ))}
@@ -284,13 +302,18 @@ const ProfilePage: React.FC = () => {
           }
           footer={
             <>
-              <button className={styles.cancelButton} onClick={toggleInviteToTeamModal}>
+              <button
+                className={styles.cancelButton}
+                onClick={toggleInviteToTeamModal}
+              >
                 {t("cancel")}
               </button>
               <button
                 className={styles.confirmButton}
                 onClick={handleSendInvite}
-                disabled={!selectedTeam || (selectedTeam && isUserInTeam(selectedTeam))}
+                disabled={
+                  !selectedTeam || (selectedTeam && isUserInTeam(selectedTeam))
+                }
               >
                 {t("send-invite")}
               </button>
