@@ -25,16 +25,16 @@
 
 .sidebarHeader {
   margin-bottom: 1rem;
- 
+
   .sidebarTitle {
     color: $textColor;
     font-size: 1.2rem;
     margin: 0;
     padding: 0.5rem 0;
     position: relative;
-   
+
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       bottom: 0;
       left: 0;
@@ -62,9 +62,9 @@
   transition: all 0.2s ease;
   width: 100%;
   position: relative;
-  
+
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -73,17 +73,17 @@
     @include linear-gradient(to right, $formGradientStart, $formGradientEnd);
     border-radius: 1px;
   }
-  
+
   &:hover {
     background-color: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
   }
-  
+
   i {
     color: $formGradientEnd;
     font-size: 1.2rem;
   }
-  
+
   span {
     font-weight: 500;
     font-size: 0.95rem;
@@ -95,33 +95,33 @@
   margin-bottom: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  
+
   &:hover {
     .sectionTitleRow i {
       color: $formGradientEnd;
     }
   }
-  
+
   .sectionTitleRow {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-bottom: 0.25rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    
+
     .sectionTitle {
       color: $textColor;
       font-size: 1rem;
       margin: 0;
       padding: 0.25rem 0;
     }
-    
+
     i {
       color: color.adjust($textColor, $alpha: -0.3);
       transition: all 0.2s ease;
     }
   }
-  
+
   .dragHint {
     font-size: 0.8rem;
     color: color.adjust($textColor, $alpha: -0.3);
@@ -138,32 +138,32 @@
   overflow-y: auto;
   max-height: calc(100vh - 270px);
   transition: all 0.3s ease;
-  
+
   &.collapsed {
     max-height: 0;
     overflow: hidden;
     margin: 0;
     opacity: 0;
   }
- 
+
   /* Scrollbar styling */
   &::-webkit-scrollbar {
     width: 4px;
   }
- 
+
   &::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.05);
   }
- 
+
   &::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 2px;
-   
+
     &:hover {
       background: rgba(255, 255, 255, 0.3);
     }
   }
- 
+
   .userCircle {
     display: flex;
     align-items: flex-start;
@@ -171,7 +171,7 @@
     padding: 0.75rem;
     border-radius: 8px;
     transition: all 0.3s ease;
-   
+
     &:hover {
       background: rgba(255, 255, 255, 0.1);
     }
@@ -179,12 +179,12 @@
     &.disabled {
       opacity: 0.5;
       cursor: not-allowed;
-      
+
       &:hover {
         background: transparent;
       }
     }
-   
+
     .avatarCircle {
       min-width: 40px;
       width: 40px;
@@ -201,38 +201,38 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       transition: all 0.3s ease;
       flex-shrink: 0;
-     
+
       &:hover {
         transform: scale(1.1);
       }
-      
+
       &.limitReached {
         border-color: #999;
         background-color: #444;
         color: #999;
-        
+
         &:hover {
           transform: none;
         }
       }
-     
-      &:nth-child(5n+1) {
+
+      &:nth-child(5n + 1) {
         border-color: $blue-300;
       }
-     
-      &:nth-child(5n+2) {
+
+      &:nth-child(5n + 2) {
         border-color: $inProgressColor;
       }
-     
-      &:nth-child(5n+3) {
+
+      &:nth-child(5n + 3) {
         border-color: $blue-500;
       }
-     
-      &:nth-child(5n+4) {
+
+      &:nth-child(5n + 4) {
         border-color: $dangerColor;
       }
-     
-      &:nth-child(5n+5) {
+
+      &:nth-child(5n + 5) {
         border-color: $successColor;
       }
     }
@@ -258,16 +258,16 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        
+
         .wipValue {
           font-size: 0.8rem;
           color: color.adjust($textColor, $alpha: -0.2);
-          
+
           strong {
             color: $textColor;
           }
         }
-        
+
         .remainingBadge {
           font-size: 0.8rem;
           color: color.adjust($textColor, $alpha: -0.2);
@@ -282,7 +282,7 @@
           padding: 2px 5px;
           border-radius: 3px;
           transition: all 0.2s ease;
-          
+
           &:hover {
             background-color: rgba(255, 255, 255, 0.1);
             color: $textColor;
@@ -299,7 +299,7 @@
         flex-wrap: wrap;
         gap: 0.5rem;
         align-items: center;
-        
+
         .wipLabel {
           font-size: 0.8rem;
           color: color.adjust($textColor, $alpha: -0.1);
@@ -315,7 +315,7 @@
           padding: 0.25rem;
           font-size: 0.8rem;
           text-align: center;
-          
+
           &:focus {
             outline: none;
             border-color: $formGradientEnd;
@@ -326,9 +326,9 @@
             -webkit-appearance: none;
             margin: 0;
           }
-          &[type=number] {
-            appearance: textfield;       /* Standard */
-            -moz-appearance: textfield;  /* Firefox */
+          &[type="number"] {
+            appearance: textfield; /* Standard */
+            -moz-appearance: textfield; /* Firefox */
           }
         }
 
@@ -336,7 +336,7 @@
           display: flex;
           gap: 0.5rem;
           margin-left: auto;
-          
+
           .wipButton {
             width: 24px;
             height: 24px;
@@ -347,20 +347,20 @@
             border-radius: 3px;
             cursor: pointer;
             transition: all 0.2s ease;
-            
+
             &.saveButton {
               background-color: rgba($successColor, 0.2);
               color: $successColor;
-              
+
               &:hover {
                 background-color: rgba($successColor, 0.3);
               }
             }
-            
+
             &.cancelButton {
               background-color: rgba($dangerColor, 0.2);
               color: $dangerColor;
-              
+
               &:hover {
                 background-color: rgba($dangerColor, 0.3);
               }

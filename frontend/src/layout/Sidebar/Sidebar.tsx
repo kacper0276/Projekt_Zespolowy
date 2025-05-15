@@ -319,8 +319,14 @@ const Sidebar = () => {
                       className={`${styles.avatarCircle} ${
                         noRemaining ? styles.limitReached : ""
                       }`}
+                      style={
+                        user.profileImage
+                          ? { backgroundImage: `url(${user.profileImage})` }
+                          : {}
+                      }
                     >
-                      {getInitials(user.firstName ?? "", user.lastName ?? "")}
+                      {!user.profileImage &&
+                        getInitials(user.firstName ?? "", user.lastName ?? "")}
                     </div>
                     <div className={styles.userDetails}>
                       <span className={styles.userName}>

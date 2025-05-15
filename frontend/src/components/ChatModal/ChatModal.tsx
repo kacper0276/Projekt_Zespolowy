@@ -130,11 +130,20 @@ const ChatModal: React.FC<ChatModalProps> = ({ onClose, kanbanId, isOpen }) => {
                   : ""
               }`}
             >
-              <div className={styles.avatarCircle}>
-                {getInitials(
-                  `${message.sender?.firstName} ${message.sender?.lastName}` ||
-                    "You"
-                )}
+              <div
+                className={styles.avatarCircle}
+                style={
+                  message.sender?.profileImage
+                    ? { backgroundImage: `url(${message.sender.profileImage})` }
+                    : {}
+                }
+              >
+                {!message.sender?.profileImage &&
+                  getInitials(
+                    `${message.sender?.firstName ?? ""} ${
+                      message.sender?.lastName ?? ""
+                    }`.trim() || "You"
+                  )}
               </div>
               <div className={styles.messageContent}>
                 <div className={styles.messageHeader}>
