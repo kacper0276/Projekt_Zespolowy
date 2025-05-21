@@ -1,13 +1,6 @@
 import { BaseEntity } from '../../entities/base.entity';
 import { Role } from '../../enums/role.enum';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { Kanban } from '../../kanban/entities/kanban.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Conversation } from '../../conversations/entities/conversation.entity';
@@ -15,6 +8,7 @@ import { Message } from '../../messages/entities/message.entity';
 import { KanbanSetting } from '../../kanban-settings/entities/kanban-setting.entity';
 import { TeamInvite } from '../../teams/entities/team-invite.entity';
 import { Team } from '../../teams/entities/team.entity';
+import { Comment } from '../../comments/entity/comment.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -65,6 +59,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => KanbanSetting, (kanbanSetting) => kanbanSetting.user)
   kanbanSettings: KanbanSetting[];
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
 
   @OneToMany(() => TeamInvite, (invite) => invite.user)
   teamInvites: TeamInvite[];

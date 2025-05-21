@@ -1,11 +1,19 @@
 import { User } from '../../users/entities/user.entity';
 import { BaseEntity } from '../../entities/base.entity';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { ToDoList } from '../../to-do-lists/entities/to-do-list.entity';
 import { ColumnEntity } from '../../columns/entities/column.entity';
 import { Kanban } from '../../kanban/entities/kanban.entity';
 import { Row } from '../../rows/entities/row.entity';
 import { Status } from '../../status/entities/status.entity';
+import { Comment } from '../../comments/entity/comment.entity';
 
 @Entity('tasks')
 export class Task extends BaseEntity {
@@ -49,4 +57,7 @@ export class Task extends BaseEntity {
 
   @ManyToMany(() => Kanban, (kanban) => kanban.tasks)
   kanbans: Kanban[];
+
+  @OneToMany(() => Comment, (comment) => comment.task, { cascade: true })
+  comments: Comment[];
 }

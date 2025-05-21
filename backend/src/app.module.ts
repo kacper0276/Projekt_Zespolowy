@@ -28,6 +28,8 @@ import { KanbanSettingsModule } from './kanban-settings/kanban-settings.module';
 import { KanbanSetting } from './kanban-settings/entities/kanban-setting.entity';
 import { Team } from './teams/entities/team.entity';
 import { TeamInvite } from './teams/entities/team-invite.entity';
+import { CommentsModule } from './comments/comments.module';
+import { Comment } from './comments/entity/comment.entity';
 
 @Module({
   imports: [
@@ -53,6 +55,7 @@ import { TeamInvite } from './teams/entities/team-invite.entity';
         KanbanSetting,
         Team,
         TeamInvite,
+        Comment,
       ],
       synchronize: true,
       migrations: ['../migrations/**/*.ts'],
@@ -70,6 +73,7 @@ import { TeamInvite } from './teams/entities/team-invite.entity';
     TeamsModule,
     RowsModule,
     KanbanSettingsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

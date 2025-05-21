@@ -11,6 +11,10 @@ import { Row } from '../rows/entities/row.entity';
 import { KanbanSetting } from '../kanban-settings/entities/kanban-setting.entity';
 import { Team } from '../teams/entities/team.entity';
 import { TeamInvite } from '../teams/entities/team-invite.entity';
+import { Comment } from '../comments/entity/comment.entity';
+import { Message } from '../messages/entities/message.entity';
+import { Conversation } from '../conversations/entities/conversation.entity';
+
 dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -29,11 +33,14 @@ export const AppDataSource = new DataSource({
     Status,
     Task,
     ToDoList,
+    Message,
+    Conversation,
     ToDoItem,
     Row,
     KanbanSetting,
     Team,
     TeamInvite,
+    Comment,
   ],
   migrations: ['migrations/**/*.ts'],
   migrationsTableName: 'migrations_typeorm',
