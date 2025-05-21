@@ -1,5 +1,6 @@
 import { IBaseEntity } from "./IBaseEntity";
 import { IColumnEntity } from "./IColumnEntity";
+import { IComment } from "./IComment";
 import { IKanban } from "./IKanban";
 import { IRow } from "./IRow";
 import { IStatus } from "./IStatus";
@@ -20,4 +21,5 @@ export interface ITask extends IBaseEntity {
   kanbans: IKanban[];
   lastColumnName?: string;
   lastMovedToColumnAt?: Date;
+  comments: IComment[];
 }
