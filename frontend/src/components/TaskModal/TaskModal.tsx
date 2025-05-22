@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ITask } from "../../interfaces/ITask";
 import { IUser } from "../../interfaces/IUser";
+import { IComment } from "../../interfaces/IComment";
 import { useApiJson } from "../../config/api";
 import { ApiResponse } from "../../types/api.types";
 import { toast } from "react-toastify";
@@ -12,6 +13,8 @@ import ToDoList from "../ToDoList/ToDoList";
 import { useParams } from "react-router-dom";
 import formatDateForInput from "../../helpers/FormatDate";
 import { useTranslation } from "react-i18next";
+import { useUser } from "../../context/UserContext";
+import PlaceholderPfP from "../../assets/PlaceholderPictures/PlaceholderPfP.png";
 
 interface TaskModalProps {
   taskId: string;
@@ -40,6 +43,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   statuses = [],
 }) => {
   const { t } = useTranslation();
+  const { user } = useUser();
   const params = useParams();
   const [taskData, setTaskData] = useState<ITask>({
     name: taskText,
@@ -60,6 +64,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     kanbans: [],
     toDoLists: [],
     row: { name: "", order: 0, tasks: [], maxTasks: 0 },
+    comments: [],
   });
 
   const [allUsers, setAllUsers] = useState<IUser[]>([]);
@@ -71,6 +76,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
     color: "#3394dc",
   });
   const [allStatuses, setAllStatuses] = useState<IStatus[]>(statuses);
+  
+  // Comments state
+  const [comments, setComments] = useState<IComment[]>([]);
+  const [newComment, setNewComment] = useState<string>("");
+  const [loadingComments, setLoadingComments] = useState<boolean>(false);
 
   const api = useApiJson();
 
@@ -78,6 +88,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       fetchUsers();
+      fetchComments();
     }
   }, [isOpen]);
 
@@ -102,7 +113,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       setAllUsers(response.data.data || []);
     } catch (error: any) {
       toast.error(
-        error.response?.data.message || t("failed-fetching-users")
+        error.response?.data.message || "Failed to fetch users"
       );
     } finally {
       setIsLoading(false);
@@ -119,7 +130,69 @@ const TaskModal: React.FC<TaskModalProps> = ({
       }
     } catch (error: any) {
       toast.error(
-        error.response?.data.message || t("failed-fetching-data")
+        error.response?.data.message || "Failed to fetch task data"
+      );
+    }
+  };
+
+  const fetchComments = async () => {
+    setLoadingComments(true);
+    try {
+      const response = await api.get<ApiResponse<IComment[]>>(`/comments/task/${taskId}`);
+      setComments(response.data.data || []);
+    } catch (error: any) {
+      toast.error(
+        error.response?.data.message || "Failed to fetch comments"
+      );
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) {
+      toast.error("Comment cannot be empty");
+      return;
+    }
+
+    if (!user?.email) {
+      toast.error("User not authenticated");
+      return;
+    }
+
+    try {
+      const commentData = {
+        content: newComment.trim(),
+        userEmail: user.email,
+        taskId: parseInt(taskId),
+      };
+
+      const response = await api.post<ApiResponse<IComment>>("/comments", commentData);
+      
+      if (response.data.data) {
+        setComments(prevComments => [...prevComments, response.data.data!]);
+        setNewComment("");
+        toast.success("Comment added successfully");
+      }
+    } catch (error: any) {
+      toast.error(
+        error.response?.data.message || "Failed to add comment"
+      );
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) {
+      return;
+    }
+
+    try {
+      await api.delete(`/comments/${commentId}`);
+      setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
+      toast.success("Comment deleted successfully");
+    } catch (error: any) {
+      toast.error(
+        error.response?.data.message || "Failed to delete comment"
       );
     }
   };
@@ -168,13 +241,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
   // Add new status
   const handleAddStatus = async () => {
     if (!newStatus.name.trim()) {
-      toast.error(t("status-name-can-not-be-empty"));
+      toast.error("Status name cannot be empty");
       return;
     }
 
     // Check if status with the same name already exists
     if (allStatuses.some((status) => status.name === newStatus.name)) {
-      toast.error(t("status-with-this-name-already-exists"));
+      toast.error("Status with this name already exists");
       return;
     }
 
@@ -201,17 +274,17 @@ const TaskModal: React.FC<TaskModalProps> = ({
     setNewStatus({ name: "", color: "#3394dc" });
     setShowNewStatusForm(false);
 
-    toast.success(t("added-new-status"));
+    toast.success("New status added");
   };
 
   // Handle delete status with window.confirm
   const handleDeleteStatus = (statusName: string) => {
     const confirmDelete = window.confirm(
-        t('confirm-delete-status', { status: statusName })
+        `Are you sure you want to delete status "${statusName}"?`
     );
 
     if (confirmDelete) {
-      console.log(t('deleting-status', { status: statusName }));
+      console.log(`Deleting status: ${statusName}`);
 
       // Remove the status from the list
       const updatedStatuses = allStatuses.filter(
@@ -228,7 +301,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         }));
       }
 
-      toast.success(t('status-deleted', { status: statusName }));
+      toast.success(`Status "${statusName}" deleted`);
     }
   };
 
@@ -238,7 +311,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       ...prevState,
       status: { color: "", name: "" },
     }));
-    toast.info(t("task-status-has-been-cleared"));
+    toast.info("Task status has been cleared");
   };
 
   // Toggle status list visibility
@@ -277,13 +350,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
         });
       }
 
-      toast.success(t("task-has-been-updated"));
+      toast.success("Task has been updated");
       onClose();
     } catch (error: any) {
       console.log(error);
       toast.error(
         error.response?.data.message ||
-          t("error-during-task-update")
+          "Error during task update"
       );
     } finally {
       setIsLoading(false);
@@ -296,13 +369,17 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }
   };
 
+  const canDeleteComment = (comment: IComment) => {
+    return user?.email === comment.user.email;
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className={styles.modalBackdrop} onClick={handleBackdropClick}>
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
-          <h3>{t("task-details")}</h3>
+          <h3>Task Details</h3>
           <button className={styles.closeButton} onClick={onClose}>
             <i className="bi bi-x"></i>
           </button>
@@ -311,7 +388,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
           <div className={styles.taskInfo}>
 
             <div className={styles.formGroup}>
-              <label htmlFor="taskName">{t("task-name")}</label>
+              <label htmlFor="taskName">Task Name</label>
               <input
                 type="text"
                 id="taskName"
@@ -323,7 +400,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="deadline">{t("choose-deadline")}</label>
+              <label htmlFor="deadline">Choose Deadline</label>
               <input
                 type="date"
                 id="deadline"
@@ -337,7 +414,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             {/* Status section with status creation and management options */}
             <div className={styles.formGroup}>
               <div className={styles.statusHeader}>
-                <label htmlFor="status">{t("task-status")}</label>
+                <label htmlFor="status">Task Status</label>
                 <div className={styles.statusActions}>
                   <button
                     className={styles.manageStatusButton}
@@ -345,11 +422,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   >
                     {showStatusList ? (
                       <>
-                        <i className="bi bi-x-circle"></i> {t("hide-statuses")}
+                        <i className="bi bi-x-circle"></i> Hide Statuses
                       </>
                     ) : (
                       <>
-                        <i className="bi bi-trash"></i> {t("delete-status")}
+                        <i className="bi bi-trash"></i> Delete Status
                       </>
                     )}
                   </button>
@@ -364,11 +441,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   >
                     {showNewStatusForm ? (
                       <>
-                        <i className="bi bi-x-circle"></i> {t("cancel")}
+                        <i className="bi bi-x-circle"></i> Cancel
                       </>
                     ) : (
                       <>
-                        <i className="bi bi-plus-circle"></i>{t("new-status")}
+                        <i className="bi bi-plus-circle"></i> New Status
                       </>
                     )}
                   </button>
@@ -379,7 +456,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
               {showStatusList && (
                 <div className={styles.statusListContainer}>
                   <h4 className={styles.statusListTitle}>
-                    {t("manage-statuses")}
+                    Manage Statuses
                   </h4>
                   <div className={styles.statusList}>
                     {allStatuses.length > 0 ? (
@@ -395,7 +472,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                           <button
                             className={styles.closeButtonAnimated}
                             onClick={() => handleDeleteStatus(status.name)}
-                            title={t("delete-status")}
+                            title="Delete Status"
                           >
                             <i className="bi bi-x"></i>
                           </button>
@@ -403,7 +480,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                       ))
                     ) : (
                       <p className={styles.noStatusMessage}>
-                        {t("no-defined-statuses")}
+                        No defined statuses
                       </p>
                     )}
                   </div>
@@ -415,7 +492,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 <div className={styles.newStatusForm}>
                   <div className={styles.formRow}>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="statusName">{t("name")}</label>
+                      <label htmlFor="statusName">Name</label>
                       <input
                         type="text"
                         id="statusName"
@@ -423,11 +500,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                         value={newStatus.name}
                         onChange={handleNewStatusChange}
                         className={styles.formControl}
-                        placeholder={t("status-name")}
+                        placeholder="Status Name"
                       />
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="statusColor">{t("color")}</label>
+                      <label htmlFor="statusColor">Color</label>
                       <div className={styles.colorPickerWrapper}>
                         <input
                           type="color"
@@ -448,7 +525,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     className={styles.addButton}
                     onClick={handleAddStatus}
                   >
-                    {t("add-status")}
+                    Add Status
                   </button>
                 </div>
               )}
@@ -461,7 +538,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 onChange={handleInputChange}
                 className={styles.formControl}
               >
-                <option value="">{t("choose-status")}</option>
+                <option value="">Choose Status</option>
                 {allStatuses.map((status, index) => (
                   <option key={index} value={status.name}>
                     {status.name}
@@ -484,7 +561,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   <button
                     className={styles.closeButtonAnimated}
                     onClick={handleClearSelectedStatus}
-                    title={t("clear-chosen-status")}
+                    title="Clear Chosen Status"
                   >
                     <i className="bi bi-x"></i>
                   </button>
@@ -493,7 +570,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             </div>
 
             <div className={styles.formGroup}>
-              <label>{t("assigned-users")}</label>
+              <label>Assigned Users</label>
               <div className={styles.multiselectContainer}>
                 {/* Custom selected users wrapper */}
                 <div className={styles.selectedUsersWrapper}>
@@ -517,8 +594,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   displayValue="email"
                   onSelect={onSelect}
                   onRemove={onRemove}
-                  placeholder={t("choose-users")}
-                  emptyRecordMsg={t("no-users")}
+                  placeholder="Choose Users"
+                  emptyRecordMsg="No Users"
                   loading={isLoading}
                   hidePlaceholder={taskData.users.length > 0}
                   hideSelectedList={true}
@@ -543,8 +620,97 @@ const TaskModal: React.FC<TaskModalProps> = ({
             </div>
 
             <div className={styles.formGroup}>
-              <label>{t("task-lists")}</label>
+              <label>Task Lists</label>
               <ToDoList taskId={+taskId} />
+            </div>
+
+            {/* Comments Section */}
+            <div className={styles.formGroup}>
+              <div className={styles.commentsSection}>
+                <div className={styles.commentsHeader}>
+                  <h4>Comments</h4>
+                  {comments.length > 0 && (
+                    <span className={styles.commentsCount}>
+                      {comments.length}
+                    </span>
+                  )}
+                </div>
+                
+                {/* Add comment form */}
+                <div className={styles.addCommentForm}>
+                  <textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Share your thoughts on this task..."
+                    className={styles.commentTextarea}
+                  />
+                  <button
+                    onClick={handleAddComment}
+                    className={styles.addCommentButton}
+                    disabled={!newComment.trim()}
+                  >
+                    Add Comment
+                  </button>
+                </div>
+
+                {/* Comments list */}
+                <div className={styles.commentsList}>
+                  {loadingComments ? (
+                    <div className={styles.commentsLoading}>
+                      Loading comments...
+                    </div>
+                  ) : comments.length === 0 ? (
+                    <div className={styles.noComments}>
+                      No comments yet. Be the first to share your thoughts!
+                    </div>
+                  ) : (
+                    comments.map((comment) => (
+                      <div key={comment.id} className={styles.commentItem}>
+                        <div className={styles.commentHeader}>
+                          <div className={styles.commentUserInfo}>
+                            <div className={styles.commentUserAvatar}>
+                              <img
+                                src={
+                                  comment.user.profileImage
+                                    ? comment.user.profileImage
+                                    : PlaceholderPfP
+                                }
+                                alt={t("profile")}
+                                onError={(e) => (e.currentTarget.src = PlaceholderPfP)}
+                              />
+                            </div>
+                            <span className={styles.commentAuthor}>
+                              {comment.user.firstName && comment.user.lastName 
+                                ? `${comment.user.firstName} ${comment.user.lastName}`
+                                : comment.user.email
+                              }
+                            </span>
+                            {comment.user.login && (
+                              <span className={styles.commentUsername}>
+                                @{comment.user.login}
+                              </span>
+                            )}
+                          </div>
+                          <div className={styles.commentActions}>
+                            {canDeleteComment(comment) && (
+                              <button
+                                onClick={() => comment.id && handleDeleteComment(comment.id)}
+                                className={styles.commentDeleteButton}
+                                title="Delete comment"
+                              >
+                                <i className="bi bi-trash"></i>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div className={styles.commentContent}>
+                          {comment.content}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className={styles.formActions}>
@@ -553,7 +719,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 onClick={handleSaveTask}
                 disabled={isLoading}
               >
-                {isLoading ? t("saving") : t("save-changes")}
+                {isLoading ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>

@@ -22,6 +22,7 @@ interface ItemProps {
     statusId?: number;
     lastColumnName?: string;
     lastMovedToColumnAt?: Date;
+    commentsCount?: number; // Dodane pole dla liczby komentarzy
   };
   index: number;
   columnId: string;
@@ -50,6 +51,7 @@ const TaskItem: React.FC<ItemProps> = ({
     task.deadline || null
   );
   const [isDropTargetActive, setIsDropTargetActive] = useState(false);
+  const [commentsCount, setCommentsCount] = useState<number>(task.commentsCount || 0);
 
   // TODO Lists state
   const [todoLists, setTodoLists] = useState<IToDoList[]>([]);
@@ -59,9 +61,10 @@ const TaskItem: React.FC<ItemProps> = ({
   // Ensure uniqueness by combining columnId and task id
   const uniqueDraggableId = `${columnId}-${task.id}-${index}`;
 
-  // Fetch TODO lists when component mounts
+  // Fetch TODO lists and comments count when component mounts
   useEffect(() => {
     fetchTodoLists();
+    fetchCommentsCount();
   }, [task.id]);
 
   const fetchTodoLists = async () => {
@@ -78,13 +81,31 @@ const TaskItem: React.FC<ItemProps> = ({
     }
   };
 
+  const fetchCommentsCount = async () => {
+    try {
+      const response = await api.get<ApiResponse<any>>(`/comments/task/${task.id}/count`);
+      setCommentsCount(response.data.data || 0);
+    } catch (error) {
+      console.error("Error fetching comments count:", error);
+      // Fallback: fetch all comments and count them
+      try {
+        const commentsResponse = await api.get<ApiResponse<any[]>>(`/comments/task/${task.id}`);
+        setCommentsCount(commentsResponse.data.data?.length || 0);
+      } catch (fallbackError) {
+        console.error("Error fetching comments for count:", fallbackError);
+        setCommentsCount(0);
+      }
+    }
+  };
+
   const handleTaskClick = (e: React.MouseEvent) => {
     // Prevent opening modal when clicking delete button, user avatar, or todo list toggle
     if (
       (e.target as HTMLElement).closest(`.${styles.deleteTaskButton}`) ||
       (e.target as HTMLElement).closest(`.${styles.userAvatars}`) ||
       (e.target as HTMLElement).closest(`.${styles.todoListToggle}`) ||
-      (e.target as HTMLElement).closest(`.${styles.todoItem}`)
+      (e.target as HTMLElement).closest(`.${styles.todoItem}`) ||
+      (e.target as HTMLElement).closest(`.${styles.commentsIndicator}`)
     ) {
       return;
     }
@@ -98,8 +119,9 @@ const TaskItem: React.FC<ItemProps> = ({
 
   const closeModal = () => {
     setIsModalOpen(false);
-    // Refresh todo lists when modal is closed
+    // Refresh todo lists and comments count when modal is closed
     fetchTodoLists();
+    fetchCommentsCount();
   };
 
   const handleTaskUpdate = (updatedTask: {
@@ -270,6 +292,17 @@ const TaskItem: React.FC<ItemProps> = ({
             <div className={styles.taskContent}>
               <span className={styles.taskText}>{taskText}</span>
               <div className={styles.taskActions}>
+                {/* Comments indicator - tylko gdy są komentarze */}
+                {commentsCount > 0 && (
+                  <div
+                    className={styles.commentsIndicator}
+                    onClick={(e) => e.stopPropagation()}
+                    title={`${commentsCount} ${commentsCount === 1 ? 'komentarz' : commentsCount < 5 ? 'komentarze' : 'komentarzy'}`}
+                  >
+                    <i className="bi bi-chat-dots"></i>
+                    <span className={styles.commentsCount}>{commentsCount}</span>
+                  </div>
+                )}
                 <div
                   className={styles.userAvatars}
                   onClick={(e) => e.stopPropagation()}

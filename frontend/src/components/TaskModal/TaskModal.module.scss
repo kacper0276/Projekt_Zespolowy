@@ -348,8 +348,6 @@
   font-size: 0.95rem;
 }
 
-
-
 .noStatusMessage {
   color: rgba(255, 255, 255, 0.5);
   font-style: italic;
@@ -444,6 +442,330 @@
     height: 22px;
     font-size: 1rem;
     margin-left: 8px;
+  }
+}
+
+// Comments Section Styles
+.commentsSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 20px;
+  margin-top: 24px;
+}
+
+.commentsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  
+  h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: color.adjust($textColor, $lightness: 15%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    &::before {
+      content: "💬";
+      font-size: 1rem;
+    }
+  }
+  
+  .commentsCount {
+    background-color: rgba($inProgressColor, 0.2);
+    color: $inProgressColor;
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+}
+
+.addCommentForm {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+  
+  &:focus-within {
+    border-color: rgba($inProgressColor, 0.4);
+    box-shadow: 0 0 0 3px rgba($inProgressColor, 0.1);
+  }
+}
+
+.commentTextarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 14px 16px;
+  background-color: color.adjust($cardBackground, $lightness: -2%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: $textColor;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.2s ease;
+  
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: $inProgressColor;
+    box-shadow: 0 0 0 2px rgba($inProgressColor, 0.2);
+    background-color: color.adjust($cardBackground, $lightness: 2%);
+  }
+}
+
+.addCommentButton {
+  background: linear-gradient(135deg, $inProgressColor, color.adjust($inProgressColor, $lightness: -10%));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-top: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba($inProgressColor, 0.25);
+  
+  &::before {
+    content: "💬";
+    font-size: 0.9rem;
+  }
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($inProgressColor, 0.35);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.commentsList {
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 8px;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba($inProgressColor, 0.4);
+    border-radius: 8px;
+    
+    &:hover {
+      background: rgba($inProgressColor, 0.6);
+    }
+  }
+}
+
+.commentItem {
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.15), 
+    rgba(0, 0, 0, 0.25)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.commentUserInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.commentUserAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+  
+  &:hover img {
+    transform: scale(1.05);
+  }
+}
+
+.commentAuthor {
+  font-weight: 600;
+  color: color.adjust($textColor, $lightness: 20%);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.commentUsername {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.commentActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.commentDeleteButton {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 1rem;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    opacity: 1;
+    background-color: rgba(#e74c3c, 0.1);
+    transform: scale(1.1);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.commentContent {
+  color: color.adjust($textColor, $lightness: 5%);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.commentsLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  
+  &::before {
+    content: "⏳";
+    margin-right: 8px;
+    animation: spin 2s linear infinite;
+  }
+}
+
+.noComments {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.1), 
+    rgba(0, 0, 0, 0.2)
+  );
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  
+  &::before {
+    content: "💭";
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 8px;
+    opacity: 0.5;
+  }
+}
+
+// Animation for loading spinner
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .commentItem {
+    padding: 12px;
+  }
+  
+  .commentHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .commentUserInfo {
+    gap: 8px;
+  }
+  
+  .commentUserAvatar {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .commentActions {
+    align-self: flex-end;
+  }
+  
+  .addCommentForm {
+    padding: 12px;
   }
 }
 
