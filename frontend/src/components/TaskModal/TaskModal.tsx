@@ -35,7 +35,7 @@ interface TaskModalProps {
 const TaskModal: React.FC<TaskModalProps> = ({
   taskId,
   taskText,
-  columnId,
+  // columnId,
   onClose,
   isOpen,
   users = [],
@@ -76,7 +76,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     color: "#3394dc",
   });
   const [allStatuses, setAllStatuses] = useState<IStatus[]>(statuses);
-  
+
   // Comments state
   const [comments, setComments] = useState<IComment[]>([]);
   const [newComment, setNewComment] = useState<string>("");
@@ -112,9 +112,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       const response = await api.get<ApiResponse<IUser[]>>("/users/all");
       setAllUsers(response.data.data || []);
     } catch (error: any) {
-      toast.error(
-        error.response?.data.message || "Failed to fetch users"
-      );
+      toast.error(error.response?.data.message || "Failed to fetch users");
     } finally {
       setIsLoading(false);
     }
@@ -129,21 +127,19 @@ const TaskModal: React.FC<TaskModalProps> = ({
       } else {
       }
     } catch (error: any) {
-      toast.error(
-        error.response?.data.message || "Failed to fetch task data"
-      );
+      toast.error(error.response?.data.message || "Failed to fetch task data");
     }
   };
 
   const fetchComments = async () => {
     setLoadingComments(true);
     try {
-      const response = await api.get<ApiResponse<IComment[]>>(`/comments/task/${taskId}`);
+      const response = await api.get<ApiResponse<IComment[]>>(
+        `/comments/task/${taskId}`
+      );
       setComments(response.data.data || []);
     } catch (error: any) {
-      toast.error(
-        error.response?.data.message || "Failed to fetch comments"
-      );
+      toast.error(error.response?.data.message || "Failed to fetch comments");
     } finally {
       setLoadingComments(false);
     }
@@ -167,17 +163,18 @@ const TaskModal: React.FC<TaskModalProps> = ({
         taskId: parseInt(taskId),
       };
 
-      const response = await api.post<ApiResponse<IComment>>("/comments", commentData);
-      
+      const response = await api.post<ApiResponse<IComment>>(
+        "/comments",
+        commentData
+      );
+
       if (response.data.data) {
-        setComments(prevComments => [...prevComments, response.data.data!]);
+        setComments((prevComments) => [...prevComments, response.data.data!]);
         setNewComment("");
         toast.success("Comment added successfully");
       }
     } catch (error: any) {
-      toast.error(
-        error.response?.data.message || "Failed to add comment"
-      );
+      toast.error(error.response?.data.message || "Failed to add comment");
     }
   };
 
@@ -188,12 +185,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
     try {
       await api.delete(`/comments/${commentId}`);
-      setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.id !== commentId)
+      );
       toast.success("Comment deleted successfully");
     } catch (error: any) {
-      toast.error(
-        error.response?.data.message || "Failed to delete comment"
-      );
+      toast.error(error.response?.data.message || "Failed to delete comment");
     }
   };
 
@@ -280,7 +277,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   // Handle delete status with window.confirm
   const handleDeleteStatus = (statusName: string) => {
     const confirmDelete = window.confirm(
-        `Are you sure you want to delete status "${statusName}"?`
+      `Are you sure you want to delete status "${statusName}"?`
     );
 
     if (confirmDelete) {
@@ -354,10 +351,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       onClose();
     } catch (error: any) {
       console.log(error);
-      toast.error(
-        error.response?.data.message ||
-          "Error during task update"
-      );
+      toast.error(error.response?.data.message || "Error during task update");
     } finally {
       setIsLoading(false);
     }
@@ -386,7 +380,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
         </div>
         <div className={styles.modalBody}>
           <div className={styles.taskInfo}>
-
             <div className={styles.formGroup}>
               <label htmlFor="taskName">Task Name</label>
               <input
@@ -455,9 +448,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
               {/* Status list for deletion */}
               {showStatusList && (
                 <div className={styles.statusListContainer}>
-                  <h4 className={styles.statusListTitle}>
-                    Manage Statuses
-                  </h4>
+                  <h4 className={styles.statusListTitle}>Manage Statuses</h4>
                   <div className={styles.statusList}>
                     {allStatuses.length > 0 ? (
                       allStatuses.map((status, index) => (
@@ -635,7 +626,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     </span>
                   )}
                 </div>
-                
+
                 {/* Add comment form */}
                 <div className={styles.addCommentForm}>
                   <textarea
@@ -676,14 +667,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                     : PlaceholderPfP
                                 }
                                 alt={t("profile")}
-                                onError={(e) => (e.currentTarget.src = PlaceholderPfP)}
+                                onError={(e) =>
+                                  (e.currentTarget.src = PlaceholderPfP)
+                                }
                               />
                             </div>
                             <span className={styles.commentAuthor}>
-                              {comment.user.firstName && comment.user.lastName 
+                              {comment.user.firstName && comment.user.lastName
                                 ? `${comment.user.firstName} ${comment.user.lastName}`
-                                : comment.user.email
-                              }
+                                : comment.user.email}
                             </span>
                             {comment.user.login && (
                               <span className={styles.commentUsername}>
@@ -694,7 +686,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
                           <div className={styles.commentActions}>
                             {canDeleteComment(comment) && (
                               <button
-                                onClick={() => comment.id && handleDeleteComment(comment.id)}
+                                onClick={() =>
+                                  comment.id && handleDeleteComment(comment.id)
+                                }
                                 className={styles.commentDeleteButton}
                                 title="Delete comment"
                               >

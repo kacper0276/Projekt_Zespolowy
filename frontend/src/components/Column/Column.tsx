@@ -8,7 +8,6 @@ import WipLimitEditor from "../WipLimitEditor/WipLimitEditor";
 import { useTranslation } from "react-i18next";
 
 interface ColumnProps {
-  
   col: {
     id: string;
     title: string;
@@ -24,7 +23,6 @@ interface ColumnProps {
 }
 
 const Column: React.FC<ColumnProps> = ({
-  
   col,
   onAddTask,
   onDeleteTask,
@@ -86,7 +84,9 @@ const Column: React.FC<ColumnProps> = ({
             onClick={() => setIsEditingWipLimit(true)}
             title={t("edit-limit")}
           >
-            <span>{t("WIP-limit")}: {col.wipLimit === 0 ? {t("null")} : col.wipLimit}</span>
+            <span>
+              {t("WIP-limit")}: {col.wipLimit === 0 ? t("null") : col.wipLimit}
+            </span>
             <i className="bi bi-pencil-fill ms-2"></i>
           </div>
         )}
